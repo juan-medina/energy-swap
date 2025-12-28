@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 Juan Medina
 // SPDX-License-Identifier: MIT
 
-#include "app.h"
+#include "app.hpp"
 
 #include <cstdio>
 #include <iostream>
