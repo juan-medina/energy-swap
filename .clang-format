@@ -4,7 +4,6 @@ Language: Cpp
 Standard: c++20
 SortIncludes: CaseInsensitive
 IncludeBlocks: Regroup
-SeparateIncludeBlocks: true
 
 IncludeCategories:
   # 1. Project headers: "file.h", "something.hpp"

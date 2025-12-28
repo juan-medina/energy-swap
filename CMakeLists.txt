@@ -23,10 +23,7 @@ file(GLOB APP_HEADER_FILES "src/*.h")
 file(GLOB APP_SOURCE_FILES "src/*.cpp")
 
 # Create executable
-add_executable(${APP_NAME}
-        ${APP_HEADER_FILES}
-        ${APP_SOURCE_FILES}
-)
+add_executable(${APP_NAME} ${APP_HEADER_FILES} ${APP_SOURCE_FILES})
 
 # Compiler warnings (target-specific)
 if (MSVC)
@@ -35,11 +32,15 @@ if (MSVC)
             /WX
             /permissive-
     )
-else()
+else ()
     target_compile_options(${APP_NAME} PRIVATE
             -Wall
             -Wextra
             -pedantic
             -Werror
     )
-endif()
+endif ()
+
+# Add spdlog
+add_subdirectory(external/spdlog)
+target_link_libraries(${APP_NAME} PRIVATE spdlog::spdlog_header_only)
