@@ -43,4 +43,11 @@ endif ()
 
 # Add spdlog
 add_subdirectory(external/spdlog)
-target_link_libraries(${APP_NAME} PRIVATE spdlog::spdlog_header_only)
+# Add Boxer
+add_subdirectory(external/boxer)
+
+# Link
+target_link_libraries(${APP_NAME}
+        PRIVATE spdlog::spdlog_header_only
+        PRIVATE Boxer
+)
