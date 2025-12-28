@@ -1,0 +1,54 @@
+BasedOnStyle: llvm
+---
+Language: Cpp
+Standard: c++20
+SortIncludes: CaseInsensitive
+IncludeBlocks: Regroup
+SeparateIncludeBlocks: true
+
+IncludeCategories:
+  # 1. Project headers: "file.h", "something.hpp"
+  - Regex: '"[^"]+\.(h|hpp)"'
+    Priority: 1
+
+  # 2. System + third-party headers: <raylib.h>, <spdlog/...>, <vector>, <string>
+  - Regex: '<.*>'
+    Priority: 2
+
+  # 3. Relative includes: ../something
+  - Regex: '\.\./.*'
+    Priority: 3
+
+  # 4. Fallback
+  - Regex: '.*'
+    Priority: 4
+
+AccessModifierOffset: -4
+AlignEscapedNewlines: DontAlign
+AllowShortBlocksOnASingleLine: Empty
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+ColumnLimit: 120
+DerivePointerAlignment: false
+FixNamespaceComments: true
+IndentPPDirectives: AfterHash
+IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: false
+PointerAlignment: Right
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: false
+SpaceAroundPointerQualifiers: After
+SpaceBeforeCaseColon: false
+SpaceBeforeCtorInitializerColon: false
+SpaceBeforeInheritanceColon: false
+SpaceBeforeParens: Never
+SpaceBeforeRangeBasedForLoopColon: false
+TabWidth: 4
+UseTab: Never
