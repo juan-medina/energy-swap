@@ -1,15 +1,18 @@
 // SPDX-FileCopyrightText: 2025 Juan Medina
 // SPDX-License-Identifier: MIT
 
+#include "app.h"
+
 #include <cstdio>
 #include <iostream>
-#include <spdlog/spdlog.h>
 
 [[nodiscard]] auto main(int /*argc*/, char * /*argv*/[]) -> int {
     try {
-        spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%@] %v");
-        SPDLOG_INFO("Hello from spdlog!");
-        return EXIT_SUCCESS;
+        energy::app app;
+        if(app.run()) {
+            return EXIT_SUCCESS;
+        }
+        return EXIT_FAILURE;
     } catch(const std::exception &e) {
         std::fputs("Unhandled exception in main: ", stderr);
         std::fputs(e.what(), stderr);
