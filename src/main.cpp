@@ -10,11 +10,11 @@
 [[nodiscard]] auto main(int /*argc*/, char * /*argv*/[]) -> int {
     try {
         energy::app app;
-        if(auto error = app.run().ko(); error) {
-            SPDLOG_ERROR("failed to run the application: '{}'", error->get_message());
-            return EXIT_SUCCESS;
+        if(const auto error = app.run().ko(); error) {
+            SPDLOG_ERROR("failed to run the application: {}", error->get_message());
+            return EXIT_FAILURE;
         }
-        return EXIT_FAILURE;
+        return EXIT_SUCCESS;
     } catch(const std::exception &e) {
         std::fputs("Unhandled exception in main: ", stderr);
         std::fputs(e.what(), stderr);

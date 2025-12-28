@@ -20,7 +20,7 @@ public:
     app(app &&) noexcept = delete;
     auto operator=(app &&) noexcept -> app & = delete;
 
-    auto run() -> result<>;
+    [[nodiscard]] auto run() -> result<>;
 
 private:
     void update();
