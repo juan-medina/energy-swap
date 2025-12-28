@@ -3,6 +3,8 @@
 
 #pragma once
 
+# include "result.hpp"
+
 namespace energy {
 
 class app {
@@ -18,7 +20,7 @@ public:
     app(app &&) noexcept = delete;
     auto operator=(app &&) noexcept -> app & = delete;
 
-    auto run() -> bool;
+    auto run() -> result<>;
 
 private:
     void update();

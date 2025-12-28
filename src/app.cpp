@@ -18,7 +18,7 @@ static const auto banner = R"(
 static const auto empty_format = "%v";
 static const auto color_line_format = "[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] [%@] %v";
 
-auto energy::app::run() -> bool {
+auto energy::app::run() -> result<> {
     spdlog::set_pattern(empty_format);
     SPDLOG_INFO(banner);
 
@@ -26,7 +26,6 @@ auto energy::app::run() -> bool {
     SPDLOG_INFO("Starting application");
 
     SPDLOG_INFO("Application started");
-
     return true;
 }
 

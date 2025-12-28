@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "app.hpp"
+#include "spdlog/spdlog.h"
 
 #include <cstdio>
 #include <iostream>
@@ -9,7 +10,8 @@
 [[nodiscard]] auto main(int /*argc*/, char * /*argv*/[]) -> int {
     try {
         energy::app app;
-        if(app.run()) {
+        if(auto error = app.run().ko(); error) {
+            SPDLOG_ERROR("failed to run the application: '{}'", error->get_message());
             return EXIT_SUCCESS;
         }
         return EXIT_FAILURE;
