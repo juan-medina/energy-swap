@@ -7,6 +7,8 @@
 #define RAYGUI_IMPLEMENTATION
 #define RAYGUI_USE_RAYLIB
 #include <cstdarg>
+#include <fstream>
+#include <jsoncons/json.hpp>
 #include <raygui.h>
 #include <spdlog/spdlog.h>
 
@@ -18,13 +20,16 @@ static const auto banner = R"(
  | |____| | | |  __/ | | (_| | |_| |  ____) \ V  V / (_| | |_) |
  |______|_| |_|\___|_|  \__, |\__, | |_____/ \_/\_/ \__,_| .__/
                          __/ | __/ |                     | |
-                        |___/ |___/                      |_|    )";
+                        |___/ |___/                      |_| v{})";
 
 static const auto empty_format = "%v";
 static const auto color_line_format = "[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v %@";
 
 auto energy::app::run() -> result<> {
-    setup_log();
+    if(const auto err = setup_log().ko(); err) {
+        SPDLOG_ERROR("error running the application");
+        return error("error running application", *err);
+    }
 
     SPDLOG_INFO("Starting application");
 
@@ -78,12 +83,20 @@ void energy::app::draw() {
     EndDrawing();
 }
 
-void energy::app::setup_log() {
+auto energy::app::setup_log() -> result<> {
+    auto const [version, err] = parse_version("resources/version/version.json").ok();
+    if(err) {
+        SPDLOG_ERROR("error setting up log");
+        return error("error setting up log", *err);
+    }
+
     spdlog::set_pattern(empty_format);
-    SPDLOG_INFO(banner);
+    const auto version_str = std::format("{}.{}.{}.{}", version->major, version->minor, version->patch, version->build);
+    SPDLOG_INFO(std::vformat(banner, std::make_format_args(version_str)));
 
     spdlog::set_pattern(color_line_format);
     SetTraceLogCallback(log_callback);
+    return true;
 }
 
 void energy::app::log_callback(const int log_level, const char *text, va_list args) {
@@ -134,4 +147,45 @@ void energy::app::log_callback(const int log_level, const char *text, va_list ar
     }
 
     spdlog::log(level, "[raylib] {}", buffer.data());
+}
+
+auto energy::app::parse_version(const std::string &path) -> result<version> {
+    // check if file exists
+    std::ifstream const file(path);
+    if(!file.is_open()) {
+        auto message = std::format("Version file not found: {}", path);
+        SPDLOG_ERROR(message);
+        return error(message);
+    }
+
+    // read file content
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    const std::string json_text = buffer.str();
+
+    try {
+        // parse JSON
+        const auto parser = jsoncons::json::parse(json_text);
+
+        if(!parser.contains("version")
+           || !parser["version"].is_object()) { // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+            const auto *message = "Failed to parse version JSON: 'version' field missing or not an object";
+            SPDLOG_ERROR(message);
+            return error(message);
+        }
+
+        const auto &object = parser["version"]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+
+        version result{};
+        result.major = object.get_value_or<int>("major", 0);
+        result.minor = object.get_value_or<int>("minor", 0);
+        result.patch = object.get_value_or<int>("patch", 0);
+        result.build = object.get_value_or<int>("build", 0);
+
+        return result;
+    } catch(const std::exception &e) {
+        auto message = std::format("JSON parse error: {}", e.what());
+        SPDLOG_ERROR(message);
+        return error(message);
+    }
 }

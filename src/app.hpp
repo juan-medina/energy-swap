@@ -22,10 +22,20 @@ public:
 
     [[nodiscard]] static auto run() -> result<>;
 
+    struct version {
+        int major{};
+        int minor{};
+        int patch{};
+        int build{};
+    };
+
 private:
     static void update();
     static void draw();
-    static void setup_log();
+
+    [[nodiscard]] static auto setup_log() -> result<>;
+    [[nodiscard]] static auto parse_version(const std::string &path) -> result<version>;
+
     static void log_callback(int log_level, const char *text, va_list args);
 };
 

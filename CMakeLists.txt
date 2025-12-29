@@ -59,6 +59,10 @@ target_link_libraries(${APP_NAME} PRIVATE raylib)
 # Add raygui
 target_include_directories(${APP_NAME} SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/raygui/src)
 
+# Add jsoncons
+target_include_directories(${APP_NAME} SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/jsoncons/include)
+
+
 # No supported on Emscripten
 if (NOT EMSCRIPTEN)
     # Add Boxer
@@ -73,10 +77,12 @@ if (EMSCRIPTEN)
 
     # Reasonable defaults; tweak later if needed
     target_link_options(${APP_NAME} PRIVATE
+            "--preload-file=${CMAKE_SOURCE_DIR}/resources@resources"
             "-sUSE_GLFW=3"
             "-sASYNCIFY"
             "-sALLOW_MEMORY_GROWTH=1"
     )
+
 endif ()
 
 # Windows specific
@@ -87,5 +93,15 @@ if (WIN32)
             NOMINMAX
             NOUSER
             NOGDI
+    )
+endif ()
+
+# Post-build: copy resources (not for Emscripten)
+if (NOT EMSCRIPTEN)
+    add_custom_command(
+            TARGET ${APP_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/resources
+            $<TARGET_FILE_DIR:${APP_NAME}>/resources
     )
 endif ()

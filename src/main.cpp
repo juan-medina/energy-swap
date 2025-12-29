@@ -8,11 +8,13 @@
 #endif
 
 #include <cstdio>
+#include <spdlog/spdlog.h>
 
 [[nodiscard]] auto main(int /*argc*/, char * /*argv*/[]) -> int {
     try {
-        energy::app app;
+        energy::app const app;
         if(const auto error = app.run().ko(); error) {
+            SPDLOG_ERROR("Failed to run the application", "Error!", error->get_message());
 #ifndef __EMSCRIPTEN__
             boxer::show("Failed to run the application", "Error!", boxer::Style::Error);
 #endif
