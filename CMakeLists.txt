@@ -96,12 +96,33 @@ if (WIN32)
     )
 endif ()
 
+# At top-level, before you need Python
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
+set(VERSION_JSON ${CMAKE_SOURCE_DIR}/resources/version/version.json)
+set(VERSION_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/version.py)
+
+# Always bump version when the target is built
+add_custom_command(
+        TARGET ${APP_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Incrementing build number..."
+        COMMAND ${Python3_EXECUTABLE} ${VERSION_SCRIPT} ${VERSION_JSON}
+        COMMENT "Version bumped"
+)
+
 # Post-build: copy resources (not for Emscripten)
 if (NOT EMSCRIPTEN)
-    add_custom_command(
-            TARGET ${APP_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/resources
-            $<TARGET_FILE_DIR:${APP_NAME}>/resources
-    )
-endif ()
+
+    # Only copy resources if they changed (native only)
+    if (NOT EMSCRIPTEN)
+        add_custom_command(
+                TARGET ${APP_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E echo "Syncing resources if needed..."
+                COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+                ${CMAKE_SOURCE_DIR}/resources
+                $<TARGET_FILE_DIR:${APP_NAME}>/resources
+                COMMENT "Copying resources only if changed"
+        )
+    endif()
+
+endif()
