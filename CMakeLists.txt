@@ -43,11 +43,26 @@ endif ()
 
 # Add spdlog
 add_subdirectory(external/spdlog)
+
+# Add raylib
+add_subdirectory(external/raylib)
+
 # Add Boxer
 add_subdirectory(external/boxer)
 
 # Link
 target_link_libraries(${APP_NAME}
         PRIVATE spdlog::spdlog_header_only
+        PRIVATE raylib
         PRIVATE Boxer
 )
+
+# Windows specific definitions
+if (WIN32)
+    # fix raylib issues on Windows
+    target_compile_definitions(${APP_NAME} PRIVATE
+            WIN32_LEAN_AND_MEAN
+            NOMINMAX
+            NOUSER
+    )
+endif ()

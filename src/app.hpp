@@ -3,7 +3,7 @@
 
 #pragma once
 
-# include "result.hpp"
+#include "result.hpp"
 
 namespace energy {
 
@@ -25,6 +25,7 @@ public:
 private:
     void update();
     void draw();
+    void setup_log();
 };
 
 } // namespace energy
