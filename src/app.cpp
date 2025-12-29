@@ -28,6 +28,9 @@ auto energy::app::run() -> result<> {
 
     SPDLOG_INFO("Starting application");
 
+#ifdef PLATFORM_DESKTOP
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+#endif
     InitWindow(1920, 1080, "testing raylib");
     SetTargetFPS(60);
 
