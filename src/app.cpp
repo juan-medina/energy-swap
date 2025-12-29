@@ -27,8 +27,7 @@ static const auto color_line_format = "[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v %@";
 
 auto energy::app::run() -> result<> {
     if(const auto err = setup_log().ko(); err) {
-        SPDLOG_ERROR("error running the application");
-        return error("error running application", *err);
+        return error("error running the application", *err);
     }
 
     SPDLOG_INFO("Starting application");
@@ -86,7 +85,6 @@ void energy::app::draw() {
 auto energy::app::setup_log() -> result<> {
     auto const [version, err] = parse_version("resources/version/version.json").ok();
     if(err) {
-        SPDLOG_ERROR("error setting up log");
         return error("error setting up log", *err);
     }
 
@@ -153,9 +151,7 @@ auto energy::app::parse_version(const std::string &path) -> result<version> {
     // check if file exists
     std::ifstream const file(path);
     if(!file.is_open()) {
-        auto message = std::format("Version file not found: {}", path);
-        SPDLOG_ERROR(message);
-        return error(message);
+        return error(std::format("Version file not found: {}", path));
     }
 
     // read file content
@@ -169,23 +165,15 @@ auto energy::app::parse_version(const std::string &path) -> result<version> {
 
         if(!parser.contains("version")
            || !parser["version"].is_object()) { // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
-            const auto *message = "Failed to parse version JSON: 'version' field missing or not an object";
-            SPDLOG_ERROR(message);
-            return error(message);
+            return error("Failed to parse version JSON: 'version' field missing or not an object");
         }
 
         const auto &object = parser["version"]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
-
-        version result{};
-        result.major = object.get_value_or<int>("major", 0);
-        result.minor = object.get_value_or<int>("minor", 0);
-        result.patch = object.get_value_or<int>("patch", 0);
-        result.build = object.get_value_or<int>("build", 0);
-
-        return result;
+        return version{.major = object.get_value_or<int>("major", 0),
+                       .minor = object.get_value_or<int>("minor", 0),
+                       .patch = object.get_value_or<int>("patch", 0),
+                       .build = object.get_value_or<int>("build", 0)};
     } catch(const std::exception &e) {
-        auto message = std::format("JSON parse error: {}", e.what());
-        SPDLOG_ERROR(message);
-        return error(message);
+        return error(std::format("JSON parse error: {}", e.what()));
     }
 }

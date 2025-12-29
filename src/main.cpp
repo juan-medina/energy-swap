@@ -14,9 +14,9 @@
     try {
         energy::app const app;
         if(const auto error = app.run().ko(); error) {
-            SPDLOG_ERROR("Failed to run the application", "Error!", error->get_message());
+            SPDLOG_ERROR("{}", error->to_string());
 #ifndef __EMSCRIPTEN__
-            boxer::show("Failed to run the application", "Error!", boxer::Style::Error);
+            boxer::show(error->get_message().c_str(), "Error!", boxer::Style::Error);
 #endif
             return EXIT_FAILURE;
         }
