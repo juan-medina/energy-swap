@@ -56,6 +56,9 @@ target_link_libraries(${APP_NAME} PRIVATE spdlog::spdlog_header_only)
 add_subdirectory(external/raylib)
 target_link_libraries(${APP_NAME} PRIVATE raylib)
 
+# Add raygui
+target_include_directories(${APP_NAME} SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/raygui/src)
+
 # No supported on Emscripten
 if (NOT EMSCRIPTEN)
     # Add Boxer
@@ -83,5 +86,6 @@ if (WIN32)
             WIN32_LEAN_AND_MEAN
             NOMINMAX
             NOUSER
+            NOGDI
     )
 endif ()

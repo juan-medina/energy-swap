@@ -4,6 +4,10 @@
 #include "app.hpp"
 
 #include <raylib.h>
+#define RAYGUI_IMPLEMENTATION
+#define RAYGUI_USE_RAYLIB
+#include <cstdarg>
+#include <raygui.h>
 #include <spdlog/spdlog.h>
 
 static const auto banner = R"(
@@ -44,7 +48,29 @@ void energy::app::draw() {
     BeginDrawing();
     ClearBackground(SKYBLUE);
 
-    DrawText("Hello, world!", (1900 / 2) - (MeasureText("Hello, world!", 20) / 2), (1080 / 2) - 10, 20, RAYWHITE);
+    // set large text size for button
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 32);
+
+    // Get current screen size
+    const int screen_width = GetScreenWidth();
+    const int screen_height = GetScreenHeight();
+
+    // Button size
+    constexpr int button_width = 200;
+    constexpr int button_height = 60;
+    const int start_x = (screen_width / 2) - (button_width / 2);
+    const int start_y = (screen_height / 2) - (button_height / 2);
+
+    // Centered button rectangle
+    const Rectangle button_bounds = {.x = static_cast<float>(start_x),
+                                     .y = static_cast<float>(start_y),
+                                     .width = static_cast<float>(button_width),
+                                     .height = static_cast<float>(button_height)};
+
+    // Draw the button; returns true when clicked this frame
+    if(GuiButton(button_bounds, "Click me") != 0) {
+        SPDLOG_INFO("button clicked");
+    }
 
     EndDrawing();
 }
@@ -63,10 +89,11 @@ void energy::app::log_callback(const int log_level, const char *text, va_list ar
     // One buffer per thread, reused across calls
     thread_local std::vector<char> buffer(initial_size);
 
-    va_list args_copy = nullptr;
-    va_copy(args_copy, args);
-    int const needed = std::vsnprintf(buffer.data(), buffer.size(), text, args_copy);
-    va_end(args_copy);
+    va_list args_copy{};      // NOLINT(*-pro-type-vararg)
+    va_copy(args_copy, args); // NOLINT(*-pro-bounds-array-to-pointer-decay)
+    int const needed =
+        std::vsnprintf(buffer.data(), buffer.size(), text, args_copy); // NOLINT(*-pro-bounds-array-to-pointer-decay)
+    va_end(args_copy);                                                 // NOLINT(*-pro-bounds-array-to-pointer-decay)
 
     if(needed < 0) {
         SPDLOG_ERROR("[raylib] log formatting error in log callback");
