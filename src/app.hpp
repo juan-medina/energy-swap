@@ -20,12 +20,13 @@ public:
     app(app &&) noexcept = delete;
     auto operator=(app &&) noexcept -> app & = delete;
 
-    [[nodiscard]] auto run() -> result<>;
+    [[nodiscard]] static auto run() -> result<>;
 
 private:
-    void update();
-    void draw();
-    void setup_log();
+    static void update();
+    static void draw();
+    static void setup_log();
+    static void log_callback(int log_level, const char *text, va_list args);
 };
 
 } // namespace energy
