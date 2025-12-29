@@ -41,23 +41,42 @@ else ()
     )
 endif ()
 
+# Detect Emscripten
+set(EMSCRIPTEN FALSE)
+if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    set(EMSCRIPTEN TRUE)
+endif ()
+
+
 # Add spdlog
 add_subdirectory(external/spdlog)
+target_link_libraries(${APP_NAME} PRIVATE spdlog::spdlog_header_only)
 
 # Add raylib
 add_subdirectory(external/raylib)
+target_link_libraries(${APP_NAME} PRIVATE raylib)
 
-# Add Boxer
-add_subdirectory(external/boxer)
+# No supported on Emscripten
+if (NOT EMSCRIPTEN)
+    # Add Boxer
+    add_subdirectory(external/boxer)
+    target_link_libraries(${APP_NAME} PRIVATE Boxer)
+endif ()
 
-# Link
-target_link_libraries(${APP_NAME}
-        PRIVATE spdlog::spdlog_header_only
-        PRIVATE raylib
-        PRIVATE Boxer
-)
+# Emscripten specific
+if (EMSCRIPTEN)
+    # Produce an .html file as the "executable"
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
-# Windows specific definitions
+    # Reasonable defaults; tweak later if needed
+    target_link_options(${APP_NAME} PRIVATE
+            "-sUSE_GLFW=3"
+            "-sASYNCIFY"
+            "-sALLOW_MEMORY_GROWTH=1"
+    )
+endif ()
+
+# Windows specific
 if (WIN32)
     # fix raylib issues on Windows
     target_compile_definitions(${APP_NAME} PRIVATE
