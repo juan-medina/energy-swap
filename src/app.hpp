@@ -20,8 +20,8 @@ public:
     app(app &&) noexcept = delete;
     auto operator=(app &&) noexcept -> app & = delete;
 
-    [[nodiscard]] static auto run() -> result<>;
-    [[nodiscard]] static auto init() -> result<>;
+    [[nodiscard]] auto run() -> result<>;
+    [[nodiscard]] auto init() -> result<>;
 
     struct version {
         int major{};
@@ -31,14 +31,18 @@ public:
     };
 
 private:
-    static constexpr const char* version_file_path = "resources/version/version.json";
-    static void update();
-    static void draw();
+    static constexpr auto version_file_path = "resources/version/version.json";
+    version version_{};
 
-    [[nodiscard]] static auto setup_log() -> result<>;
+    static void update();
+    void draw() const;
+
+    [[nodiscard]] auto setup_log() -> result<>;
     [[nodiscard]] static auto parse_version(const std::string &path) -> result<version>;
 
     static void log_callback(int log_level, const char *text, va_list args);
+
+    auto draw_version() const -> void;
 };
 
 } // namespace energy

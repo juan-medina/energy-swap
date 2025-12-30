@@ -25,7 +25,13 @@ static const auto empty_format = "%v";
 static const auto color_line_format = "[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v %@";
 
 auto energy::app::init() -> result<> {
-    if(const auto err = setup_log().ko(); err) {
+    auto [version, err] = parse_version(version_file_path).ok();
+    if(err) {
+        return error("error parsing the version", *err);
+    }
+    version_ = *version;
+
+    if(err = setup_log().ko(); err) {
         return error("error initializing the application", *err);
     }
 
@@ -57,9 +63,9 @@ auto energy::app::run() -> result<> {
 
 void energy::app::update() {}
 
-void energy::app::draw() {
+void energy::app::draw() const {
     BeginDrawing();
-    ClearBackground(SKYBLUE);
+    ClearBackground(Color{.r = 20, .g = 49, .b = 59, .a = 255});
 
     // set large text size for button
     GuiSetStyle(DEFAULT, TEXT_SIZE, 32);
@@ -85,17 +91,14 @@ void energy::app::draw() {
         SPDLOG_INFO("button clicked");
     }
 
+    draw_version();
+
     EndDrawing();
 }
 
 auto energy::app::setup_log() -> result<> {
-    auto const [version, err] = parse_version(version_file_path).ok();
-    if(err) {
-        return error("error setting up log", *err);
-    }
-
     spdlog::set_pattern(empty_format);
-    const auto version_str = std::format("{}.{}.{}.{}", version->major, version->minor, version->patch, version->build);
+    const auto version_str = std::format("{}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
     SPDLOG_INFO(std::vformat(banner, std::make_format_args(version_str)));
 
     spdlog::set_pattern(color_line_format);
@@ -155,7 +158,7 @@ void energy::app::log_callback(const int log_level, const char *text, va_list ar
 
 auto energy::app::parse_version(const std::string &path) -> result<version> {
     std::ifstream const file(path);
-    if (!file.is_open()) {
+    if(!file.is_open()) {
         return error(std::format("Version file not found: {}", path));
     }
 
@@ -167,22 +170,71 @@ auto energy::app::parse_version(const std::string &path) -> result<version> {
     jsoncons::json_stream_reader reader(buffer, decoder);
     reader.read(error_code);
 
-    if (error_code) {
+    if(error_code) {
         return error(std::format("JSON parse error: {}", error_code.message()));
     }
 
-    const auto& parser = decoder.get_result();
+    const auto &parser = decoder.get_result();
 
     // NOLINTNEXTLINE(*-pro-bounds-avoid-unchecked-container-access)
-    if (!parser.contains("version") || !parser["version"].is_object()) {
+    if(!parser.contains("version") || !parser["version"].is_object()) {
         return error("Failed to parse version JSON: [\"version\"] field missing or not an object");
     }
 
-    const auto& object = parser["version"]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
-    return version{
-        .major = object.get_value_or<int>("major", 0),
-        .minor = object.get_value_or<int>("minor", 0),
-        .patch = object.get_value_or<int>("patch", 0),
-        .build = object.get_value_or<int>("build", 0)
+    const auto &object = parser["version"]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+    return version{.major = object.get_value_or<int>("major", 0),
+                   .minor = object.get_value_or<int>("minor", 0),
+                   .patch = object.get_value_or<int>("patch", 0),
+                   .build = object.get_value_or<int>("build", 0)};
+}
+
+void energy::app::draw_version() const {
+    const std::array part_strs = {std::string("v"),
+                                  std::to_string(version_.major),
+                                  std::to_string(version_.minor),
+                                  std::to_string(version_.patch),
+                                  std::to_string(version_.build)};
+
+    constexpr std::array colors = {
+        Color{.r = 0xF0, .g = 0x00, .b = 0xF0, .a = 0xFF}, // #F000F0 (v)
+        Color{.r = 0xFF, .g = 0x00, .b = 0x00, .a = 0xFF}, // #FF0000 (major)
+        Color{.r = 0xFF, .g = 0xA5, .b = 0x00, .a = 0xFF}, // #FFA500 (minor)
+        Color{.r = 0xFF, .g = 0xFF, .b = 0x00, .a = 0xFF}, // #FFFF00 (patch)
+        Color{.r = 0x00, .g = 0xFF, .b = 0x00, .a = 0xFF}  // #00FF00 (build)
     };
+
+    assert(part_strs.size() == colors.size());
+
+    constexpr auto dot_color = WHITE;
+    constexpr int font_size = 20;
+    constexpr int margin = 10;
+    constexpr int dot_spacing = 4;
+
+    // we silence the linter because for video games we want branch prediction and cache usage,
+    //   and we know these arrays are constant size so we prefer using indices
+
+    // Calculate total width
+    int total_width = 0;
+    for(std::size_t i = 0; i < colors.size(); ++i) {
+        // NOLINTNEXTLINE(*-pro-bounds-constant-array-index, *-pro-bounds-avoid-unchecked-container-access)
+        total_width += MeasureText(part_strs[i].c_str(), font_size);
+        if(i < colors.size() - 1) {
+            total_width += (2 * dot_spacing) + MeasureText(".", font_size);
+        }
+    }
+
+    int pos_x = GetScreenWidth() - total_width - margin;
+    const int pos_y = GetScreenHeight() - font_size - margin;
+
+    for(std::size_t i = 0; i < colors.size(); ++i) {
+        // NOLINTNEXTLINE(*-pro-bounds-constant-array-index, *-pro-bounds-avoid-unchecked-container-access)
+        DrawText(part_strs[i].c_str(), pos_x, pos_y, font_size, colors[i]);
+        // NOLINTNEXTLINE(*-pro-bounds-constant-array-index, *-pro-bounds-avoid-unchecked-container-access)
+        pos_x += MeasureText(part_strs[i].c_str(), font_size);
+        if(i < 4) {
+            pos_x += dot_spacing;
+            DrawText(".", pos_x, pos_y, font_size, dot_color);
+            pos_x += MeasureText(".", font_size) + dot_spacing;
+        }
+    }
 }

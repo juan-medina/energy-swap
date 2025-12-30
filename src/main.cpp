@@ -4,7 +4,7 @@
 #include "app.hpp"
 
 #ifndef __EMSCRIPTEN__
-#include <boxer/boxer.h>
+#    include <boxer/boxer.h>
 #endif
 
 #include <cstdio>
@@ -12,7 +12,7 @@
 
 [[nodiscard]] auto main(int /*argc*/, char * /*argv*/[]) -> int {
     try {
-        energy::app const app;
+        energy::app app;
         if(const auto error = app.run().ko(); error) {
             SPDLOG_ERROR("{}", error->to_string());
 #ifndef __EMSCRIPTEN__
