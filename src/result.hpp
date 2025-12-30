@@ -16,38 +16,58 @@ namespace energy {
 class error {
 public:
     explicit error(const std::string &message, const std::source_location &location = std::source_location::current())
-        : message_{format_with_location(message, location)} {}
+        : causes_{cause{message, location}} {}
 
     error(const std::string &message,
           const error &other,
           const std::source_location &location = std::source_location::current())
-        : message_{format_with_location(message, location)}, causes_{other.causes_} {
-        causes_.insert(causes_.begin(), other.message_);
+        : causes_{cause{message, location}} {
+        causes_.insert(causes_.end(), other.causes_.begin(), other.causes_.end());
     }
 
     [[nodiscard]] auto get_message() const noexcept -> const std::string & {
-        return message_;
+        return causes_.front().get_message();
     }
 
-    [[nodiscard]] auto get_causes() const noexcept -> const std::vector<std::string> & {
-        return causes_;
+    [[nodiscard]] auto get_location() const noexcept -> const std::source_location & {
+        return causes_.front().get_location();
     }
 
     [[nodiscard]] auto to_string() const -> std::string {
-        std::string out = message_;
-        for(const auto &cause : causes_) {
-            out += "\n  caused by: " + cause;
+        std::string out;
+        for(size_t i = 0; i < causes_.size(); ++i) {
+            const auto &cause = causes_.at(i);
+            if(i == 0) {
+                out += format_message_with_location(cause.get_message(), cause.get_location());
+            } else {
+                out += "\n  caused by: " + format_message_with_location(cause.get_message(), cause.get_location());
+            }
         }
         return out;
     }
 
 private:
-    static auto format_with_location(const std::string &msg, const std::source_location &loc) -> std::string {
+    struct cause {
+    private:
+        std::string message_;
+        std::source_location location_;
+
+    public:
+        cause(std::string msg, const std::source_location &loc): message_{std::move(msg)}, location_{loc} {}
+
+        [[nodiscard]] auto get_message() const noexcept -> const std::string & {
+            return message_;
+        }
+        [[nodiscard]] auto get_location() const noexcept -> const std::source_location & {
+            return location_;
+        }
+    };
+
+    static auto format_message_with_location(const std::string &msg, const std::source_location &loc) -> std::string {
         return std::format("{} [{}:{} {}]", msg, loc.file_name(), loc.line(), loc.function_name());
     }
 
-    std::string message_;
-    std::vector<std::string> causes_;
+    std::vector<cause> causes_;
 };
 
 template<class Value = bool, class Error = error>
