@@ -57,7 +57,9 @@ auto energy::app::run() -> result<> {
     }
 
     while(!WindowShouldClose()) {
-        update();
+        if(const auto err = update().ko(); err) {
+            return error("error updating the application", *err);
+        }
         draw();
     }
 
@@ -65,17 +67,23 @@ auto energy::app::run() -> result<> {
     return true;
 }
 
-void energy::app::update() {
-    Vector2 const screen_size = {.x = static_cast<float>(GetScreenWidth()), .y = static_cast<float>(GetScreenHeight())};
+auto energy::app::update() -> result<> {
+    if(Vector2 const screen_size = {.x = static_cast<float>(GetScreenWidth()),
+                                    .y = static_cast<float>(GetScreenHeight())};
+       screen_size_.x != screen_size.x || screen_size_.y != screen_size.y) {
+        screen_size_ = screen_size;
+        SPDLOG_INFO("Display resized to {}x{}", static_cast<int>(screen_size_.x), static_cast<int>(screen_size_.y));
 
-    if(screen_size_.x == screen_size.x && screen_size_.y == screen_size.y) {
-        return;
+        // screen size changed, tell components to layout
+        version_display_.layout(screen_size_);
     }
-    screen_size_ = screen_size;
-    SPDLOG_INFO("Display resized to {}x{}", static_cast<int>(screen_size_.x), static_cast<int>(screen_size_.y));
 
-    // tell components to layout
-    version_display_.layout(screen_size_);
+    // update components
+    if(const auto err = version_display_.update(GetFrameTime()).ko(); err) {
+        return error("Failed to update components", *err);
+    }
+
+    return true;
 }
 
 void energy::app::draw() const {

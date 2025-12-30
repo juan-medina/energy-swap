@@ -33,11 +33,10 @@ public:
     auto end() -> result<>;
 
     auto layout(Vector2 screen_size) -> void override;
-    auto update(float delta) -> void override;
+    [[nodiscard]] auto update(float delta) -> result<> override;
     auto draw() const -> void override;
 
 private:
-
     struct part {
         std::string text;
         Color color;
@@ -66,5 +65,6 @@ private:
     static constexpr auto parts_spacing = 4.0F;
     static constexpr auto margin = 10.0F;
 
+    static auto open_url(const std::string &url) -> result<>;
 };
 } // namespace energy

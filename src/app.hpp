@@ -29,7 +29,7 @@ private:
     static constexpr auto version_file_path = "resources/version/version.json";
     version version_{};
 
-    void update();
+    [[nodiscard]] auto update() -> result<>;
     void draw() const;
 
     [[nodiscard]] auto setup_log() -> result<>;

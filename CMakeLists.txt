@@ -82,6 +82,7 @@ if (EMSCRIPTEN)
             "-sUSE_GLFW=3"
             "-sASYNCIFY"
             "-sALLOW_MEMORY_GROWTH=1"
+            "--bind"
     )
 
 endif ()

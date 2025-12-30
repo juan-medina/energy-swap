@@ -22,7 +22,7 @@ public:
     auto operator=(component &&) noexcept -> component & = delete;
 
     virtual auto layout(Vector2 screen_size) -> void = 0;
-    virtual auto update(float delta) -> void = 0;
+    [[nodiscard]] virtual auto update(float delta) -> result<> = 0;
     virtual auto draw() const -> void = 0;
 };
 } // namespace energy
