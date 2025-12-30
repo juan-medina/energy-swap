@@ -18,9 +18,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Collect sources
-file(GLOB APP_HEADER_FILES "src/*.h")
-file(GLOB APP_SOURCE_FILES "src/*.cpp")
+# Collect sources recursively
+file(GLOB_RECURSE APP_HEADER_FILES "src/*.hpp")
+file(GLOB_RECURSE APP_SOURCE_FILES "src/*.cpp")
+
 
 # Create executable
 add_executable(${APP_NAME} ${APP_HEADER_FILES} ${APP_SOURCE_FILES})

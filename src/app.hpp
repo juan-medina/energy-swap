@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "components/version_display.hpp"
 #include "result.hpp"
 
 namespace energy {
@@ -23,18 +24,12 @@ public:
     [[nodiscard]] auto run() -> result<>;
     [[nodiscard]] auto init() -> result<>;
 
-    struct version {
-        int major{};
-        int minor{};
-        int patch{};
-        int build{};
-    };
-
 private:
+    Vector2 screen_size_{};
     static constexpr auto version_file_path = "resources/version/version.json";
     version version_{};
 
-    static void update();
+    void update();
     void draw() const;
 
     [[nodiscard]] auto setup_log() -> result<>;
@@ -42,7 +37,8 @@ private:
 
     static void log_callback(int log_level, const char *text, va_list args);
 
-    auto draw_version() const -> void;
+    // components
+    version_display version_display_;
 };
 
 } // namespace energy

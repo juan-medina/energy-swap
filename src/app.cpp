@@ -43,6 +43,10 @@ auto energy::app::init() -> result<> {
     InitWindow(1920, 1080, "testing raylib");
     SetTargetFPS(60);
 
+    // init components
+    SPDLOG_INFO("Initializing components");
+    version_display_.init(version_);
+
     SPDLOG_INFO("Application started");
     return true;
 }
@@ -61,7 +65,18 @@ auto energy::app::run() -> result<> {
     return true;
 }
 
-void energy::app::update() {}
+void energy::app::update() {
+    Vector2 const screen_size = {.x = static_cast<float>(GetScreenWidth()), .y = static_cast<float>(GetScreenHeight())};
+
+    if(screen_size_.x == screen_size.x && screen_size_.y == screen_size.y) {
+        return;
+    }
+    screen_size_ = screen_size;
+    SPDLOG_INFO("Display resized to {}x{}", static_cast<int>(screen_size_.x), static_cast<int>(screen_size_.y));
+
+    // tell components to layout
+    version_display_.layout(screen_size_);
+}
 
 void energy::app::draw() const {
     BeginDrawing();
@@ -91,7 +106,8 @@ void energy::app::draw() const {
         SPDLOG_INFO("button clicked");
     }
 
-    draw_version();
+    // draw components
+    version_display_.draw();
 
     EndDrawing();
 }
@@ -186,55 +202,4 @@ auto energy::app::parse_version(const std::string &path) -> result<version> {
                    .minor = object.get_value_or<int>("minor", 0),
                    .patch = object.get_value_or<int>("patch", 0),
                    .build = object.get_value_or<int>("build", 0)};
-}
-
-void energy::app::draw_version() const {
-    const std::array part_strs = {std::string("v"),
-                                  std::to_string(version_.major),
-                                  std::to_string(version_.minor),
-                                  std::to_string(version_.patch),
-                                  std::to_string(version_.build)};
-
-    constexpr std::array colors = {
-        Color{.r = 0xF0, .g = 0x00, .b = 0xF0, .a = 0xFF}, // #F000F0 (v)
-        Color{.r = 0xFF, .g = 0x00, .b = 0x00, .a = 0xFF}, // #FF0000 (major)
-        Color{.r = 0xFF, .g = 0xA5, .b = 0x00, .a = 0xFF}, // #FFA500 (minor)
-        Color{.r = 0xFF, .g = 0xFF, .b = 0x00, .a = 0xFF}, // #FFFF00 (patch)
-        Color{.r = 0x00, .g = 0xFF, .b = 0x00, .a = 0xFF}  // #00FF00 (build)
-    };
-
-    assert(part_strs.size() == colors.size());
-
-    constexpr auto dot_color = WHITE;
-    constexpr int font_size = 20;
-    constexpr int margin = 10;
-    constexpr int dot_spacing = 4;
-
-    // we silence the linter because for video games we want branch prediction and cache usage,
-    //   and we know these arrays are constant size so we prefer using indices
-
-    // Calculate total width
-    int total_width = 0;
-    for(std::size_t i = 0; i < colors.size(); ++i) {
-        // NOLINTNEXTLINE(*-pro-bounds-constant-array-index, *-pro-bounds-avoid-unchecked-container-access)
-        total_width += MeasureText(part_strs[i].c_str(), font_size);
-        if(i < colors.size() - 1) {
-            total_width += (2 * dot_spacing) + MeasureText(".", font_size);
-        }
-    }
-
-    int pos_x = GetScreenWidth() - total_width - margin;
-    const int pos_y = GetScreenHeight() - font_size - margin;
-
-    for(std::size_t i = 0; i < colors.size(); ++i) {
-        // NOLINTNEXTLINE(*-pro-bounds-constant-array-index, *-pro-bounds-avoid-unchecked-container-access)
-        DrawText(part_strs[i].c_str(), pos_x, pos_y, font_size, colors[i]);
-        // NOLINTNEXTLINE(*-pro-bounds-constant-array-index, *-pro-bounds-avoid-unchecked-container-access)
-        pos_x += MeasureText(part_strs[i].c_str(), font_size);
-        if(i < 4) {
-            pos_x += dot_spacing;
-            DrawText(".", pos_x, pos_y, font_size, dot_color);
-            pos_x += MeasureText(".", font_size) + dot_spacing;
-        }
-    }
 }
