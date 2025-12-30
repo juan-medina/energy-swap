@@ -21,6 +21,7 @@ public:
     auto operator=(app &&) noexcept -> app & = delete;
 
     [[nodiscard]] static auto run() -> result<>;
+    [[nodiscard]] static auto init() -> result<>;
 
     struct version {
         int major{};
@@ -30,6 +31,7 @@ public:
     };
 
 private:
+    static constexpr const char* version_file_path = "resources/version/version.json";
     static void update();
     static void draw();
 

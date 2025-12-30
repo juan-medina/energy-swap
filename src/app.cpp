@@ -3,12 +3,11 @@
 
 #include "app.hpp"
 
-#include <raylib.h>
-#define RAYGUI_IMPLEMENTATION
-#define RAYGUI_USE_RAYLIB
 #include <cstdarg>
 #include <fstream>
 #include <jsoncons/json.hpp>
+#include <raylib.h>
+#define RAYGUI_IMPLEMENTATION
 #include <raygui.h>
 #include <spdlog/spdlog.h>
 
@@ -25,9 +24,9 @@ static const auto banner = R"(
 static const auto empty_format = "%v";
 static const auto color_line_format = "[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v %@";
 
-auto energy::app::run() -> result<> {
+auto energy::app::init() -> result<> {
     if(const auto err = setup_log().ko(); err) {
-        return error("error running the application", *err);
+        return error("error initializing the application", *err);
     }
 
     SPDLOG_INFO("Starting application");
@@ -39,6 +38,13 @@ auto energy::app::run() -> result<> {
     SetTargetFPS(60);
 
     SPDLOG_INFO("Application started");
+    return true;
+}
+
+auto energy::app::run() -> result<> {
+    if(const auto err = init().ko(); err) {
+        return error("error running the application", *err);
+    }
 
     while(!WindowShouldClose()) {
         update();
@@ -83,7 +89,7 @@ void energy::app::draw() {
 }
 
 auto energy::app::setup_log() -> result<> {
-    auto const [version, err] = parse_version("resources/version/version.json").ok();
+    auto const [version, err] = parse_version(version_file_path).ok();
     if(err) {
         return error("error setting up log", *err);
     }
@@ -148,32 +154,35 @@ void energy::app::log_callback(const int log_level, const char *text, va_list ar
 }
 
 auto energy::app::parse_version(const std::string &path) -> result<version> {
-    // check if file exists
     std::ifstream const file(path);
-    if(!file.is_open()) {
+    if (!file.is_open()) {
         return error(std::format("Version file not found: {}", path));
     }
 
-    // read file content
     std::stringstream buffer;
     buffer << file.rdbuf();
-    const std::string json_text = buffer.str();
 
-    try {
-        // parse JSON
-        const auto parser = jsoncons::json::parse(json_text);
+    std::error_code error_code;
+    jsoncons::json_decoder<jsoncons::json> decoder;
+    jsoncons::json_stream_reader reader(buffer, decoder);
+    reader.read(error_code);
 
-        if(!parser.contains("version")
-           || !parser["version"].is_object()) { // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
-            return error("Failed to parse version JSON: 'version' field missing or not an object");
-        }
-
-        const auto &object = parser["version"]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
-        return version{.major = object.get_value_or<int>("major", 0),
-                       .minor = object.get_value_or<int>("minor", 0),
-                       .patch = object.get_value_or<int>("patch", 0),
-                       .build = object.get_value_or<int>("build", 0)};
-    } catch(const std::exception &e) {
-        return error(std::format("JSON parse error: {}", e.what()));
+    if (error_code) {
+        return error(std::format("JSON parse error: {}", error_code.message()));
     }
+
+    const auto& parser = decoder.get_result();
+
+    // NOLINTNEXTLINE(*-pro-bounds-avoid-unchecked-container-access)
+    if (!parser.contains("version") || !parser["version"].is_object()) {
+        return error("Failed to parse version JSON: [\"version\"] field missing or not an object");
+    }
+
+    const auto& object = parser["version"]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+    return version{
+        .major = object.get_value_or<int>("major", 0),
+        .minor = object.get_value_or<int>("minor", 0),
+        .patch = object.get_value_or<int>("patch", 0),
+        .build = object.get_value_or<int>("build", 0)
+    };
 }
