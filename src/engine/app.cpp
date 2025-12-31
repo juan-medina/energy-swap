@@ -6,9 +6,6 @@
 #include <cstdarg>
 #include <fstream>
 #include <jsoncons/json.hpp>
-#include <raylib.h>
-#define RAYGUI_IMPLEMENTATION
-#include <raygui.h>
 #include <spdlog/spdlog.h>
 
 static const auto banner = R"(
@@ -63,7 +60,7 @@ auto engine::app::run() -> result<> {
         if(const auto err = update().ko(); err) {
             return error("error updating the application", *err);
         }
-        if(const auto err = draw().ko(); err) {
+        if(const auto err = internal_draw().ko(); err) {
             return error("error drawing the application", *err);
         }
     }
@@ -92,40 +89,10 @@ auto engine::app::update() -> result<> {
 }
 
 auto engine::app::draw() const -> result<> {
-    BeginDrawing();
-    ClearBackground(Color{.r = 20, .g = 49, .b = 59, .a = 255});
-
-    // set large text size for button
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 32);
-
-    // Get current screen size
-    const int screen_width = GetScreenWidth();
-    const int screen_height = GetScreenHeight();
-
-    // Button size
-    constexpr int button_width = 200;
-    constexpr int button_height = 60;
-    const int start_x = (screen_width / 2) - (button_width / 2);
-    const int start_y = (screen_height / 2) - (button_height / 2);
-
-    // Centered button rectangle
-    const Rectangle button_bounds = {.x = static_cast<float>(start_x),
-                                     .y = static_cast<float>(start_y),
-                                     .width = static_cast<float>(button_width),
-                                     .height = static_cast<float>(button_height)};
-
-    // Draw the button; returns true when clicked this frame
-    if(GuiButton(button_bounds, "Click me") != 0) {
-        SPDLOG_INFO("button clicked");
-    }
-
     // draw components
     if(const auto err = version_display_.draw().ko(); err) {
         return error("Failed to draw components", *err);
     }
-
-    EndDrawing();
-
     return true;
 }
 
@@ -187,6 +154,16 @@ void engine::app::log_callback(const int log_level, const char *text, va_list ar
     }
 
     spdlog::log(level, "[raylib] {}", buffer.data());
+}
+auto engine::app::internal_draw() const -> result<> {
+    BeginDrawing();
+    ClearBackground(Color{.r = 20, .g = 49, .b = 59, .a = 255});
+
+    if(const auto err = draw().ko(); err) {
+        return error("error during internal draw", *err);
+    }
+    EndDrawing();
+    return true;
 }
 
 auto engine::app::parse_version(const std::string &path) -> result<version> {

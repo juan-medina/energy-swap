@@ -46,8 +46,8 @@ private:
 
     [[nodiscard]] auto setup_log() -> result<>;
     [[nodiscard]] static auto parse_version(const std::string &path) -> result<version>;
-
     static void log_callback(int log_level, const char *text, va_list args);
+    [[nodiscard]] auto internal_draw() const -> result<>;
 
     // components
     version_display version_display_;
