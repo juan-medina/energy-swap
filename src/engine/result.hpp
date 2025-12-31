@@ -11,7 +11,7 @@
 #include <variant>
 #include <vector>
 
-namespace energy {
+namespace engine {
 
 class error {
 public:
@@ -99,4 +99,4 @@ public:
     };
 };
 
-} // namespace energy
+} // namespace engine

@@ -3,14 +3,16 @@
 
 #include "version_display.hpp"
 
-#include "spdlog/spdlog.h"
+#include "../app.hpp"
 
 #include <algorithm>
 #include <cassert>
 
 #ifdef _WIN32
-#    include <shellapi.h>
 #    include <windows.h>
+
+#    include <shellapi.h>
+
 #elif defined(__APPLE__) || defined(__linux__)
 #    include <unistd.h>
 #elif defined(__EMSCRIPTEN__)
@@ -18,19 +20,19 @@
 #    include <emscripten/val.h>
 #endif
 
-auto energy::version_display::init(const version &version) -> result<> {
-    version_ = version;
+auto engine::version_display::init(app *app) -> result<> {
+    auto [major, minor, patch, build] = app->get_version();
     static_assert(components_colors.size() == 8);
     assert(components_colors.size() == parts_.size());
     parts_ = {
         part{.text = std::string("v"), .color = components_colors.at(0), .offset = 0.0F},
-        part{.text = std::to_string(version_.major), .color = components_colors.at(1), .offset = 0.0F},
+        part{.text = std::to_string(major), .color = components_colors.at(1), .offset = 0.0F},
         part{.text = std::string("."), .color = components_colors.at(2), .offset = 0.0F},
-        part{.text = std::to_string(version_.minor), .color = components_colors.at(3), .offset = 0.0F},
+        part{.text = std::to_string(minor), .color = components_colors.at(3), .offset = 0.0F},
         part{.text = std::string("."), .color = components_colors.at(4), .offset = 0.0F},
-        part{.text = std::to_string(version.patch), .color = components_colors.at(5), .offset = 0.0F},
+        part{.text = std::to_string(patch), .color = components_colors.at(5), .offset = 0.0F},
         part{.text = std::string("."), .color = components_colors.at(6), .offset = 0.0F},
-        part{.text = std::to_string(version.build), .color = components_colors.at(7), .offset = 0.0F},
+        part{.text = std::to_string(build), .color = components_colors.at(7), .offset = 0.0F},
     };
 
     // Calculate total width
@@ -48,19 +50,18 @@ auto energy::version_display::init(const version &version) -> result<> {
     return true;
 }
 
-auto energy::version_display::end() -> result<> {
-    version_ = {};
+auto engine::version_display::end() -> result<> {
     parts_ = {};
     return true;
 }
 
-auto energy::version_display::layout(const Vector2 screen_size) -> void {
+auto engine::version_display::layout(const Vector2 screen_size) -> void {
     screen_size_ = screen_size;
     bounds_.x = screen_size_.x - bounds_.width - margin;
     bounds_.y = screen_size_.y - bounds_.height - margin;
 }
 
-auto energy::version_display::update(float /*delta*/) -> result<> {
+auto engine::version_display::update(float /*delta*/) -> result<> {
     // check for mouse click on version display
     if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         const auto [x, y] = GetMousePosition();
@@ -73,17 +74,18 @@ auto energy::version_display::update(float /*delta*/) -> result<> {
     return true;
 }
 
-auto energy::version_display::draw() const -> void {
+auto engine::version_display::draw() const -> result<> {
     Vector2 pos = {.x = bounds_.x, .y = bounds_.y};
     for(const auto &part: parts_) {
         pos.x = bounds_.x + part.offset;
         DrawTextEx(font_, part.text.c_str(), pos, font_size, 1.0F, part.color);
     }
+    return true;
 }
 
 #include <vector>
 
-auto energy::version_display::open_url(const std::string &url) -> result<> {
+auto engine::version_display::open_url(const std::string &url) -> result<> {
 #ifdef _WIN32
     if(auto *result = ShellExecuteA(nullptr, "open", url.c_str(), nullptr, nullptr, 1);
        reinterpret_cast<intptr_t>(result) <= 32) { // NOLINT(*-pro-type-reinterpret-cast)

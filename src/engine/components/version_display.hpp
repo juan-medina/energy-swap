@@ -6,15 +6,9 @@
 #include "component.hpp"
 
 #include <array>
+#include <raylib.h>
 
-namespace energy {
-
-struct version {
-    int major{};
-    int minor{};
-    int patch{};
-    int build{};
-};
+namespace engine {
 
 class version_display: public component {
 public:
@@ -29,12 +23,12 @@ public:
     version_display(version_display &&) noexcept = delete;
     auto operator=(version_display &&) noexcept -> version_display & = delete;
 
-    auto init(const version &version) -> result<>;
-    auto end() -> result<>;
+    [[nodiscard]] auto init(app *app) -> result<> override;
+    [[nodiscard]] auto end() -> result<> override;
 
     auto layout(Vector2 screen_size) -> void override;
     [[nodiscard]] auto update(float delta) -> result<> override;
-    auto draw() const -> void override;
+    [[nodiscard]] auto draw() const -> result<> override;
 
 private:
     struct part {
@@ -44,7 +38,6 @@ private:
     };
 
     Rectangle bounds_{};
-    version version_{};
     Vector2 screen_size_{};
     Font font_{};
 
@@ -67,4 +60,4 @@ private:
 
     static auto open_url(const std::string &url) -> result<>;
 };
-} // namespace energy
+} // namespace engine

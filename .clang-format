@@ -6,21 +6,29 @@ SortIncludes: CaseInsensitive
 IncludeBlocks: Regroup
 
 IncludeCategories:
-  # 1. Project headers: "file.h", "something.hpp"
+  # Project headers: "file.h", "something.hpp"
   - Regex: '"[^"]+\.(h|hpp)"'
     Priority: 1
 
-  # 2. System + third-party headers: <raylib.h>, <spdlog/...>, <vector>, <string>
-  - Regex: '<.*>'
+  # raylib, we need it before windows.h
+  - Regex: '<raylib\.h>'
     Priority: 2
 
-  # 3. Relative includes: ../something
-  - Regex: '\.\./.*'
+  # Windows header, must be before other system headers
+  - Regex: '<windows\.h>'
     Priority: 3
 
-  # 4. Fallback
-  - Regex: '.*'
+  # System + system headers: <spdlog/...>, <vector>, <string>
+  - Regex: '<.*>'
     Priority: 4
+
+  # Relative includes: ../something
+  - Regex: '\.\./.*'
+    Priority: 5
+
+  # Fallback
+  - Regex: '.*'
+    Priority: 6
 
 AccessModifierOffset: -4
 AlignEscapedNewlines: DontAlign

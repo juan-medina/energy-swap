@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 Juan Medina
 // SPDX-License-Identifier: MIT
 
-#include "app.hpp"
+#include "energy_swap.hpp"
 
 #ifndef __EMSCRIPTEN__
 #    include <boxer/boxer.h>
@@ -12,7 +12,7 @@
 
 [[nodiscard]] auto main(int /*argc*/, char * /*argv*/[]) -> int {
     try {
-        energy::app app;
+        energy::energy_swap app;
         if(const auto error = app.run().ko(); error) {
             SPDLOG_ERROR("{}", error->to_string());
 #ifndef __EMSCRIPTEN__

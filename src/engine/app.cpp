@@ -24,7 +24,7 @@ static const auto banner = R"(
 static const auto empty_format = "%v";
 static const auto color_line_format = "[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v %@";
 
-auto energy::app::init() -> result<> {
+auto engine::app::init() -> result<> {
     auto [version, err] = parse_version(version_file_path).ok();
     if(err) {
         return error("error parsing the version", *err);
@@ -40,18 +40,21 @@ auto energy::app::init() -> result<> {
 #ifdef PLATFORM_DESKTOP
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 #endif
-    InitWindow(1920, 1080, "testing raylib");
+    InitWindow(1920, 1080, "testing raylib2");
     SetTargetFPS(60);
 
     // init components
     SPDLOG_INFO("Initializing components");
-    version_display_.init(version_);
+
+    if(err = version_display_.init(this).ko(); err) {
+        return error("Failed to initialize components", *err);
+    }
 
     SPDLOG_INFO("Application started");
     return true;
 }
 
-auto energy::app::run() -> result<> {
+auto engine::app::run() -> result<> {
     if(const auto err = init().ko(); err) {
         return error("error running the application", *err);
     }
@@ -60,14 +63,16 @@ auto energy::app::run() -> result<> {
         if(const auto err = update().ko(); err) {
             return error("error updating the application", *err);
         }
-        draw();
+        if(const auto err = draw().ko(); err) {
+            return error("error drawing the application", *err);
+        }
     }
 
     SPDLOG_INFO("Application ended");
     return true;
 }
 
-auto energy::app::update() -> result<> {
+auto engine::app::update() -> result<> {
     if(Vector2 const screen_size = {.x = static_cast<float>(GetScreenWidth()),
                                     .y = static_cast<float>(GetScreenHeight())};
        screen_size_.x != screen_size.x || screen_size_.y != screen_size.y) {
@@ -86,7 +91,7 @@ auto energy::app::update() -> result<> {
     return true;
 }
 
-void energy::app::draw() const {
+auto engine::app::draw() const -> result<> {
     BeginDrawing();
     ClearBackground(Color{.r = 20, .g = 49, .b = 59, .a = 255});
 
@@ -115,12 +120,16 @@ void energy::app::draw() const {
     }
 
     // draw components
-    version_display_.draw();
+    if(const auto err = version_display_.draw().ko(); err) {
+        return error("Failed to draw components", *err);
+    }
 
     EndDrawing();
+
+    return true;
 }
 
-auto energy::app::setup_log() -> result<> {
+auto engine::app::setup_log() -> result<> {
     spdlog::set_pattern(empty_format);
     const auto version_str = std::format("{}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
     SPDLOG_INFO(std::vformat(banner, std::make_format_args(version_str)));
@@ -130,7 +139,7 @@ auto energy::app::setup_log() -> result<> {
     return true;
 }
 
-void energy::app::log_callback(const int log_level, const char *text, va_list args) {
+void engine::app::log_callback(const int log_level, const char *text, va_list args) {
     constexpr std::size_t initial_size = 1024;
 
     // One buffer per thread, reused across calls
@@ -180,7 +189,7 @@ void energy::app::log_callback(const int log_level, const char *text, va_list ar
     spdlog::log(level, "[raylib] {}", buffer.data());
 }
 
-auto energy::app::parse_version(const std::string &path) -> result<version> {
+auto engine::app::parse_version(const std::string &path) -> result<version> {
     std::ifstream const file(path);
     if(!file.is_open()) {
         return error(std::format("Version file not found: {}", path));

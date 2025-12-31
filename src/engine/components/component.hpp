@@ -7,7 +7,10 @@
 
 #include <raylib.h>
 
-namespace energy {
+namespace engine {
+
+class app;
+
 class component {
 public:
     component() = default;
@@ -21,8 +24,11 @@ public:
     component(component &&) noexcept = delete;
     auto operator=(component &&) noexcept -> component & = delete;
 
+    [[nodiscard]] virtual auto init(app *app) -> result<> = 0;
+    [[nodiscard]] virtual auto end() -> result<> = 0;
+
     virtual auto layout(Vector2 screen_size) -> void = 0;
     [[nodiscard]] virtual auto update(float delta) -> result<> = 0;
-    virtual auto draw() const -> void = 0;
+    [[nodiscard]] virtual auto draw() const -> result<> = 0;
 };
-} // namespace energy
+} // namespace engine
