@@ -9,7 +9,7 @@ namespace energy {
 
 class energy_swap: public engine::app {
 public:
-    energy_swap() = default;
+    energy_swap(): app("Energy Swapper") {}
     ~energy_swap() override = default;
 
     // Non-copyable

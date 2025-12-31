@@ -37,7 +37,7 @@ auto engine::app::init() -> result<> {
 #ifdef PLATFORM_DESKTOP
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 #endif
-    InitWindow(1920, 1080, "testing raylib2");
+    InitWindow(1920, 1080, title_.c_str());
     SetTargetFPS(60);
 
     // init components

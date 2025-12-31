@@ -10,7 +10,7 @@ namespace engine {
 
 class app {
 public:
-    app() = default;
+    explicit app(std::string title): title_{std::move(title)} {}
     virtual ~app() = default;
 
     // Non-copyable
@@ -40,6 +40,7 @@ protected:
     [[nodiscard]] virtual auto draw() const -> result<>;
 
 private:
+    std::string title_{"Engine App"};
     Vector2 screen_size_{};
     static constexpr auto version_file_path = "resources/version/version.json";
     version version_{};
