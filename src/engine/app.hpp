@@ -11,6 +11,10 @@
 #include <memory>
 #include <vector>
 
+#if defined(__GNUG__) && !defined(__EMSCRIPTEN__) && !defined(__APPLE__)
+#    include <cxxabi.h>
+#endif
+
 namespace engine {
 
 class app {
@@ -46,11 +50,26 @@ protected:
     [[nodiscard]] virtual auto update() -> result<>;
     [[nodiscard]] virtual auto draw() const -> result<>;
 
-    auto register_scene(const int scene_id, std::unique_ptr<scene> scene, const int layer, const bool visible) -> void {
-        SPDLOG_DEBUG("Registering scene with id {} at layer {}", scene_id, layer);
-        scenes_.push_back(
-            scene_info{.id = scene_id, .scene_ptr = std::move(scene), .layer = layer, .visible = visible});
+    template<typename T>
+        requires std::is_base_of_v<scene, T>
+    auto register_scene(int layer, bool visible = true) -> int {
+        int scene_id = ++last_scene_id_;
+
+        std::string name;
+#if defined(__GNUG__) && !defined(__EMSCRIPTEN__) && !defined(__APPLE__)
+        int status = 0;
+        const char *mangled = typeid(T).name();
+        using demangle_ptr = std::unique_ptr<char, decltype(&std::free)>;
+        demangle_ptr const demangled{abi::__cxa_demangle(mangled, nullptr, nullptr, &status), &std::free};
+        name = (status == 0 && demangled) ? demangled.get() : mangled;
+#else
+        name = typeid(T).name();
+#endif
+        SPDLOG_DEBUG("Registering scene of type `{}` with id {} at layer {}", name, scene_id, layer);
+        scenes_.push_back(scene_info{
+            .id = scene_id, .name = name, .scene_ptr = std::make_unique<T>(), .layer = layer, .visible = visible});
         sort_scenes();
+        return scene_id;
     }
 
     auto unregister_scene(const int scene_id) -> result<> {
@@ -59,7 +78,7 @@ protected:
         if(find != scenes_.end()) {
             if(find->scene_ptr) {
                 if(const auto err = find->scene_ptr->end().ko(); err) {
-                    return error(std::format("Error ending scene with id {}", scene_id), *err);
+                    return error(std::format("Error ending scene with id: {} name: {}", scene_id, find->name), *err);
                 }
                 find->scene_ptr.reset();
             }
@@ -84,6 +103,8 @@ protected:
     }
 
 private:
+    int last_scene_id_{0};
+
     std::string title_{"Engine App"};
     Vector2 screen_size_{};
     static constexpr auto version_file_path = "resources/version/version.json";
@@ -95,6 +116,7 @@ private:
 
     struct scene_info {
         int id{};
+        std::string name;
         std::unique_ptr<scene> scene_ptr{nullptr};
         int layer{};
         bool visible{};

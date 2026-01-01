@@ -43,7 +43,7 @@ auto engine::app::init() -> result<> {
     SetTargetFPS(60);
 
     // register default scenes
-    register_scene(0, std::make_unique<game_overlay>(), 999, true);
+    register_scene<game_overlay>(999);
 
     return true;
 }
@@ -51,9 +51,9 @@ auto engine::app::init() -> result<> {
 auto engine::app::init_scenes() -> result<> {
     // init scenes
     SPDLOG_INFO("init scenes");
-    for(auto &scene_info: scenes_) {
-        if(const auto err = scene_info.scene_ptr->init(*this).ko(); err) {
-            return error(std::format("Failed to initialize scene with id {}", scene_info.id), *err);
+    for(auto &info: scenes_) {
+        if(const auto err = info.scene_ptr->init(*this).ko(); err) {
+            return error(std::format("Failed to initialize scene with id: {} name: {}", info.id, info.name), *err);
         }
     }
     return true;
@@ -62,12 +62,12 @@ auto engine::app::init_scenes() -> result<> {
 auto engine::app::end() -> result<> {
     // end scenes
     SPDLOG_INFO("ending scenes");
-    for(auto &scene_info: scenes_) {
-        if(scene_info.scene_ptr) {
-            if(const auto err = scene_info.scene_ptr->end().ko(); err) {
-                return error(std::format("Error ending scene with id {}", scene_info.id), *err);
+    for(auto &info: scenes_) {
+        if(info.scene_ptr) {
+            if(const auto err = info.scene_ptr->end().ko(); err) {
+                return error(std::format("Error ending scene with id: {} name: {}", info.id, info.name), *err);
             }
-            scene_info.scene_ptr.reset();
+            info.scene_ptr.reset();
         }
     }
     scenes_.clear();
@@ -114,9 +114,9 @@ auto engine::app::update() -> result<> {
     }
 
     // update scenes
-    for(auto &scene_info: scenes_) {
-        if(const auto err = scene_info.scene_ptr->update(GetFrameTime()).ko(); err) {
-            return error(std::format("Failed to initialize scene with id {}", scene_info.id), *err);
+    for(auto &info: scenes_) {
+        if(const auto err = info.scene_ptr->update(GetFrameTime()).ko(); err) {
+            return error(std::format("Failed to update scene with id: {} name: {}", info.id, info.name), *err);
         }
     }
 
@@ -195,9 +195,9 @@ auto engine::app::draw() const -> result<> {
     ClearBackground(Color{.r = 20, .g = 49, .b = 59, .a = 255});
 
     // draw scenes
-    for(const auto &scene_info: scenes_) {
-        if(const auto err = scene_info.scene_ptr->draw().ko(); err) {
-            return error(std::format("Failed to initialize scene with id {}", scene_info.id), *err);
+    for(const auto &info: scenes_) {
+        if(const auto err = info.scene_ptr->draw().ko(); err) {
+            return error(std::format("Failed to draw scene with id: {} name:", info.id, info.name), *err);
         }
     }
 
