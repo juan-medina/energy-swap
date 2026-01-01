@@ -28,7 +28,10 @@ auto engine::app::init() -> result<> {
     if(err) {
         return error("error parsing the version", *err);
     }
+
     version_ = *version;
+
+    SPDLOG_DEBUG("parsed version: {}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
 
     if(err = setup_log().ko(); err) {
         return error("error initializing the application", *err);
@@ -55,6 +58,7 @@ auto engine::app::init_scenes() -> result<> {
         if(const auto err = info.scene_ptr->init(*this).ko(); err) {
             return error(std::format("Failed to initialize scene with id: {} name: {}", info.id, info.name), *err);
         }
+        SPDLOG_DEBUG("initialized scene with id: {} name: {}", info.id, info.name);
     }
     return true;
 }
@@ -67,6 +71,7 @@ auto engine::app::end() -> result<> {
             if(const auto err = info.scene_ptr->end().ko(); err) {
                 return error(std::format("Error ending scene with id: {} name: {}", info.id, info.name), *err);
             }
+            SPDLOG_DEBUG("end scene with id: {} name: {}", info.id, info.name);
             info.scene_ptr.reset();
         }
     }
@@ -96,7 +101,7 @@ auto engine::app::run() -> result<> {
         return error("error ending the application", *err);
     }
 
-    SPDLOG_INFO("Application ended");
+    SPDLOG_INFO("application ended");
     return true;
 }
 
@@ -105,7 +110,7 @@ auto engine::app::update() -> result<> {
                                     .y = static_cast<float>(GetScreenHeight())};
        screen_size_.x != screen_size.x || screen_size_.y != screen_size.y) {
         screen_size_ = screen_size;
-        SPDLOG_INFO("Display resized to {}x{}", static_cast<int>(screen_size_.x), static_cast<int>(screen_size_.y));
+        SPDLOG_DEBUG("display resized to {}x{}", static_cast<int>(screen_size_.x), static_cast<int>(screen_size_.y));
 
         // screen size changed, tell scenes to layout
         for(const auto &scene_info: scenes_) {

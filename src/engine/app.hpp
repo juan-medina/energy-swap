@@ -65,7 +65,7 @@ protected:
 #else
         name = typeid(T).name();
 #endif
-        SPDLOG_DEBUG("Registering scene of type `{}` with id {} at layer {}", name, scene_id, layer);
+        SPDLOG_DEBUG("registering scene of type `{}` with id {} at layer {}", name, scene_id, layer);
         scenes_.push_back(scene_info{
             .id = scene_id, .name = name, .scene_ptr = std::make_unique<T>(), .layer = layer, .visible = visible});
         sort_scenes();
