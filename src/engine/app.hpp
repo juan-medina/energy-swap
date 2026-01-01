@@ -41,21 +41,29 @@ public:
 
 protected:
     [[nodiscard]] virtual auto init() -> result<>;
+    [[nodiscard]] virtual auto init_scenes() -> result<>;
+    [[nodiscard]] virtual auto end() -> result<>;
     [[nodiscard]] virtual auto update() -> result<>;
     [[nodiscard]] virtual auto draw() const -> result<>;
 
     auto register_scene(const int scene_id, std::unique_ptr<scene> scene, const int layer, const bool visible) -> void {
         SPDLOG_DEBUG("Registering scene with id {} at layer {}", scene_id, layer);
-        scenes_.push_back(scene_info{.id = scene_id, .scene_ptr = std::move(scene), .layer = layer, .visible = visible});
+        scenes_.push_back(
+            scene_info{.id = scene_id, .scene_ptr = std::move(scene), .layer = layer, .visible = visible});
         sort_scenes();
     }
 
     auto unregister_scene(const int scene_id) -> result<> {
-        const auto find = std::ranges::remove_if(scenes_, [scene_id](const scene_info &scene) -> bool {
-                              return scene.id == scene_id;
-                          }).begin();
+        const auto find =
+            std::ranges::find_if(scenes_, [scene_id](const scene_info &scene) -> bool { return scene.id == scene_id; });
         if(find != scenes_.end()) {
-            scenes_.erase(find, scenes_.end());
+            if(find->scene_ptr) {
+                if(const auto err = find->scene_ptr->end().ko(); err) {
+                    return error(std::format("Error ending scene with id {}", scene_id), *err);
+                }
+                find->scene_ptr.reset();
+            }
+            scenes_.erase(find);
             return true;
         }
         return error(std::format("Scene with id {} not found", scene_id));
@@ -84,7 +92,6 @@ private:
     [[nodiscard]] auto setup_log() -> result<>;
     [[nodiscard]] static auto parse_version(const std::string &path) -> result<version>;
     static void log_callback(int log_level, const char *text, va_list args);
-    [[nodiscard]] auto internal_draw() const -> result<>;
 
     struct scene_info {
         int id{};

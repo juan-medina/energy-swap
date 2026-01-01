@@ -12,6 +12,7 @@ auto energy::energy_swap::init() -> engine::result<> {
 auto energy::energy_swap::update() -> engine::result<> {
     return app::update();
 }
+
 auto energy::energy_swap::draw() const -> engine::result<> {
     // set large text size for button
     GuiSetStyle(DEFAULT, TEXT_SIZE, 32);

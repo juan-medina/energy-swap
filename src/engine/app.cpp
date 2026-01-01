@@ -34,7 +34,7 @@ auto engine::app::init() -> result<> {
         return error("error initializing the application", *err);
     }
 
-    SPDLOG_INFO("Starting application");
+    SPDLOG_INFO("init application");
 
 #ifdef PLATFORM_DESKTOP
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -42,34 +42,58 @@ auto engine::app::init() -> result<> {
     InitWindow(1920, 1080, title_.c_str());
     SetTargetFPS(60);
 
-    // init components
-    SPDLOG_INFO("Initializing");
-
+    // register default scenes
     register_scene(0, std::make_unique<game_overlay>(), 999, true);
 
+    return true;
+}
+
+auto engine::app::init_scenes() -> result<> {
     // init scenes
+    SPDLOG_INFO("init scenes");
     for(auto &scene_info: scenes_) {
-        if(err = scene_info.scene_ptr->init(*this).ko(); err) {
+        if(const auto err = scene_info.scene_ptr->init(*this).ko(); err) {
             return error(std::format("Failed to initialize scene with id {}", scene_info.id), *err);
         }
     }
+    return true;
+}
 
-    SPDLOG_INFO("Application started");
+auto engine::app::end() -> result<> {
+    // end scenes
+    SPDLOG_INFO("ending scenes");
+    for(auto &scene_info: scenes_) {
+        if(scene_info.scene_ptr) {
+            if(const auto err = scene_info.scene_ptr->end().ko(); err) {
+                return error(std::format("Error ending scene with id {}", scene_info.id), *err);
+            }
+            scene_info.scene_ptr.reset();
+        }
+    }
+    scenes_.clear();
     return true;
 }
 
 auto engine::app::run() -> result<> {
     if(const auto err = init().ko(); err) {
-        return error("error running the application", *err);
+        return error("error init the application", *err);
+    }
+
+    if(const auto err = init_scenes().ko(); err) {
+        return error("error init scenes", *err);
     }
 
     while(!WindowShouldClose()) {
         if(const auto err = update().ko(); err) {
             return error("error updating the application", *err);
         }
-        if(const auto err = internal_draw().ko(); err) {
+        if(const auto err = draw().ko(); err) {
             return error("error drawing the application", *err);
         }
+    }
+
+    if(const auto err = end().ko(); err) {
+        return error("error ending the application", *err);
     }
 
     SPDLOG_INFO("Application ended");
@@ -96,16 +120,6 @@ auto engine::app::update() -> result<> {
         }
     }
 
-    return true;
-}
-
-auto engine::app::draw() const -> result<> {
-    // draw scenes
-    for(const auto &scene_info: scenes_) {
-        if(const auto err = scene_info.scene_ptr->draw().ko(); err) {
-            return error(std::format("Failed to initialize scene with id {}", scene_info.id), *err);
-        }
-    }
     return true;
 }
 
@@ -176,13 +190,17 @@ void engine::app::log_callback(const int log_level, const char *text, va_list ar
 
     spdlog::log(level, "[raylib] {}", buffer.data());
 }
-auto engine::app::internal_draw() const -> result<> {
+auto engine::app::draw() const -> result<> {
     BeginDrawing();
     ClearBackground(Color{.r = 20, .g = 49, .b = 59, .a = 255});
 
-    if(const auto err = draw().ko(); err) {
-        return error("error during internal draw", *err);
+    // draw scenes
+    for(const auto &scene_info: scenes_) {
+        if(const auto err = scene_info.scene_ptr->draw().ko(); err) {
+            return error(std::format("Failed to initialize scene with id {}", scene_info.id), *err);
+        }
     }
+
     EndDrawing();
     return true;
 }
