@@ -8,6 +8,7 @@
 #include <cstdarg>
 #include <fstream>
 #include <jsoncons/json.hpp>
+#include <raygui.h>
 #include <spdlog/spdlog.h>
 
 static const auto banner = R"(
@@ -45,6 +46,15 @@ auto engine::app::init() -> result<> {
     InitWindow(1920, 1080, title_.c_str());
     SetTargetFPS(60);
 
+    // check if font_path exists
+    if(std::ifstream const font_file(font_path); !font_file.is_open()) {
+        return error(std::format("Font file not found: {}", font_path));
+    }
+
+    default_font_ = LoadFontEx(font_path, 12, nullptr, 0);
+    SetTextureFilter(default_font_.texture, TEXTURE_FILTER_POINT);
+    GuiSetFont(default_font_);
+
     // register default scenes
     register_scene<game_overlay>(999);
 
@@ -76,6 +86,9 @@ auto engine::app::end() -> result<> {
         }
     }
     scenes_.clear();
+
+    UnloadFont(default_font_);
+
     return true;
 }
 

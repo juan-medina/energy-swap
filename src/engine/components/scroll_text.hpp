@@ -41,6 +41,10 @@ public:
         spacing_ = font_size_ * 0.2F;
     }
 
+    auto set_font(const Font &font) -> void {
+        font_ = font;
+    }
+
 private:
     std::string title_;
     std::vector<std::string> text_lines_;

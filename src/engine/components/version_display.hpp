@@ -53,7 +53,7 @@ private:
     std::array<part, 8> parts_{};
 
     static constexpr auto font_size = 20.0F;
-    static constexpr auto parts_spacing = 4.0F;
+    static constexpr auto parts_spacing = 2.0F;
 
     static auto open_url(const std::string &url) -> result<>;
 };

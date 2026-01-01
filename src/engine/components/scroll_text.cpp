@@ -8,11 +8,12 @@
 
 #include <algorithm>
 #include <sstream>
+#include "../../engine/app.hpp"
 
 namespace engine {
 
-auto scroll_text::init(app & /*app*/) -> result<> {
-    font_ = GetFontDefault();
+auto scroll_text::init(app & app) -> result<> {
+    font_ = app.get_default_font();
     return true;
 }
 

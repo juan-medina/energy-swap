@@ -5,10 +5,12 @@
 
 #include "result.hpp"
 #include "scenes/scene.hpp"
-#include "spdlog/spdlog.h"
+
+#include <raylib.h>
 
 #include <algorithm>
 #include <memory>
+#include <spdlog/spdlog.h>
 #include <vector>
 
 #if defined(__GNUG__) && !defined(__EMSCRIPTEN__) && !defined(__APPLE__)
@@ -41,6 +43,10 @@ public:
 
     [[nodiscard]] auto get_version() const -> const version & {
         return version_;
+    }
+
+    [[nodiscard]] auto get_default_font() const -> const Font & {
+        return default_font_;
     }
 
 protected:
@@ -103,6 +109,9 @@ protected:
     }
 
 private:
+    Font default_font_{};
+    static constexpr auto font_path = "resources/fonts/PixeloidMono-d94EV.ttf";
+
     int last_scene_id_{0};
 
     std::string title_{"Engine App"};

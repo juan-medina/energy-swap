@@ -39,7 +39,7 @@ auto engine::version_display::init(app &app) -> result<> {
     float width = 0;
     float height = 0;
 
-    font_ = GetFontDefault();
+    font_ = app.get_default_font();
 
     for(auto &part: parts_) {
         const auto [size_x, size_y] = MeasureTextEx(font_, part.text.c_str(), font_size, 1.0F);
