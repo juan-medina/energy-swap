@@ -52,7 +52,7 @@ protected:
 
     template<typename T>
         requires std::is_base_of_v<scene, T>
-    auto register_scene(int layer, bool visible = true) -> int {
+    auto register_scene(int layer = 0, bool visible = true) -> int {
         int scene_id = ++last_scene_id_;
 
         std::string name;

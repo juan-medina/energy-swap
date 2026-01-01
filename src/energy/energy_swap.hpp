@@ -22,8 +22,6 @@ public:
 
 protected:
     [[nodiscard]] auto init() -> engine::result<> override;
-    [[nodiscard]] auto update() -> engine::result<> override;
-    [[nodiscard]] auto draw() const -> engine::result<> override;
 };
 
 } // namespace energy
