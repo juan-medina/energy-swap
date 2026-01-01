@@ -28,7 +28,7 @@ public:
     component(component &&) noexcept = delete;
     auto operator=(component &&) noexcept -> component & = delete;
 
-    [[nodiscard]] virtual auto init(app *app) -> result<> = 0;
+    [[nodiscard]] virtual auto init(app &app) -> result<> = 0;
     [[nodiscard]] virtual auto end() -> result<> = 0;
 
     [[nodiscard]] virtual auto update(float delta) -> result<> = 0;

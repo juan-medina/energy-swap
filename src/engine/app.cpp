@@ -44,7 +44,7 @@ auto engine::app::init() -> result<> {
     SPDLOG_INFO("Initializing components");
 
     // init scenes
-    if(err = game_overlay_.init(this).ko(); err) {
+    if(err = game_overlay_.init(*this).ko(); err) {
         return error("Failed to initialize game overlay", *err);
     }
 

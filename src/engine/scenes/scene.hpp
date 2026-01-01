@@ -25,7 +25,7 @@ public:
     scene(scene &&) noexcept = delete;
     auto operator=(scene &&) noexcept -> scene & = delete;
 
-    [[nodiscard]] auto init(app *app) -> result<> override = 0;
+    [[nodiscard]] auto init(app &app) -> result<> override = 0;
     [[nodiscard]] auto end() -> result<> override = 0;
 
     [[nodiscard]] auto update(float delta) -> result<> override = 0;

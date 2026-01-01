@@ -20,8 +20,8 @@
 #    include <emscripten/val.h>
 #endif
 
-auto engine::version_display::init(app *app) -> result<> {
-    auto [major, minor, patch, build] = app->get_version();
+auto engine::version_display::init(app &app) -> result<> {
+    auto [major, minor, patch, build] = app.get_version();
     static_assert(components_colors.size() == 8);
     assert(components_colors.size() == parts_.size());
     parts_ = {

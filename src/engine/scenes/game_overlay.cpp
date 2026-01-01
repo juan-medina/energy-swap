@@ -5,7 +5,7 @@
 
 namespace engine {
 
-auto game_overlay::init(app *app) -> result<> {
+auto game_overlay::init(app &app) -> result<> {
     if(const auto err = version_display_.init(app).ko(); err) {
         return error("Failed to initialize version display", *err);
     }
@@ -30,7 +30,7 @@ auto game_overlay::draw() const -> result<> {
     return true;
 }
 
-auto game_overlay::layout(Vector2 screen_size) -> void {
+auto game_overlay::layout(const Vector2 screen_size) -> void {
     // position version display at bottom-right corner with margin
     const auto [width, height] = version_display_.get_size();
     version_display_.set_position({

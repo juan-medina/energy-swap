@@ -24,7 +24,7 @@ public:
     version_display(version_display &&) noexcept = delete;
     auto operator=(version_display &&) noexcept -> version_display & = delete;
 
-    [[nodiscard]] auto init(app *app) -> result<> override;
+    [[nodiscard]] auto init(app &app) -> result<> override;
     [[nodiscard]] auto end() -> result<> override;
 
     [[nodiscard]] auto update(float delta) -> result<> override;

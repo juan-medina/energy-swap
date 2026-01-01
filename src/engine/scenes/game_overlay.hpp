@@ -20,7 +20,7 @@ public:
     game_overlay(game_overlay &&) noexcept = delete;
     auto operator=(game_overlay &&) noexcept -> game_overlay & = delete;
 
-    [[nodiscard]] auto init(app *app) -> result<> override;
+    [[nodiscard]] auto init(app &app) -> result<> override;
     [[nodiscard]] auto end() -> result<> override;
 
     [[nodiscard]] auto update(float delta) -> result<> override;
