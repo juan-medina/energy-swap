@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "components/version_display.hpp"
+#include "scenes/game_overlay.hpp"
 #include "result.hpp"
 
 namespace engine {
@@ -50,8 +50,7 @@ private:
     static void log_callback(int log_level, const char *text, va_list args);
     [[nodiscard]] auto internal_draw() const -> result<>;
 
-    // components
-    version_display version_display_;
+    game_overlay game_overlay_;
 };
 
 } // namespace engine

@@ -3,10 +3,11 @@
 
 #pragma once
 
-#include "component.hpp"
+#include "../scenes/scene.hpp"
+
+#include <raylib.h>
 
 #include <array>
-#include <raylib.h>
 
 namespace engine {
 
@@ -26,7 +27,6 @@ public:
     [[nodiscard]] auto init(app *app) -> result<> override;
     [[nodiscard]] auto end() -> result<> override;
 
-    auto layout(Vector2 screen_size) -> void override;
     [[nodiscard]] auto update(float delta) -> result<> override;
     [[nodiscard]] auto draw() const -> result<> override;
 
@@ -37,26 +37,23 @@ private:
         float offset;
     };
 
-    Rectangle bounds_{};
-    Vector2 screen_size_{};
     Font font_{};
 
     static constexpr std::array components_colors = {
-        Color{.r = 0xF0, .g = 0x00, .b = 0xF0, .a = 0xFF}, // #F000F0 (v)
-        Color{.r = 0xFF, .g = 0x00, .b = 0x00, .a = 0xFF}, // #FF0000 (major)
-        Color{.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0xFF}, // #F000F0 (.)
-        Color{.r = 0xFF, .g = 0xA5, .b = 0x00, .a = 0xFF}, // #FFA500 (minor)
-        Color{.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0xFF}, // #F000F0 (.)
-        Color{.r = 0xFF, .g = 0xFF, .b = 0x00, .a = 0xFF}, // #FFFF00 (patch)
-        Color{.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0xFF}, // #F000F0 (.)
-        Color{.r = 0x00, .g = 0xFF, .b = 0x00, .a = 0xFF}  // #00FF00 (build)
+        Color{.r = 0xF0, .g = 0x00, .b = 0xF0, .a = 0xFF}, // v
+        Color{.r = 0xFF, .g = 0x00, .b = 0x00, .a = 0xFF}, // major
+        Color{.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0xFF}, // .
+        Color{.r = 0xFF, .g = 0xA5, .b = 0x00, .a = 0xFF}, // minor
+        Color{.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0xFF}, // .
+        Color{.r = 0xFF, .g = 0xFF, .b = 0x00, .a = 0xFF}, // patch
+        Color{.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0xFF}, // .
+        Color{.r = 0x00, .g = 0xFF, .b = 0x00, .a = 0xFF}  // build
     };
 
     std::array<part, 8> parts_{};
 
     static constexpr auto font_size = 20.0F;
     static constexpr auto parts_spacing = 4.0F;
-    static constexpr auto margin = 10.0F;
 
     static auto open_url(const std::string &url) -> result<>;
 };

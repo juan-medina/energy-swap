@@ -35,18 +35,21 @@ auto engine::version_display::init(app *app) -> result<> {
         part{.text = std::to_string(build), .color = components_colors.at(7), .offset = 0.0F},
     };
 
-    // Calculate total width
-    bounds_.width = 0;
-    bounds_.height = 0;
+    // Calculate total width and height
+    float width = 0;
+    float height = 0;
 
     font_ = GetFontDefault();
 
     for(auto &part: parts_) {
         const auto [size_x, size_y] = MeasureTextEx(font_, part.text.c_str(), font_size, 1.0F);
-        part.offset = bounds_.width;
-        bounds_.width += size_x + parts_spacing;
-        bounds_.height = std::max(size_y, bounds_.height);
+        part.offset = width;
+        width += size_x + parts_spacing;
+        height = std::max(size_y, height);
     }
+
+    set_size({.width = width, .height = height});
+
     return true;
 }
 
@@ -55,17 +58,10 @@ auto engine::version_display::end() -> result<> {
     return true;
 }
 
-auto engine::version_display::layout(const Vector2 screen_size) -> void {
-    screen_size_ = screen_size;
-    bounds_.x = screen_size_.x - bounds_.width - margin;
-    bounds_.y = screen_size_.y - bounds_.height - margin;
-}
-
 auto engine::version_display::update(float /*delta*/) -> result<> {
-    // check for mouse click on version display
+    // check for mouse click
     if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-        const auto [x, y] = GetMousePosition();
-        if(x >= bounds_.x && x <= bounds_.x + bounds_.width && y >= bounds_.y && y <= bounds_.y + bounds_.height) {
+        if(point_inside(GetMousePosition())) {
             if(const auto err = open_url("https://juan-medina.com").ko(); err) {
                 return error("Failed updating version display", *err);
             }
@@ -75,10 +71,11 @@ auto engine::version_display::update(float /*delta*/) -> result<> {
 }
 
 auto engine::version_display::draw() const -> result<> {
-    Vector2 pos = {.x = bounds_.x, .y = bounds_.y};
-    for(const auto &part: parts_) {
-        pos.x = bounds_.x + part.offset;
-        DrawTextEx(font_, part.text.c_str(), pos, font_size, 1.0F, part.color);
+    const auto pos = get_pos();
+    auto part_pos = pos;
+    for(const auto &[text, color, offset]: parts_) {
+        part_pos.x = pos.x + offset;
+        DrawTextEx(font_, text.c_str(), part_pos, font_size, 1.0F, color);
     }
     return true;
 }

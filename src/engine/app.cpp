@@ -43,8 +43,9 @@ auto engine::app::init() -> result<> {
     // init components
     SPDLOG_INFO("Initializing components");
 
-    if(err = version_display_.init(this).ko(); err) {
-        return error("Failed to initialize components", *err);
+    // init scenes
+    if(err = game_overlay_.init(this).ko(); err) {
+        return error("Failed to initialize game overlay", *err);
     }
 
     SPDLOG_INFO("Application started");
@@ -76,12 +77,12 @@ auto engine::app::update() -> result<> {
         screen_size_ = screen_size;
         SPDLOG_INFO("Display resized to {}x{}", static_cast<int>(screen_size_.x), static_cast<int>(screen_size_.y));
 
-        // screen size changed, tell components to layout
-        version_display_.layout(screen_size_);
+        // screen size changed, tell scenes to layout
+        game_overlay_.layout(screen_size_);
     }
 
-    // update components
-    if(const auto err = version_display_.update(GetFrameTime()).ko(); err) {
+    // update scenes
+    if(const auto err = game_overlay_.update(GetFrameTime()).ko(); err) {
         return error("Failed to update components", *err);
     }
 
@@ -89,8 +90,8 @@ auto engine::app::update() -> result<> {
 }
 
 auto engine::app::draw() const -> result<> {
-    // draw components
-    if(const auto err = version_display_.draw().ko(); err) {
+    // draw scenes
+    if(const auto err = game_overlay_.draw().ko(); err) {
         return error("Failed to draw components", *err);
     }
     return true;
