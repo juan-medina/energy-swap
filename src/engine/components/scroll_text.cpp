@@ -41,12 +41,7 @@ auto scroll_text::draw() -> result<> {
     auto const start_x = view_.x + scroll_.x;
 
     for(const auto &line: text_lines_) {
-        DrawTextEx(font_,
-                   line.c_str(),
-                   {.x = start_x, .y = start_y},
-                   font_size_,
-                   spacing_,
-                   BLACK);
+        DrawTextEx(font_, line.c_str(), {.x = start_x, .y = start_y}, font_size_, spacing_, BLACK);
         const auto [_, line_y] = MeasureTextEx(font_, line.c_str(), font_size_, spacing_);
         start_y += line_y + line_spacing_;
     }
@@ -75,7 +70,7 @@ auto scroll_text::set_text(const std::string &text) -> void {
     content_.width = max_x;
     content_.height = total_height;
     scroll_ = {.x = 0, .y = 0};
-    view_ = {.x = 0, .y = 0};
+    view_ = {.x = 0, .y = 0, .width = 0, .height = 0};
 }
 
 } // namespace engine
