@@ -3,6 +3,11 @@
 
 #include "game_overlay.hpp"
 
+#include "../app.hpp"
+#include "../result.hpp"
+
+#include <raylib.h>
+
 namespace engine {
 
 auto game_overlay::init(app &app) -> result<> {
@@ -16,14 +21,14 @@ auto game_overlay::end() -> result<> {
     return true;
 }
 
-auto game_overlay::update(float delta) -> result<> {
+auto game_overlay::update(const float delta) -> result<> {
     if(const auto err = version_display_.update(delta).ko(); err) {
         return error("Failed to update version display", *err);
     }
     return true;
 }
 
-auto game_overlay::draw() const -> result<> {
+auto game_overlay::draw() -> result<> {
     if(const auto err = version_display_.draw().ko(); err) {
         return error("Failed to draw version display", *err);
     }

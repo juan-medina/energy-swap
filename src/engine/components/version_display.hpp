@@ -28,7 +28,7 @@ public:
     [[nodiscard]] auto end() -> result<> override;
 
     [[nodiscard]] auto update(float delta) -> result<> override;
-    [[nodiscard]] auto draw() const -> result<> override;
+    [[nodiscard]] auto draw() -> result<> override;
 
 private:
     struct part {

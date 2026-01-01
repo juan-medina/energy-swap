@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "../../engine/components/scroll_text.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
 
@@ -25,9 +26,15 @@ public:
     [[nodiscard]] auto end() -> engine::result<> override;
 
     [[nodiscard]] auto update(float delta) -> engine::result<> override;
-    [[nodiscard]] auto draw() const -> engine::result<> override;
+    [[nodiscard]] auto draw() -> engine::result<> override;
 
     auto layout(Vector2 screen_size) -> void override;
+
+private:
+    static constexpr auto license_path = "resources/license/license.txt";
+    engine::scroll_text scroll_text_;
+    Rectangle button_bounds_ = {.x = 0, .y = 0, .width = 0, .height = 0};
+    static constexpr auto font_size = 20;
 };
 
 } // namespace energy

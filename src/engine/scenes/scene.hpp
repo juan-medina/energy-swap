@@ -29,7 +29,7 @@ public:
     [[nodiscard]] auto end() -> result<> override = 0;
 
     [[nodiscard]] auto update(float delta) -> result<> override = 0;
-    [[nodiscard]] auto draw() const -> result<> override = 0;
+    [[nodiscard]] auto draw() -> result<> override = 0;
 
     virtual auto layout(Vector2 screen_size) -> void = 0;
 };

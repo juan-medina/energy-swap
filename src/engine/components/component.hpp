@@ -32,7 +32,7 @@ public:
     [[nodiscard]] virtual auto end() -> result<> = 0;
 
     [[nodiscard]] virtual auto update(float delta) -> result<> = 0;
-    [[nodiscard]] virtual auto draw() const -> result<> = 0;
+    [[nodiscard]] virtual auto draw() -> result<> = 0;
 
     auto set_position(const Vector2 &pos) -> void {
         pos_ = pos;

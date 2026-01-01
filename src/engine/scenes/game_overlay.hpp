@@ -24,7 +24,7 @@ public:
     [[nodiscard]] auto end() -> result<> override;
 
     [[nodiscard]] auto update(float delta) -> result<> override;
-    [[nodiscard]] auto draw() const -> result<> override;
+    [[nodiscard]] auto draw() -> result<> override;
 
     auto layout(Vector2 screen_size) -> void override;
 

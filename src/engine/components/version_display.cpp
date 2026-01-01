@@ -70,7 +70,7 @@ auto engine::version_display::update(float /*delta*/) -> result<> {
     return true;
 }
 
-auto engine::version_display::draw() const -> result<> {
+auto engine::version_display::draw() -> result<> {
     const auto pos = get_pos();
     auto part_pos = pos;
     for(const auto &[text, color, offset]: parts_) {
