@@ -53,6 +53,11 @@ endif ()
 add_subdirectory(external/spdlog)
 target_link_libraries(${APP_NAME} PRIVATE spdlog::spdlog_header_only)
 
+# Set spdlog to trace level, we can filter later in runtime
+target_compile_definitions(${APP_NAME} PRIVATE
+        SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
+)
+
 # Add raylib
 add_subdirectory(external/raylib)
 target_link_libraries(${APP_NAME} PRIVATE raylib)
@@ -125,6 +130,6 @@ if (NOT EMSCRIPTEN)
                 $<TARGET_FILE_DIR:${APP_NAME}>/resources
                 COMMENT "Copying resources only if changed"
         )
-    endif()
+    endif ()
 
-endif()
+endif ()

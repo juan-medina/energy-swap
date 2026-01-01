@@ -3,6 +3,8 @@
 
 #include "app.hpp"
 
+#include "scenes/game_overlay.hpp"
+
 #include <cstdarg>
 #include <fstream>
 #include <jsoncons/json.hpp>
@@ -41,11 +43,15 @@ auto engine::app::init() -> result<> {
     SetTargetFPS(60);
 
     // init components
-    SPDLOG_INFO("Initializing components");
+    SPDLOG_INFO("Initializing");
+
+    register_scene(0, std::make_unique<game_overlay>(), 999, true);
 
     // init scenes
-    if(err = game_overlay_.init(*this).ko(); err) {
-        return error("Failed to initialize game overlay", *err);
+    for(auto &scene_info: scenes_) {
+        if(err = scene_info.scene_ptr->init(*this).ko(); err) {
+            return error(std::format("Failed to initialize scene with id {}", scene_info.id), *err);
+        }
     }
 
     SPDLOG_INFO("Application started");
@@ -78,12 +84,16 @@ auto engine::app::update() -> result<> {
         SPDLOG_INFO("Display resized to {}x{}", static_cast<int>(screen_size_.x), static_cast<int>(screen_size_.y));
 
         // screen size changed, tell scenes to layout
-        game_overlay_.layout(screen_size_);
+        for(const auto &scene_info: scenes_) {
+            scene_info.scene_ptr->layout(screen_size_);
+        }
     }
 
     // update scenes
-    if(const auto err = game_overlay_.update(GetFrameTime()).ko(); err) {
-        return error("Failed to update components", *err);
+    for(auto &scene_info: scenes_) {
+        if(const auto err = scene_info.scene_ptr->update(GetFrameTime()).ko(); err) {
+            return error(std::format("Failed to initialize scene with id {}", scene_info.id), *err);
+        }
     }
 
     return true;
@@ -91,8 +101,10 @@ auto engine::app::update() -> result<> {
 
 auto engine::app::draw() const -> result<> {
     // draw scenes
-    if(const auto err = game_overlay_.draw().ko(); err) {
-        return error("Failed to draw components", *err);
+    for(const auto &scene_info: scenes_) {
+        if(const auto err = scene_info.scene_ptr->draw().ko(); err) {
+            return error(std::format("Failed to initialize scene with id {}", scene_info.id), *err);
+        }
     }
     return true;
 }
@@ -104,6 +116,14 @@ auto engine::app::setup_log() -> result<> {
 
     spdlog::set_pattern(color_line_format);
     SetTraceLogCallback(log_callback);
+
+#ifdef NDEBUG
+    spdlog::set_level(spdlog::level::err);
+    SetTraceLogLevel(LOG_ERROR);
+#else
+    spdlog::set_level(spdlog::level::debug);
+    SetTraceLogLevel(LOG_DEBUG);
+#endif
     return true;
 }
 
