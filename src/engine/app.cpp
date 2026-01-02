@@ -224,6 +224,12 @@ auto engine::app::set_default_font(const std::string &path, const int size, cons
         return error(std::format("Can not load  font file: {}", path));
     }
 
+    if(custom_default_font_) {
+        SPDLOG_DEBUG("unloading previous custom default font");
+        UnloadFont(default_font_);
+        custom_default_font_ = false;
+    }
+
     const auto font = LoadFontEx(path.c_str(), size, nullptr, 0);
     set_default_font(font, texture_filter);
 
