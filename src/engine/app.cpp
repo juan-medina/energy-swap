@@ -46,14 +46,7 @@ auto engine::app::init() -> result<> {
     InitWindow(1920, 1080, title_.c_str());
     SetTargetFPS(60);
 
-    // check if font_path exists
-    if(std::ifstream const font_file(font_path); !font_file.is_open()) {
-        return error(std::format("Font file not found: {}", font_path));
-    }
-
-    default_font_ = LoadFontEx(font_path, 12, nullptr, 0);
-    SetTextureFilter(default_font_.texture, TEXTURE_FILTER_POINT);
-    GuiSetFont(default_font_);
+    default_font_ = GetFontDefault();
 
     // register default scenes
     register_scene<game_overlay>(999);
@@ -87,7 +80,10 @@ auto engine::app::end() -> result<> {
     }
     scenes_.clear();
 
-    UnloadFont(default_font_);
+    if(custom_default_font_) {
+        SPDLOG_DEBUG("unloading custom default font");
+        UnloadFont(default_font_);
+    }
 
     return true;
 }
@@ -208,6 +204,7 @@ void engine::app::log_callback(const int log_level, const char *text, va_list ar
 
     spdlog::log(level, "[raylib] {}", buffer.data());
 }
+
 auto engine::app::draw() const -> result<> {
     BeginDrawing();
     ClearBackground(Color{.r = 20, .g = 49, .b = 59, .a = 255});
@@ -221,6 +218,24 @@ auto engine::app::draw() const -> result<> {
 
     EndDrawing();
     return true;
+}
+auto engine::app::set_default_font(const std::string &path, const int size, const int texture_filter) -> result<> {
+    if(std::ifstream const font_file(path); !font_file.is_open()) {
+        return error(std::format("Can not load  font file: {}", path));
+    }
+
+    const auto font = LoadFontEx(path.c_str(), size, nullptr, 0);
+    set_default_font(font, texture_filter);
+
+    custom_default_font_ = true;
+    SPDLOG_DEBUG("Set default font to {}", path);
+    return true;
+}
+
+auto engine::app::set_default_font(const Font &font, const int texture_filter) -> void {
+    default_font_ = font;
+    SetTextureFilter(font.texture, texture_filter);
+    GuiSetFont(default_font_);
 }
 
 auto engine::app::parse_version(const std::string &path) -> result<version> {

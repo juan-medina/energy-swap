@@ -22,6 +22,10 @@ public:
 
 protected:
     [[nodiscard]] auto init() -> engine::result<> override;
+
+private:
+    static constexpr auto font_path = "resources/fonts/PixeloidSans-mLxMm.ttf";
+    static constexpr auto font_size = 20;
 };
 
 } // namespace energy

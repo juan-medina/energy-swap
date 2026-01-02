@@ -12,6 +12,10 @@ auto energy::energy_swap::init() -> engine::result<> {
         return engine::error{"failed to initialize base app", *err};
     }
 
+    if(const auto err = set_default_font(font_path, font_size).ko(); err) {
+        return engine::error{"failed to set default font", *err};
+    }
+
     register_scene<license>();
 
     return true;

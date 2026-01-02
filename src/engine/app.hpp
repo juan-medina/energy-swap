@@ -108,10 +108,12 @@ protected:
         return error(std::format("Scene with id {} not found", scene_id));
     }
 
+    [[nodiscard]] auto set_default_font(const std::string &path, int size, int texture_filter = TEXTURE_FILTER_POINT)
+        -> result<>;
+
 private:
     Font default_font_{};
-    static constexpr auto font_path = "resources/fonts/PixeloidMono-d94EV.ttf";
-
+    bool custom_default_font_{false};
     int last_scene_id_{0};
 
     std::string title_{"Engine App"};
@@ -141,6 +143,8 @@ private:
         }
         return error(std::format("Scene with id {} not found", scene_id));
     }
+
+    auto set_default_font(const Font &font, int texture_filter = TEXTURE_FILTER_POINT) -> void;
 };
 
 } // namespace engine
