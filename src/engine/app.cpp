@@ -231,17 +231,19 @@ auto engine::app::set_default_font(const std::string &path, const int size, cons
     }
 
     const auto font = LoadFontEx(path.c_str(), size, nullptr, 0);
-    set_default_font(font, texture_filter);
+    set_default_font(font, size, texture_filter);
 
     custom_default_font_ = true;
     SPDLOG_DEBUG("Set default font to {}", path);
     return true;
 }
 
-auto engine::app::set_default_font(const Font &font, const int texture_filter) -> void {
+auto engine::app::set_default_font(const Font &font, const int size, const int texture_filter) -> void {
     default_font_ = font;
+    default_font_size_ = size;
     SetTextureFilter(font.texture, texture_filter);
     GuiSetFont(default_font_);
+    GuiSetStyle(DEFAULT, TEXT_SIZE, size);
 }
 
 auto engine::app::parse_version(const std::string &path) -> result<version> {

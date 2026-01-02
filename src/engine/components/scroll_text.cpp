@@ -3,17 +3,18 @@
 
 #include "scroll_text.hpp"
 
+#include "../../engine/app.hpp"
 #include "raygui.h"
 #include "spdlog/spdlog.h"
 
 #include <algorithm>
 #include <sstream>
-#include "../../engine/app.hpp"
 
 namespace engine {
 
-auto scroll_text::init(app & app) -> result<> {
-    font_ = app.get_default_font();
+auto scroll_text::init(app &app) -> result<> {
+    set_font(app.get_default_font());
+    set_font_size(static_cast<float>(app.get_default_font_size()));
     return true;
 }
 

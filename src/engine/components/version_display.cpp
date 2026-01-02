@@ -40,11 +40,12 @@ auto engine::version_display::init(app &app) -> result<> {
     float height = 0;
 
     font_ = app.get_default_font();
+    set_font_size(static_cast<float>(app.get_default_font_size()));
 
     for(auto &part: parts_) {
-        const auto [size_x, size_y] = MeasureTextEx(font_, part.text.c_str(), font_size, 1.0F);
+        const auto [size_x, size_y] = MeasureTextEx(font_, part.text.c_str(), font_size_, 1.0F);
         part.offset = width;
-        width += size_x + parts_spacing;
+        width += size_x + parts_spacing_;
         height = std::max(size_y, height);
     }
 
@@ -80,7 +81,7 @@ auto engine::version_display::update(float /*delta*/) -> result<> {
 
 auto engine::version_display::draw() -> result<> {
     const auto pos = get_pos();
-    draw_parts({.x = pos.x + shadow_offset, .y = pos.y + shadow_offset}, true);
+    draw_parts({.x = pos.x + shadow_offset_, .y = pos.y + shadow_offset_}, true);
     draw_parts(pos, false);
 
     return true;
@@ -90,7 +91,7 @@ auto engine::version_display::draw_parts(const Vector2 pos, bool shadow) -> void
     auto part_pos = pos;
     for(const auto &[text, color, offset]: parts_) {
         part_pos.x = pos.x + offset;
-        DrawTextEx(font_, text.c_str(), part_pos, font_size, 1.0F, shadow ? BLACK : color);
+        DrawTextEx(font_, text.c_str(), part_pos, font_size_, 1.0F, shadow ? BLACK : color);
     }
 }
 

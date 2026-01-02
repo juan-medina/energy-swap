@@ -49,6 +49,10 @@ public:
         return default_font_;
     }
 
+    [[nodiscard]] auto get_default_font_size() const -> const int & {
+        return default_font_size_;
+    }
+
 protected:
     [[nodiscard]] virtual auto init() -> result<>;
     [[nodiscard]] virtual auto init_scenes() -> result<>;
@@ -113,6 +117,8 @@ protected:
 
 private:
     Font default_font_{};
+    int default_font_size_{12};
+
     bool custom_default_font_{false};
     int last_scene_id_{0};
 
@@ -144,7 +150,7 @@ private:
         return error(std::format("Scene with id {} not found", scene_id));
     }
 
-    auto set_default_font(const Font &font, int texture_filter = TEXTURE_FILTER_POINT) -> void;
+    auto set_default_font(const Font &font, int size, int texture_filter = TEXTURE_FILTER_POINT) -> void;
 };
 
 } // namespace engine

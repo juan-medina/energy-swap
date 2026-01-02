@@ -3,6 +3,8 @@
 
 #include "license.hpp"
 
+#include "../../engine/app.hpp"
+
 #include <raygui.h>
 #include <spdlog/spdlog.h>
 
@@ -22,8 +24,6 @@ auto license::init(engine::app &app) -> engine::result<> {
 
     scroll_text_.set_text(text);
     UnloadFileText(text);
-
-    scroll_text_.set_font_size(font_size);
     scroll_text_.set_position({.x = 10, .y = 10});
     scroll_text_.set_size({.width = 500, .height = 400});
     scroll_text_.set_title("License");

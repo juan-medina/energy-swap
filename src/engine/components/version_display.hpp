@@ -37,8 +37,6 @@ private:
         float offset;
     };
 
-    Font font_{};
-
     static constexpr std::array components_colors = {
         Color{.r = 0xF0, .g = 0x00, .b = 0xF0, .a = 0xFF}, // v
         Color{.r = 0xFF, .g = 0x00, .b = 0x00, .a = 0xFF}, // major
@@ -52,14 +50,20 @@ private:
 
     std::array<part, 8> parts_{};
 
-    static constexpr auto font_size = 20.0F;
-    static constexpr auto parts_spacing = 2.0F;
-
-    static constexpr auto shadow_offset = font_size / 10.0F * 2.0F;
+    Font font_{};
+    float font_size_ = 20.0F;
+    float parts_spacing_ = font_size_ / 10.0F;
+    float shadow_offset_ = font_size_ / 10.0F * 2.0F;
 
     static auto open_url(const std::string &url) -> result<>;
 
     auto draw_parts(Vector2 pos, bool shadow) -> void;
     bool hover_{false};
+
+    auto set_font_size(const float &size) -> void {
+        font_size_ = size;
+        parts_spacing_ = font_size_ / 10.0F;
+        shadow_offset_ = font_size_ / 10.0F * 2.0F;
+    }
 };
 } // namespace engine
