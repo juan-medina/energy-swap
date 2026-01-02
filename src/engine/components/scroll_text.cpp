@@ -4,17 +4,18 @@
 #include "scroll_text.hpp"
 
 #include "../../engine/app.hpp"
-#include "raygui.h"
-#include "spdlog/spdlog.h"
 
 #include <algorithm>
+#include <raygui.h>
+#include <spdlog/spdlog.h>
 #include <sstream>
 
 namespace engine {
 
 auto scroll_text::init(app &app) -> result<> {
-    set_font(app.get_default_font());
-    set_font_size(static_cast<float>(app.get_default_font_size()));
+    if(const auto err = ui_component::init(app).ko(); err) {
+        return error("Failed to initialize base UI component", *err);
+    }
     return true;
 }
 
@@ -27,7 +28,7 @@ auto scroll_text::update(float /*delta*/) -> result<> {
 }
 
 auto scroll_text::draw() -> result<> {
-    GuiSetStyle(DEFAULT, TEXT_SIZE, static_cast<int>(font_size_));
+    GuiSetStyle(DEFAULT, TEXT_SIZE, static_cast<int>(get_font_size()));
 
     auto [x, y] = get_pos();
     const auto [width, height] = get_size();
@@ -43,8 +44,8 @@ auto scroll_text::draw() -> result<> {
     auto const start_x = view_.x + scroll_.x;
 
     for(const auto &line: text_lines_) {
-        DrawTextEx(font_, line.c_str(), {.x = start_x, .y = start_y}, font_size_, spacing_, BLACK);
-        const auto [_, line_y] = MeasureTextEx(font_, line.c_str(), font_size_, spacing_);
+        DrawTextEx(get_font(), line.c_str(), {.x = start_x, .y = start_y}, get_font_size(), spacing_, BLACK);
+        const auto [_, line_y] = MeasureTextEx(get_font(), line.c_str(), get_font_size(), spacing_);
         start_y += line_y + line_spacing_;
     }
 
@@ -62,7 +63,7 @@ auto scroll_text::set_text(const std::string &text) -> void {
     while(std::getline(stream, line)) {
         text_lines_.emplace_back(line);
 
-        const auto [x, y] = MeasureTextEx(font_, line.c_str(), font_size_, spacing_);
+        const auto [x, y] = MeasureTextEx(get_font(), line.c_str(), get_font_size(), spacing_);
         max_x = std::max(x, max_x);
         total_height += y + line_spacing_;
     }
@@ -73,6 +74,11 @@ auto scroll_text::set_text(const std::string &text) -> void {
     content_.height = total_height;
     scroll_ = {.x = 0, .y = 0};
     view_ = {.x = 0, .y = 0, .width = 0, .height = 0};
+}
+void scroll_text::set_font_size(const float &font_size) {
+    ui_component::set_font_size(font_size);
+    line_spacing_ = font_size * 0.5F;
+    spacing_ = font_size * 0.2F;
 }
 
 } // namespace engine

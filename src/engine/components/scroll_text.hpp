@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include "component.hpp"
+#include "ui_component.hpp"
 
 #include <string>
 #include <vector>
 
 namespace engine {
 
-class scroll_text: public component {
+class scroll_text: public ui_component {
 public:
     scroll_text() = default;
     ~scroll_text() override = default;
@@ -35,16 +35,9 @@ public:
         this->title_ = title;
     }
 
-private:
-    auto set_font(const Font &font) -> void {
-        font_ = font;
-    }
+    auto set_font_size(const float &font_size) -> void override;
 
-    auto set_font_size(const float font_size) -> void {
-        font_size_ = font_size;
-        line_spacing_ = font_size_ * 0.5F;
-        spacing_ = font_size_ * 0.2F;
-    }
+private:
     std::string title_;
     std::vector<std::string> text_lines_;
 
@@ -52,10 +45,8 @@ private:
     Rectangle view_ = {.x = 0, .y = 0, .width = 0, .height = 0};
     Rectangle content_ = {.x = 0, .y = 0, .width = 0, .height = 0};
 
-    Font font_{};
-    float font_size_ = 20;
-    float line_spacing_ = font_size_ * 0.5F;
-    float spacing_ = font_size_ * 0.2F;
+    float line_spacing_ = 0.0F;
+    float spacing_ = 0.0F;
 };
 
 } // namespace engine
