@@ -33,4 +33,4 @@ TB
 
 **Contact**
 
-- Author: Juan Medina (copyright 2025)
+- Author: Juan Medina (copyright 2026)

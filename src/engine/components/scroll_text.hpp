@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Juan Medina
+﻿// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #pragma once

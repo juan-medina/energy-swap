@@ -1,4 +1,8 @@
 ﻿#!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: 2026 Juan Medina
+# SPDX-License-Identifier: MIT
+
 import json
 import sys
 from pathlib import Path
