@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "ui_component.hpp"
 #include "../scenes/scene.hpp"
 
 #include <raylib.h>
@@ -11,7 +12,7 @@
 
 namespace engine {
 
-class version_display: public component {
+class version_display: public ui_component {
 public:
     version_display() = default;
     ~version_display() override = default;
@@ -30,6 +31,7 @@ public:
     [[nodiscard]] auto update(float delta) -> result<> override;
     [[nodiscard]] auto draw() -> result<> override;
 
+    auto set_font_size(const float &size) -> void override;
 private:
     struct part {
         std::string text;
@@ -50,20 +52,13 @@ private:
 
     std::array<part, 8> parts_{};
 
-    Font font_{};
-    float font_size_ = 20.0F;
-    float parts_spacing_ = font_size_ / 10.0F;
-    float shadow_offset_ = font_size_ / 10.0F * 2.0F;
+    float parts_spacing_ = 0.0F;
+    float shadow_offset_ = 0.0F;
 
     static auto open_url(const std::string &url) -> result<>;
 
     auto draw_parts(Vector2 pos, bool shadow) -> void;
     bool hover_{false};
 
-    auto set_font_size(const float &size) -> void {
-        font_size_ = size;
-        parts_spacing_ = font_size_ / 10.0F;
-        shadow_offset_ = font_size_ / 10.0F * 2.0F;
-    }
 };
 } // namespace engine

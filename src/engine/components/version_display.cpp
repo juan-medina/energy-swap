@@ -21,6 +21,10 @@
 #endif
 
 auto engine::version_display::init(app &app) -> result<> {
+    if(const auto err = ui_component::init(app).ko(); err) {
+        return error("Failed to initialize base UI component", *err);
+    }
+
     auto [major, minor, patch, build] = app.get_version();
     static_assert(components_colors.size() == 8);
     assert(components_colors.size() == parts_.size());
@@ -39,11 +43,8 @@ auto engine::version_display::init(app &app) -> result<> {
     float width = 0;
     float height = 0;
 
-    font_ = app.get_default_font();
-    set_font_size(static_cast<float>(app.get_default_font_size()));
-
     for(auto &part: parts_) {
-        const auto [size_x, size_y] = MeasureTextEx(font_, part.text.c_str(), font_size_, 1.0F);
+        const auto [size_x, size_y] = MeasureTextEx(get_font(), part.text.c_str(), get_font_size(), 1.0F);
         part.offset = width;
         width += size_x + parts_spacing_;
         height = std::max(size_y, height);
@@ -91,8 +92,14 @@ auto engine::version_display::draw_parts(const Vector2 pos, bool shadow) -> void
     auto part_pos = pos;
     for(const auto &[text, color, offset]: parts_) {
         part_pos.x = pos.x + offset;
-        DrawTextEx(font_, text.c_str(), part_pos, font_size_, 1.0F, shadow ? BLACK : color);
+        DrawTextEx(get_font(), text.c_str(), part_pos, get_font_size(), 1.0F, shadow ? BLACK : color);
     }
+}
+
+void engine::version_display::set_font_size(const float &size) {
+    ui_component::set_font_size(size);
+    parts_spacing_ = size / 10.0F;
+    shadow_offset_ = size / 10.0F * 2.0F;
 }
 
 #include <vector>

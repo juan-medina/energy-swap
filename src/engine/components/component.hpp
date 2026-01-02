@@ -4,7 +4,7 @@
 #pragma once
 
 #include "../result.hpp"
-#include "raylib.h"
+#include <raylib.h>
 
 namespace engine {
 
@@ -51,7 +51,7 @@ public:
     }
 
     static auto point_inside(const Vector2 pos, const size size, const Vector2 point) -> bool {
-        return point.x >= pos.x && point.x <= pos.x + size.width && point.y >= pos.y && point.y <= pos.y + size.height;
+        return CheckCollisionPointRec(point, {.x = pos.x, .y = pos.y, .width = size.width, .height = size.height});
     }
 
     [[nodiscard]] auto point_inside(const Vector2 point) const -> bool {
