@@ -59,9 +59,17 @@ auto engine::version_display::end() -> result<> {
 }
 
 auto engine::version_display::update(float /*delta*/) -> result<> {
-    // check for mouse click
-    if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-        if(point_inside(GetMousePosition())) {
+    const auto inside = point_inside(GetMousePosition());
+
+    if(hover_ && !inside) {
+        SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+    }
+
+    hover_ = false;
+    if(inside) {
+        hover_ = true;
+        SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+        if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             if(const auto err = open_url("https://juan-medina.com").ko(); err) {
                 return error("Failed updating version display", *err);
             }
@@ -72,12 +80,18 @@ auto engine::version_display::update(float /*delta*/) -> result<> {
 
 auto engine::version_display::draw() -> result<> {
     const auto pos = get_pos();
+    draw_parts({.x = pos.x + shadow_offset, .y = pos.y + shadow_offset}, true);
+    draw_parts(pos, false);
+
+    return true;
+}
+
+auto engine::version_display::draw_parts(const Vector2 pos, bool shadow) -> void {
     auto part_pos = pos;
     for(const auto &[text, color, offset]: parts_) {
         part_pos.x = pos.x + offset;
-        DrawTextEx(font_, text.c_str(), part_pos, font_size, 1.0F, color);
+        DrawTextEx(font_, text.c_str(), part_pos, font_size, 1.0F, shadow ? BLACK : color);
     }
-    return true;
 }
 
 #include <vector>

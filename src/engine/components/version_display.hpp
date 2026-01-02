@@ -55,6 +55,11 @@ private:
     static constexpr auto font_size = 20.0F;
     static constexpr auto parts_spacing = 2.0F;
 
+    static constexpr auto shadow_offset = font_size / 10.0F * 2.0F;
+
     static auto open_url(const std::string &url) -> result<>;
+
+    auto draw_parts(Vector2 pos, bool shadow) -> void;
+    bool hover_{false};
 };
 } // namespace engine

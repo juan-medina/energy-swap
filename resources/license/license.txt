@@ -1,6 +1,6 @@
 	ENERGY SWAP
 
-	END User License Agreement (EULA)
+	End User License Agreement (EULA)
 	Copyright (c) 2026 Juan Medina
 	All rights reserved.
 
