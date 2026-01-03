@@ -88,6 +88,7 @@ if (EMSCRIPTEN)
             "-sASYNCIFY"
             "-sALLOW_MEMORY_GROWTH=1"
             "--bind"
+            "-sEXPORTED_RUNTIME_METHODS=['HEAPF32','HEAP32','HEAPU8']"
     )
 
 endif ()
