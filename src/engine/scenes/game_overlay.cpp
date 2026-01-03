@@ -35,6 +35,7 @@ auto game_overlay::init(app &app) -> result<> {
 
 auto game_overlay::end() -> result<> {
     app_->get().unsubscribe(click_);
+    app_.reset();
     return true;
 }
 

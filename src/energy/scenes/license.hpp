@@ -3,9 +3,12 @@
 
 #pragma once
 
+#include "../../engine/components/button.hpp"
 #include "../../engine/components/scroll_text.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
+#include "../../engine/events.hpp"
+#include "../../engine/app.hpp"
 
 namespace energy {
 
@@ -31,10 +34,13 @@ public:
     auto layout(Vector2 screen_size) -> void override;
 
 private:
+    std::optional<std::reference_wrapper<engine::app>> app_;
     static constexpr auto license_path = "resources/license/license.txt";
     engine::scroll_text scroll_text_;
-    Rectangle button_bounds_ = {.x = 0, .y = 0, .width = 0, .height = 0};
-    static constexpr auto font_size = 20;
+    engine::button accept_button_;
+    engine::event_bus::token_t click_{0};
+
+    static auto on_license_accepted() -> void;
 };
 
 } // namespace energy

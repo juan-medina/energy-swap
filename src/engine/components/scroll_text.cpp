@@ -28,6 +28,7 @@ auto scroll_text::update(float /*delta*/) -> result<> {
 }
 
 auto scroll_text::draw() -> result<> {
+    GuiSetFont(get_font());
     GuiSetStyle(DEFAULT, TEXT_SIZE, static_cast<int>(get_font_size()));
 
     auto [x, y] = get_pos();

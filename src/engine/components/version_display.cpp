@@ -57,6 +57,7 @@ auto engine::version_display::init(app &app) -> result<> {
 }
 
 auto engine::version_display::end() -> result<> {
+    app_.reset();
     parts_ = {};
     return true;
 }
