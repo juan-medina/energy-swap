@@ -30,4 +30,8 @@ auto ui_component::draw() -> result<> {
     return true;
 }
 
+auto ui_component::play_click_sound() -> result<> {
+    return get_app().play_sound(click_sound_);
+}
+
 } // namespace engine

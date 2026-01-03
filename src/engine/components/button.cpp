@@ -43,6 +43,9 @@ auto engine::button::draw() -> result<> {
     GuiSetStyle(DEFAULT, TEXT_SIZE, static_cast<int>(get_font_size()));
 
     if(const Rectangle rect{.x = x, .y = y, .width = width, .height = height}; GuiButton(rect, text_.c_str())) {
+        if(const auto err = play_click_sound().ko(); err) {
+            return error("failed to play click sound", *err);
+        }
         get_app().post_event(click{.id = id_});
     }
 

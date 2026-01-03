@@ -20,7 +20,7 @@ auto energy::energy_swap::init() -> engine::result<> {
 
     license_accepted_ = on_event<license::accepted>(this, &energy_swap::on_license_accepted);
 
-    if(const auto err = load_sound(button_sound, button_sound_path).ko(); err) {
+    if(const auto err = load_sound(click_sound, click_sound_path).ko(); err) {
         return engine::error{"failed to load button sound", *err};
     }
 
@@ -33,8 +33,5 @@ auto energy::energy_swap::end() -> engine::result<> {
 }
 
 auto energy::energy_swap::on_license_accepted() -> void {
-    if(const auto err = play_sound(button_sound).ko(); err) {
-        SPDLOG_ERROR("failed to play button sound: {}", err->get_message());
-    }
     enable_scene(license_scene_, false);
 }

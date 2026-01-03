@@ -32,8 +32,8 @@ private:
     int license_scene_{-1};
     engine::event_bus::token_t license_accepted_{0};
 
-    static constexpr auto button_sound_path = "resources/sounds/button.wav";
-    static constexpr auto button_sound = "button";
+    static constexpr auto click_sound_path = "resources/sounds/click.wav";
+    static constexpr auto click_sound = "click";
 };
 
 } // namespace energy

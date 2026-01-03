@@ -76,6 +76,9 @@ auto engine::version_display::update(float delta) -> result<> {
         hover_ = true;
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if(const auto err = play_click_sound().ko(); err) {
+                return error("failed to play click sound", *err);
+            }
             get_app().post_event(click{});
         }
     }

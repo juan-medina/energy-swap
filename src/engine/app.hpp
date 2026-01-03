@@ -78,6 +78,8 @@ public:
         event_bus_.post(event);
     }
 
+    [[nodiscard]] auto play_sound(const std::string &name) -> result<>;
+
 protected:
     [[nodiscard]] virtual auto init() -> result<>;
     [[nodiscard]] virtual auto init_scenes() -> result<>;
@@ -142,7 +144,6 @@ protected:
 
     [[nodiscard]] auto load_sound(const std::string &name, const std::string &path) -> result<>;
     [[nodiscard]] auto unload_sound(const std::string &name) -> result<>;
-    [[nodiscard]] auto play_sound(const std::string &name) -> result<>;
 
 private:
     Font default_font_{};

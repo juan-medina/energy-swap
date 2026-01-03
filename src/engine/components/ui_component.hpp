@@ -42,9 +42,16 @@ public:
         return font_size_;
     }
 
+    auto set_click_sound(const std::string &sound_name) -> void {
+        click_sound_ = sound_name;
+    }
+
+    [[nodiscard]] auto play_click_sound() -> result<>;
+
 private:
     Font font_{};
     float font_size_ = 20.0F;
+    std::string click_sound_{"click"};
 };
 
 } // namespace engine
