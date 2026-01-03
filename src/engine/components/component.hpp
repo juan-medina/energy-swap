@@ -32,8 +32,6 @@ public:
     component(component &&) noexcept = delete;
     auto operator=(component &&) noexcept -> component & = delete;
 
-    // Default implementations store / release the app reference.
-    // Subclasses that override should call the base implementation.
     [[nodiscard]] virtual auto init(app &app) -> result<> {
         app_ = app;
         return true;

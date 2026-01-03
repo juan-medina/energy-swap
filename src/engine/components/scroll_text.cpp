@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #include "scroll_text.hpp"
@@ -20,14 +20,25 @@ auto scroll_text::init(app &app) -> result<> {
 }
 
 auto scroll_text::end() -> result<> {
-    return true;
+    // Ensure base releases stored app reference and any base cleanup runs.
+    return ui_component::end();
 }
 
-auto scroll_text::update(float /*delta*/) -> result<> {
+auto scroll_text::update(float delta) -> result<> {
+    // Let base UI component run its update behavior first.
+    if(const auto err = ui_component::update(delta).ko(); err) {
+        return error("Failed to update base UI component", *err);
+    }
+
     return true;
 }
 
 auto scroll_text::draw() -> result<> {
+    // Allow base to perform any draw-side work first.
+    if(const auto err = ui_component::draw().ko(); err) {
+        return error("Failed to draw base UI component", *err);
+    }
+
     GuiSetFont(get_font());
     GuiSetStyle(DEFAULT, TEXT_SIZE, static_cast<int>(get_font_size()));
 
@@ -76,6 +87,7 @@ auto scroll_text::set_text(const std::string &text) -> void {
     scroll_ = {.x = 0, .y = 0};
     view_ = {.x = 0, .y = 0, .width = 0, .height = 0};
 }
+
 void scroll_text::set_font_size(const float &font_size) {
     ui_component::set_font_size(font_size);
     line_spacing_ = font_size * 0.5F;

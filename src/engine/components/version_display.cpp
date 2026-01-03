@@ -21,7 +21,6 @@
 #endif
 
 auto engine::version_display::init(app &app) -> result<> {
-    // let ui_component (and component) store the app reference and set fonts
     if(const auto err = ui_component::init(app).ko(); err) {
         return error("Failed to initialize base UI component", *err);
     }
@@ -57,12 +56,15 @@ auto engine::version_display::init(app &app) -> result<> {
 }
 
 auto engine::version_display::end() -> result<> {
-    // Clear state and let the base class release the stored app reference.
     parts_ = {};
     return ui_component::end();
 }
 
-auto engine::version_display::update(float /*delta*/) -> result<> {
+auto engine::version_display::update(float delta) -> result<> {
+    if(const auto err = ui_component::update(delta).ko(); err) {
+        return error("Failed to update base UI component", *err);
+    }
+
     const auto inside = point_inside(GetMousePosition());
 
     if(hover_ && !inside) {
@@ -74,15 +76,17 @@ auto engine::version_display::update(float /*delta*/) -> result<> {
         hover_ = true;
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            if(app_.has_value()) {
-                app_->get().post_event(click{});
-            }
+            app_->get().post_event(click{});
         }
     }
     return true;
 }
 
 auto engine::version_display::draw() -> result<> {
+    if(const auto err = ui_component::draw().ko(); err) {
+        return error("Failed to draw base UI component", *err);
+    }
+
     const auto pos = get_pos();
     draw_parts({.x = pos.x + shadow_offset_, .y = pos.y + shadow_offset_}, true);
     draw_parts(pos, false);

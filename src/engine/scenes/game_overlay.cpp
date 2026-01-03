@@ -23,7 +23,6 @@
 namespace engine {
 
 auto game_overlay::init(app &app) -> result<> {
-    // store app reference in base component
     if(const auto err = scene::init(app).ko(); err) {
         return error("Failed to initialize base component", *err);
     }
@@ -33,17 +32,14 @@ auto game_overlay::init(app &app) -> result<> {
     }
 
     using click = version_display::click;
-    // use provided app reference for subscription; base stored app_ will be used elsewhere
     click_ = app.subscribe<click>([](const click &) -> void { open_url("https://juan-medina.com"); });
 
     return true;
 }
 
 auto game_overlay::end() -> result<> {
-    // unsubscribe using stored app_ (inherited from component) and call base end
-    if(app_.has_value()) {
-        app_->get().unsubscribe(click_);
-    }
+    app_->get().unsubscribe(click_);
+
     if(const auto err = version_display_.end().ko(); err) {
         return error("Failed to end version display", *err);
     }

@@ -23,11 +23,19 @@ auto engine::button::end() -> result<> {
     return ui_component::end();
 }
 
-auto engine::button::update(float /*delta*/) -> result<> {
+auto engine::button::update(float delta) -> result<> {
+    if(const auto err = ui_component::update(delta).ko(); err) {
+        return error("Failed to update base UI component", *err);
+    }
+
     return true;
 }
 
 auto engine::button::draw() -> result<> {
+    if(const auto err = ui_component::draw().ko(); err) {
+        return error("Failed to draw base UI component", *err);
+    }
+
     const auto [x, y] = get_pos();
     const auto [width, height] = get_size();
 

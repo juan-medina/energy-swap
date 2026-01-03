@@ -19,7 +19,6 @@ auto ui_component::init(app &app) -> result<> {
 }
 
 auto ui_component::end() -> result<> {
-    // Base component::end will reset the stored app reference.
     return component::end();
 }
 
