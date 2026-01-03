@@ -29,8 +29,11 @@ private:
     static constexpr auto font_size = 20;
 
     auto on_license_accepted() -> void;
-    int license_scene{-1};
+    int license_scene_{-1};
     engine::event_bus::token_t license_accepted_{0};
+
+    static constexpr auto button_sound_path = "resources/sounds/button.wav";
+    static constexpr auto button_sound = "button";
 };
 
 } // namespace energy

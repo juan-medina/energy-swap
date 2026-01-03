@@ -140,6 +140,10 @@ protected:
     [[nodiscard]] auto set_default_font(const std::string &path, int size, int texture_filter = TEXTURE_FILTER_POINT)
         -> result<>;
 
+    [[nodiscard]] auto load_sound(const std::string &name, const std::string &path) -> result<>;
+    [[nodiscard]] auto unload_sound(const std::string &name) -> result<>;
+    [[nodiscard]] auto play_sound(const std::string &name) -> result<>;
+
 private:
     Font default_font_{};
     int default_font_size_{12};
@@ -178,6 +182,12 @@ private:
     auto set_default_font(const Font &font, int size, int texture_filter = TEXTURE_FILTER_POINT) -> void;
 
     event_bus event_bus_;
+
+    auto init_sound() -> result<>;
+    auto end_sound() -> result<>;
+    bool sound_initialized_{false};
+
+    std::map<std::string, Sound> sounds_;
 };
 
 } // namespace engine

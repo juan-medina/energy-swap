@@ -38,6 +38,10 @@ auto engine::app::init() -> result<> {
         return error("error initializing the application", *err);
     }
 
+    if(err = init_sound().ko(); err) {
+        return error("audio device could not be initialized", *err);
+    }
+
     SPDLOG_INFO("init application");
 
 #ifdef PLATFORM_DESKTOP
@@ -83,6 +87,10 @@ auto engine::app::end() -> result<> {
     if(custom_default_font_) {
         SPDLOG_DEBUG("unloading custom default font");
         UnloadFont(default_font_);
+    }
+
+    if(const auto err = end_sound().ko(); err) {
+        return error("audio device could not be ended", *err);
     }
 
     return true;
@@ -243,6 +251,47 @@ auto engine::app::set_default_font(const std::string &path, const int size, cons
     SPDLOG_DEBUG("Set default font to {}", path);
     return true;
 }
+auto engine::app::load_sound(const std::string &name, const std::string &path) -> result<> {
+    if(std::ifstream const font_file(path); !font_file.is_open()) {
+        return error(std::format("can not load  font file: {}", path));
+    }
+
+    if(sounds_.contains(name)) {
+        return error(std::format("sound with name {} is already loaded", name));
+    }
+
+    Sound const sound = LoadSound(path.c_str());
+
+    if(!IsSoundValid(sound)) {
+        return error(std::format("sound not valid from path: {}", path));
+    }
+
+    sounds_.emplace(name, sound);
+    SPDLOG_DEBUG("loaded sound {} from {}", name, path);
+
+    return true;
+}
+
+auto engine::app::unload_sound(const std::string &name) -> result<> {
+    const auto find = sounds_.find(name);
+    if(find == sounds_.end()) {
+        return error(std::format("can't unload sound with name {}, is not loaded", name));
+    }
+
+    UnloadSound(find->second);
+    sounds_.erase(find);
+    SPDLOG_DEBUG("unloaded sound {}", name);
+    return true;
+}
+
+auto engine::app::play_sound(const std::string &name) -> result<> {
+    const auto find = sounds_.find(name);
+    if(find == sounds_.end()) {
+        return error(std::format("can't play sound with name {}, is not loaded", name));
+    }
+    PlaySound(find->second);
+    return true;
+}
 
 auto engine::app::set_default_font(const Font &font, const int size, const int texture_filter) -> void {
     default_font_ = font;
@@ -250,6 +299,40 @@ auto engine::app::set_default_font(const Font &font, const int size, const int t
     SetTextureFilter(font.texture, texture_filter);
     GuiSetFont(default_font_);
     GuiSetStyle(DEFAULT, TEXT_SIZE, size);
+}
+
+auto engine::app::init_sound() -> result<> {
+    InitAudioDevice();
+    if(IsAudioDeviceReady()) {
+        sound_initialized_ = true;
+        SPDLOG_INFO("audio device initialized");
+        return true;
+    }
+    return error("failed to initialize audio device");
+}
+
+auto engine::app::end_sound() -> result<> {
+    for(const auto &[name, sound]: sounds_) {
+        if(IsSoundPlaying(sound)) {
+            StopSound(sound);
+            SPDLOG_DEBUG("stopped playing sound {}", name);
+        }
+    }
+
+    for(const auto &[name, sound]: sounds_) {
+        UnloadSound(sound);
+        SPDLOG_DEBUG("unloaded sound {}", name);
+    }
+    sounds_.clear();
+
+    if(sound_initialized_) {
+        CloseAudioDevice();
+        sound_initialized_ = false;
+        SPDLOG_INFO("audio device closed");
+        return true;
+    }
+    SPDLOG_WARN("audio device was not initialized");
+    return true;
 }
 
 auto engine::app::parse_version(const std::string &path) -> result<version> {

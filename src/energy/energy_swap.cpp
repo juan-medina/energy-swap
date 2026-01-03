@@ -16,9 +16,13 @@ auto energy::energy_swap::init() -> engine::result<> {
         return engine::error{"failed to set default font", *err};
     }
 
-    license_scene = register_scene<license>();
+    license_scene_ = register_scene<license>();
 
     license_accepted_ = on_event<license::accepted>(this, &energy_swap::on_license_accepted);
+
+    if(const auto err = load_sound(button_sound, button_sound_path).ko(); err) {
+        return engine::error{"failed to load button sound", *err};
+    }
 
     return true;
 }
@@ -29,5 +33,8 @@ auto energy::energy_swap::end() -> engine::result<> {
 }
 
 auto energy::energy_swap::on_license_accepted() -> void {
-    enable_scene(license_scene, false);
+    if(const auto err = play_sound(button_sound).ko(); err) {
+        SPDLOG_ERROR("failed to play button sound: {}", err->get_message());
+    }
+    enable_scene(license_scene_, false);
 }
