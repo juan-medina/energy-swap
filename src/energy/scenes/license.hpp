@@ -41,7 +41,7 @@ private:
     engine::button accept_button_;
     engine::event_bus::token_t button_click_{0};
 
-    auto on_button_click(const engine::button::click &evt) const -> void;
+    auto on_button_click(const engine::button::click &evt) -> void;
 };
 
 } // namespace energy

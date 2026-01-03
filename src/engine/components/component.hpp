@@ -7,6 +7,7 @@
 
 #include <raylib.h>
 
+#include <cassert>
 #include <functional>
 #include <optional>
 
@@ -74,9 +75,18 @@ public:
     }
 
 protected:
-    std::optional<std::reference_wrapper<app>> app_;
+    [[nodiscard]] auto get_app() -> app & {
+        assert(app_.has_value() && "app is not set");
+        return app_->get();
+    }
+
+    [[nodiscard]] auto get_app() const -> const app & {
+        assert(app_.has_value() && "app is not set");
+        return app_->get();
+    }
 
 private:
+    std::optional<std::reference_wrapper<app>> app_;
     Vector2 pos_{};
     size size_{};
 };

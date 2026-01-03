@@ -32,7 +32,7 @@ auto license::init(engine::app &app) -> engine::result<> {
     scroll_text_.set_title("License");
 
     if(const auto err = accept_button_.init(app).ko(); err) {
-        return engine::error("Failed to initialize accept button component", *err);
+        return engine::error("failed to initialize accept button component", *err);
     }
 
     accept_button_.set_text("Accept");
@@ -46,28 +46,28 @@ auto license::init(engine::app &app) -> engine::result<> {
 }
 
 auto license::end() -> engine::result<> {
-    app_->get().unsubscribe(button_click_);
+    get_app().unsubscribe(button_click_);
     return scene::end();
 }
 
 auto license::update(float delta) -> engine::result<> {
     if(const auto err = scroll_text_.update(delta).ko(); err) {
-        return engine::error("Failed to update scroll text component", *err);
+        return engine::error("failed to update scroll text component", *err);
     }
 
     if(const auto err = accept_button_.update(delta).ko(); err) {
-        return engine::error("Failed to update accept button", *err);
+        return engine::error("failed to update accept button", *err);
     }
     return true;
 }
 
 auto license::draw() -> engine::result<> {
     if(const auto err = scroll_text_.draw().ko(); err) {
-        return engine::error("Failed to draw scroll text component", *err);
+        return engine::error("failed to draw scroll text component", *err);
     }
 
     if(const auto err = accept_button_.draw().ko(); err) {
-        return engine::error("Failed to draw accept button", *err);
+        return engine::error("failed to draw accept button", *err);
     }
     return true;
 }
@@ -85,9 +85,9 @@ auto license::layout(const Vector2 screen_size) -> void {
     accept_button_.set_position({.x = button_x, .y = button_y});
 }
 
-auto license::on_button_click(const engine::button::click &evt) const -> void {
+auto license::on_button_click(const engine::button::click &evt) -> void {
     if(evt.id == accept_button_.get_id()) {
-        app_->get().post_event(accepted{});
+        get_app().post_event(accepted{});
     }
 }
 

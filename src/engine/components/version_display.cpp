@@ -22,7 +22,7 @@
 
 auto engine::version_display::init(app &app) -> result<> {
     if(const auto err = ui_component::init(app).ko(); err) {
-        return error("Failed to initialize base UI component", *err);
+        return error("failed to initialize base UI component", *err);
     }
 
     auto [major, minor, patch, build] = app.get_version();
@@ -62,7 +62,7 @@ auto engine::version_display::end() -> result<> {
 
 auto engine::version_display::update(float delta) -> result<> {
     if(const auto err = ui_component::update(delta).ko(); err) {
-        return error("Failed to update base UI component", *err);
+        return error("failed to update base UI component", *err);
     }
 
     const auto inside = point_inside(GetMousePosition());
@@ -76,7 +76,7 @@ auto engine::version_display::update(float delta) -> result<> {
         hover_ = true;
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            app_->get().post_event(click{});
+            get_app().post_event(click{});
         }
     }
     return true;
@@ -84,7 +84,7 @@ auto engine::version_display::update(float delta) -> result<> {
 
 auto engine::version_display::draw() -> result<> {
     if(const auto err = ui_component::draw().ko(); err) {
-        return error("Failed to draw base UI component", *err);
+        return error("failed to draw base UI component", *err);
     }
 
     const auto pos = get_pos();

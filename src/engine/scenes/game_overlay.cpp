@@ -24,38 +24,38 @@ namespace engine {
 
 auto game_overlay::init(app &app) -> result<> {
     if(const auto err = scene::init(app).ko(); err) {
-        return error("Failed to initialize base component", *err);
+        return error("failed to initialize base component", *err);
     }
 
     if(const auto err = version_display_.init(app).ko(); err) {
-        return error("Failed to initialize version display", *err);
+        return error("failed to initialize version display", *err);
     }
 
     using click = version_display::click;
-    click_ = app.subscribe<click>([](const click &) -> void { open_url("https://juan-medina.com"); });
+    click_ = get_app().subscribe<click>([](const click &) -> void { open_url("https://juan-medina.com"); });
 
     return true;
 }
 
 auto game_overlay::end() -> result<> {
-    app_->get().unsubscribe(click_);
+    get_app().unsubscribe(click_);
 
     if(const auto err = version_display_.end().ko(); err) {
-        return error("Failed to end version display", *err);
+        return error("failed to end version display", *err);
     }
     return scene::end();
 }
 
 auto game_overlay::update(const float delta) -> result<> {
     if(const auto err = version_display_.update(delta).ko(); err) {
-        return error("Failed to update version display", *err);
+        return error("failed to update version display", *err);
     }
     return true;
 }
 
 auto game_overlay::draw() -> result<> {
     if(const auto err = version_display_.draw().ko(); err) {
-        return error("Failed to draw version display", *err);
+        return error("failed to draw version display", *err);
     }
     return true;
 }
@@ -73,7 +73,7 @@ auto game_overlay::open_url(const std::string &url) -> result<> {
 #ifdef _WIN32
     if(auto *result = ShellExecuteA(nullptr, "open", url.c_str(), nullptr, nullptr, 1);
        reinterpret_cast<intptr_t>(result) <= 32) { // NOLINT(*-pro-type-reinterpret-cast)
-        return error("Failed to open URL using shell execute");
+        return error("failed to open URL using shell execute");
     }
     return true;
 #elif defined(__APPLE__) || defined(__linux__)
