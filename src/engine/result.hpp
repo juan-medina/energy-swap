@@ -16,12 +16,12 @@ namespace engine {
 class error {
 public:
     explicit error(const std::string &message, const std::source_location &location = std::source_location::current())
-        : causes_{cause{.message=message, .location=location}} {}
+        : causes_{cause{.message = message, .location = location}} {}
 
     error(const std::string &message,
           const error &other,
           const std::source_location &location = std::source_location::current())
-        : causes_{cause{.message=message, .location=location}} {
+        : causes_{cause{.message = message, .location = location}} {
         causes_.insert(causes_.end(), other.causes_.begin(), other.causes_.end());
     }
 

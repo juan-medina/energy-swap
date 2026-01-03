@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #pragma once
@@ -11,8 +11,6 @@
 #include <array>
 
 namespace engine {
-
-
 
 class version_display: public ui_component {
 public:
@@ -38,8 +36,6 @@ public:
     struct click {};
 
 private:
-    std::optional<std::reference_wrapper<app>> app_;
-
     struct part {
         std::string text;
         Color color;

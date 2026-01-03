@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #include "version_display.hpp"
@@ -21,7 +21,7 @@
 #endif
 
 auto engine::version_display::init(app &app) -> result<> {
-    app_ = app;
+    // let ui_component (and component) store the app reference and set fonts
     if(const auto err = ui_component::init(app).ko(); err) {
         return error("Failed to initialize base UI component", *err);
     }
@@ -57,9 +57,9 @@ auto engine::version_display::init(app &app) -> result<> {
 }
 
 auto engine::version_display::end() -> result<> {
-    app_.reset();
+    // Clear state and let the base class release the stored app reference.
     parts_ = {};
-    return true;
+    return ui_component::end();
 }
 
 auto engine::version_display::update(float /*delta*/) -> result<> {
@@ -74,7 +74,9 @@ auto engine::version_display::update(float /*delta*/) -> result<> {
         hover_ = true;
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            app_->get().post_event(click{});
+            if(app_.has_value()) {
+                app_->get().post_event(click{});
+            }
         }
     }
     return true;
