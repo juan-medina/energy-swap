@@ -59,6 +59,11 @@ public:
         return event_bus_.subscribe<Event>(std::move(handler));
     }
 
+    template<typename Event, typename T, typename Func>
+    auto bind_event(T *instance, Func func) -> event_bus::token_t {
+        return subscribe<Event>([instance, func](const Event &evt) -> auto { (instance->*func)(evt); });
+    }
+
     auto unsubscribe(const event_bus::token_t token) -> void {
         event_bus_.unsubscribe(token);
     }

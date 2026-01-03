@@ -37,22 +37,25 @@ auto license::init(engine::app &app) -> engine::result<> {
     accept_button_.set_position({.x = 0, .y = 0});
     accept_button_.set_size({.width = 100, .height = 40});
 
-    click_ = app.subscribe<engine::button::click>([this](const engine::button::click &evt) -> void {
-        if(evt.id == accept_button_.get_id()) {
-            on_license_accepted();
-        }
-    });
+    button_click_ = app.bind_event<engine::button::click>(this, &license::on_button_click);
 
     return true;
 }
 
 auto license::end() -> engine::result<> {
-    app_->get().unsubscribe(click_);
+    app_->get().unsubscribe(button_click_);
     app_.reset();
     return true;
 }
 
-auto license::update(float /*delta*/) -> engine::result<> {
+auto license::update(float delta) -> engine::result<> {
+    if(const auto err = scroll_text_.update(delta).ko(); err) {
+        return engine::error("Failed to update scroll text component", *err);
+    }
+
+    if(const auto err = accept_button_.update(delta).ko(); err) {
+        return engine::error("Failed to update accept button", *err);
+    }
     return true;
 }
 
@@ -60,6 +63,7 @@ auto license::draw() -> engine::result<> {
     if(const auto err = scroll_text_.draw().ko(); err) {
         return engine::error("Failed to draw scroll text component", *err);
     }
+
     if(const auto err = accept_button_.draw().ko(); err) {
         return engine::error("Failed to draw accept button", *err);
     }
@@ -78,8 +82,11 @@ auto license::layout(const Vector2 screen_size) -> void {
     float const button_y = scroll_text_.get_pos().y + scroll_text_.get_size().height + 10;
     accept_button_.set_position({.x = button_x, .y = button_y});
 }
-auto license::on_license_accepted() -> void {
-    SPDLOG_INFO("License accepted by user");
+
+auto license::on_button_click(const engine::button::click &evt) const -> void {
+    if(evt.id == accept_button_.get_id()) {
+        SPDLOG_INFO("License accepted by user");
+    }
 }
 
 } // namespace energy

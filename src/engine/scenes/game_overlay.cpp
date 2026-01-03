@@ -28,7 +28,8 @@ auto game_overlay::init(app &app) -> result<> {
         return error("Failed to initialize version display", *err);
     }
 
-    click_ = app.subscribe<version_display::click>([](const version_display::click &) -> void { on_version_click(); });
+    using click = version_display::click;
+    click_ = app.subscribe<click>([](const click &) -> void { open_url("https://juan-medina.com"); });
 
     return true;
 }
@@ -60,10 +61,6 @@ auto game_overlay::layout(const Vector2 screen_size) -> void {
         .x = screen_size.x - width - margin,
         .y = screen_size.y - height - margin,
     });
-}
-
-auto game_overlay::on_version_click() -> void {
-    open_url("https://juan-medina.com");
 }
 
 auto game_overlay::open_url(const std::string &url) -> result<> {

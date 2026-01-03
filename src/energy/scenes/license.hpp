@@ -38,9 +38,10 @@ private:
     static constexpr auto license_path = "resources/license/license.txt";
     engine::scroll_text scroll_text_;
     engine::button accept_button_;
-    engine::event_bus::token_t click_{0};
+    engine::event_bus::token_t button_click_{0};
 
-    static auto on_license_accepted() -> void;
+    auto on_button_click(const engine::button::click &evt) const -> void;
+
 };
 
 } // namespace energy
