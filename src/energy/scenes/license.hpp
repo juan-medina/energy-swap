@@ -33,6 +33,7 @@ public:
 
     auto layout(Vector2 screen_size) -> void override;
 
+    struct accepted {};
 private:
     std::optional<std::reference_wrapper<engine::app>> app_;
     static constexpr auto license_path = "resources/license/license.txt";

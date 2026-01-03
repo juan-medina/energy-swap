@@ -64,6 +64,11 @@ public:
         return subscribe<Event>([instance, func](const Event &evt) -> auto { (instance->*func)(evt); });
     }
 
+    template<typename Event, typename T, typename Func>
+    auto on_event(T *instance, Func func) -> event_bus::token_t {
+        return subscribe<Event>([instance, func](const Event &) -> auto { (instance->*func)(); });
+    }
+
     auto unsubscribe(const event_bus::token_t token) -> void {
         event_bus_.unsubscribe(token);
     }
@@ -125,7 +130,7 @@ protected:
     }
 
     auto enable_scene(const int scene_id, bool enabled = true) -> result<> {
-        if(auto [scene_info_res, error] = find_scene_info(scene_id).ok(); error) {
+        if(auto [scene_info_res, error] = find_scene_info(scene_id).ok(); !error) {
             scene_info_res->get().visible = enabled;
             return true;
         }

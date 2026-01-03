@@ -214,6 +214,9 @@ auto engine::app::draw() const -> result<> {
 
     // draw scenes
     for(const auto &info: scenes_) {
+        if(!info.visible) {
+            continue;
+        }
         if(const auto err = info.scene_ptr->draw().ko(); err) {
             return error(std::format("Failed to draw scene with id: {} name:", info.id, info.name), *err);
         }

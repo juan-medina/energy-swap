@@ -85,7 +85,7 @@ auto license::layout(const Vector2 screen_size) -> void {
 
 auto license::on_button_click(const engine::button::click &evt) const -> void {
     if(evt.id == accept_button_.get_id()) {
-        SPDLOG_INFO("License accepted by user");
+        app_->get().post_event(accepted{});
     }
 }
 
