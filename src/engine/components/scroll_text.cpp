@@ -13,85 +13,85 @@
 namespace engine {
 
 auto scroll_text::init(app &app) -> result<> {
-    if(const auto err = ui_component::init(app).ko(); err) {
-        return error("Failed to initialize base UI component", *err);
-    }
-    return true;
+	if(const auto err = ui_component::init(app).ko(); err) {
+		return error("Failed to initialize base UI component", *err);
+	}
+	return true;
 }
 
 auto scroll_text::end() -> result<> {
-    // Ensure base releases stored app reference and any base cleanup runs.
-    return ui_component::end();
+	// Ensure base releases stored app reference and any base cleanup runs.
+	return ui_component::end();
 }
 
 auto scroll_text::update(float delta) -> result<> {
-    // Let base UI component run its update behavior first.
-    if(const auto err = ui_component::update(delta).ko(); err) {
-        return error("Failed to update base UI component", *err);
-    }
+	// Let base UI component run its update behavior first.
+	if(const auto err = ui_component::update(delta).ko(); err) {
+		return error("Failed to update base UI component", *err);
+	}
 
-    return true;
+	return true;
 }
 
 auto scroll_text::draw() -> result<> {
-    // Allow base to perform any draw-side work first.
-    if(const auto err = ui_component::draw().ko(); err) {
-        return error("Failed to draw base UI component", *err);
-    }
+	// Allow base to perform any draw-side work first.
+	if(const auto err = ui_component::draw().ko(); err) {
+		return error("Failed to draw base UI component", *err);
+	}
 
-    GuiSetFont(get_font());
-    GuiSetStyle(DEFAULT, TEXT_SIZE, static_cast<int>(get_font_size()));
+	GuiSetFont(get_font());
+	GuiSetStyle(DEFAULT, TEXT_SIZE, static_cast<int>(get_font_size()));
 
-    auto [x, y] = get_pos();
-    const auto [width, height] = get_size();
-    const auto bound = Rectangle{.x = x, .y = y, .width = width, .height = height};
-    GuiScrollPanel(bound, title_.c_str(), content_, &scroll_, &view_);
+	auto [x, y] = get_pos();
+	const auto [width, height] = get_size();
+	const auto bound = Rectangle{.x = x, .y = y, .width = width, .height = height};
+	GuiScrollPanel(bound, title_.c_str(), content_, &scroll_, &view_);
 
-    BeginScissorMode(static_cast<int>(view_.x),
-                     static_cast<int>(view_.y),
-                     static_cast<int>(view_.width),
-                     static_cast<int>(view_.height));
+	BeginScissorMode(static_cast<int>(view_.x),
+					 static_cast<int>(view_.y),
+					 static_cast<int>(view_.width),
+					 static_cast<int>(view_.height));
 
-    auto start_y = view_.y + scroll_.y;
-    auto const start_x = view_.x + scroll_.x;
+	auto start_y = view_.y + scroll_.y;
+	auto const start_x = view_.x + scroll_.x;
 
-    for(const auto &line: text_lines_) {
-        DrawTextEx(get_font(), line.c_str(), {.x = start_x, .y = start_y}, get_font_size(), spacing_, BLACK);
-        const auto [_, line_y] = MeasureTextEx(get_font(), line.c_str(), get_font_size(), spacing_);
-        start_y += line_y + line_spacing_;
-    }
+	for(const auto &line: text_lines_) {
+		DrawTextEx(get_font(), line.c_str(), {.x = start_x, .y = start_y}, get_font_size(), spacing_, BLACK);
+		const auto [_, line_y] = MeasureTextEx(get_font(), line.c_str(), get_font_size(), spacing_);
+		start_y += line_y + line_spacing_;
+	}
 
-    EndScissorMode();
+	EndScissorMode();
 
-    return true;
+	return true;
 }
 
 auto scroll_text::set_text(const std::string &text) -> void {
-    float max_x = 0;
-    float total_height = 0;
+	float max_x = 0;
+	float total_height = 0;
 
-    std::istringstream stream(text);
-    std::string line;
-    while(std::getline(stream, line)) {
-        text_lines_.emplace_back(line);
+	std::istringstream stream(text);
+	std::string line;
+	while(std::getline(stream, line)) {
+		text_lines_.emplace_back(line);
 
-        const auto [x, y] = MeasureTextEx(get_font(), line.c_str(), get_font_size(), spacing_);
-        max_x = std::max(x, max_x);
-        total_height += y + line_spacing_;
-    }
+		const auto [x, y] = MeasureTextEx(get_font(), line.c_str(), get_font_size(), spacing_);
+		max_x = std::max(x, max_x);
+		total_height += y + line_spacing_;
+	}
 
-    content_.x = 0;
-    content_.y = 0;
-    content_.width = max_x;
-    content_.height = total_height;
-    scroll_ = {.x = 0, .y = 0};
-    view_ = {.x = 0, .y = 0, .width = 0, .height = 0};
+	content_.x = 0;
+	content_.y = 0;
+	content_.width = max_x;
+	content_.height = total_height;
+	scroll_ = {.x = 0, .y = 0};
+	view_ = {.x = 0, .y = 0, .width = 0, .height = 0};
 }
 
 void scroll_text::set_font_size(const float &font_size) {
-    ui_component::set_font_size(font_size);
-    line_spacing_ = font_size * 0.5F;
-    spacing_ = font_size * 0.2F;
+	ui_component::set_font_size(font_size);
+	line_spacing_ = font_size * 0.5F;
+	spacing_ = font_size * 0.2F;
 }
 
 } // namespace engine

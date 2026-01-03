@@ -9,31 +9,31 @@ namespace energy {
 
 class energy_swap: public engine::app {
 public:
-    energy_swap(): app("Energy Swapper") {}
-    ~energy_swap() override = default;
+	energy_swap(): app("Energy Swapper") {}
+	~energy_swap() override = default;
 
-    // Non-copyable
-    energy_swap(const energy_swap &) = delete;
-    auto operator=(const energy_swap &) -> energy_swap & = delete;
+	// Non-copyable
+	energy_swap(const energy_swap &) = delete;
+	auto operator=(const energy_swap &) -> energy_swap & = delete;
 
-    // Non-movable
-    energy_swap(energy_swap &&) noexcept = delete;
-    auto operator=(energy_swap &&) noexcept -> energy_swap & = delete;
+	// Non-movable
+	energy_swap(energy_swap &&) noexcept = delete;
+	auto operator=(energy_swap &&) noexcept -> energy_swap & = delete;
 
 protected:
-    [[nodiscard]] auto init() -> engine::result<> override;
-    [[nodiscard]] auto end() -> engine::result<> override;
+	[[nodiscard]] auto init() -> engine::result<> override;
+	[[nodiscard]] auto end() -> engine::result<> override;
 
 private:
-    static constexpr auto font_path = "resources/fonts/PixeloidSans-mLxMm.ttf";
-    static constexpr auto font_size = 20;
+	static constexpr auto font_path = "resources/fonts/PixeloidSans-mLxMm.ttf";
+	static constexpr auto font_size = 20;
 
-    auto on_license_accepted() -> void;
-    int license_scene_{-1};
-    engine::event_bus::token_t license_accepted_{0};
+	auto on_license_accepted() -> void;
+	int license_scene_{-1};
+	engine::event_bus::token_t license_accepted_{0};
 
-    static constexpr auto click_sound_path = "resources/sounds/click.wav";
-    static constexpr auto click_sound = "click";
+	static constexpr auto click_sound_path = "resources/sounds/click.wav";
+	static constexpr auto click_sound = "click";
 };
 
 } // namespace energy

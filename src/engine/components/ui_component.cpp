@@ -8,30 +8,30 @@
 namespace engine {
 
 auto ui_component::init(app &app) -> result<> {
-    if(const auto err = component::init(app).ko(); err) {
-        return error("Failed to initialize base component", *err);
-    }
+	if(const auto err = component::init(app).ko(); err) {
+		return error("Failed to initialize base component", *err);
+	}
 
-    set_font(app.get_default_font());
-    set_font_size(static_cast<float>(app.get_default_font_size()));
+	set_font(app.get_default_font());
+	set_font_size(static_cast<float>(app.get_default_font_size()));
 
-    return true;
+	return true;
 }
 
 auto ui_component::end() -> result<> {
-    return component::end();
+	return component::end();
 }
 
 auto ui_component::update(float /*delta*/) -> result<> {
-    return true;
+	return true;
 }
 
 auto ui_component::draw() -> result<> {
-    return true;
+	return true;
 }
 
 auto ui_component::play_click_sound() -> result<> {
-    return get_app().play_sound(click_sound_);
+	return get_app().play_sound(click_sound_);
 }
 
 } // namespace engine

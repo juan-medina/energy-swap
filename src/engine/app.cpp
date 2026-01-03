@@ -25,344 +25,344 @@ static const auto empty_format = "%v";
 static const auto color_line_format = "[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v %@";
 
 auto engine::app::init() -> result<> {
-    auto [version, err] = parse_version(version_file_path).ok();
-    if(err) {
-        return error("error parsing the version", *err);
-    }
+	auto [version, err] = parse_version(version_file_path).ok();
+	if(err) {
+		return error("error parsing the version", *err);
+	}
 
-    version_ = *version;
+	version_ = *version;
 
-    SPDLOG_DEBUG("parsed version: {}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
+	SPDLOG_DEBUG("parsed version: {}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
 
-    if(err = setup_log().ko(); err) {
-        return error("error initializing the application", *err);
-    }
+	if(err = setup_log().ko(); err) {
+		return error("error initializing the application", *err);
+	}
 
-    if(err = init_sound().ko(); err) {
-        return error("audio device could not be initialized", *err);
-    }
+	if(err = init_sound().ko(); err) {
+		return error("audio device could not be initialized", *err);
+	}
 
-    SPDLOG_INFO("init application");
+	SPDLOG_INFO("init application");
 
 #ifdef PLATFORM_DESKTOP
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 #endif
-    InitWindow(1920, 1080, title_.c_str());
-    SetTargetFPS(60);
+	InitWindow(1920, 1080, title_.c_str());
+	SetTargetFPS(60);
 
-    default_font_ = GetFontDefault();
+	default_font_ = GetFontDefault();
 
-    // register default scenes
-    register_scene<game_overlay>(999);
+	// register default scenes
+	register_scene<game_overlay>(999);
 
-    return true;
+	return true;
 }
 
 auto engine::app::init_scenes() -> result<> {
-    // init scenes
-    SPDLOG_INFO("init scenes");
-    for(auto &info: scenes_) {
-        if(const auto err = info.scene_ptr->init(*this).ko(); err) {
-            return error(std::format("Failed to initialize scene with id: {} name: {}", info.id, info.name), *err);
-        }
-        SPDLOG_DEBUG("initialized scene with id: {} name: {}", info.id, info.name);
-    }
-    return true;
+	// init scenes
+	SPDLOG_INFO("init scenes");
+	for(auto &info: scenes_) {
+		if(const auto err = info.scene_ptr->init(*this).ko(); err) {
+			return error(std::format("Failed to initialize scene with id: {} name: {}", info.id, info.name), *err);
+		}
+		SPDLOG_DEBUG("initialized scene with id: {} name: {}", info.id, info.name);
+	}
+	return true;
 }
 
 auto engine::app::end() -> result<> {
-    // end scenes
-    SPDLOG_INFO("ending scenes");
-    for(auto &info: scenes_) {
-        if(info.scene_ptr) {
-            if(const auto err = info.scene_ptr->end().ko(); err) {
-                return error(std::format("Error ending scene with id: {} name: {}", info.id, info.name), *err);
-            }
-            SPDLOG_DEBUG("end scene with id: {} name: {}", info.id, info.name);
-            info.scene_ptr.reset();
-        }
-    }
-    scenes_.clear();
+	// end scenes
+	SPDLOG_INFO("ending scenes");
+	for(auto &info: scenes_) {
+		if(info.scene_ptr) {
+			if(const auto err = info.scene_ptr->end().ko(); err) {
+				return error(std::format("Error ending scene with id: {} name: {}", info.id, info.name), *err);
+			}
+			SPDLOG_DEBUG("end scene with id: {} name: {}", info.id, info.name);
+			info.scene_ptr.reset();
+		}
+	}
+	scenes_.clear();
 
-    if(custom_default_font_) {
-        SPDLOG_DEBUG("unloading custom default font");
-        UnloadFont(default_font_);
-    }
+	if(custom_default_font_) {
+		SPDLOG_DEBUG("unloading custom default font");
+		UnloadFont(default_font_);
+	}
 
-    if(const auto err = end_sound().ko(); err) {
-        return error("audio device could not be ended", *err);
-    }
+	if(const auto err = end_sound().ko(); err) {
+		return error("audio device could not be ended", *err);
+	}
 
-    return true;
+	return true;
 }
 
 auto engine::app::run() -> result<> {
-    if(const auto err = init().ko(); err) {
-        return error("error init the application", *err);
-    }
+	if(const auto err = init().ko(); err) {
+		return error("error init the application", *err);
+	}
 
-    if(const auto err = init_scenes().ko(); err) {
-        return error("error init scenes", *err);
-    }
+	if(const auto err = init_scenes().ko(); err) {
+		return error("error init scenes", *err);
+	}
 
-    while(!WindowShouldClose()) {
-        if(const auto err = update().ko(); err) {
-            return error("error updating the application", *err);
-        }
-        if(const auto err = draw().ko(); err) {
-            return error("error drawing the application", *err);
-        }
-    }
+	while(!WindowShouldClose()) {
+		if(const auto err = update().ko(); err) {
+			return error("error updating the application", *err);
+		}
+		if(const auto err = draw().ko(); err) {
+			return error("error drawing the application", *err);
+		}
+	}
 
-    if(const auto err = end().ko(); err) {
-        return error("error ending the application", *err);
-    }
+	if(const auto err = end().ko(); err) {
+		return error("error ending the application", *err);
+	}
 
-    SPDLOG_INFO("application ended");
-    return true;
+	SPDLOG_INFO("application ended");
+	return true;
 }
 
 auto engine::app::update() -> result<> {
-    if(Vector2 const screen_size = {.x = static_cast<float>(GetScreenWidth()),
-                                    .y = static_cast<float>(GetScreenHeight())};
-       screen_size_.x != screen_size.x || screen_size_.y != screen_size.y) {
-        screen_size_ = screen_size;
-        SPDLOG_DEBUG("display resized to {}x{}", static_cast<int>(screen_size_.x), static_cast<int>(screen_size_.y));
+	if(Vector2 const screen_size = {.x = static_cast<float>(GetScreenWidth()),
+									.y = static_cast<float>(GetScreenHeight())};
+	   screen_size_.x != screen_size.x || screen_size_.y != screen_size.y) {
+		screen_size_ = screen_size;
+		SPDLOG_DEBUG("display resized to {}x{}", static_cast<int>(screen_size_.x), static_cast<int>(screen_size_.y));
 
-        // screen size changed, tell scenes to layout
-        for(const auto &scene_info: scenes_) {
-            scene_info.scene_ptr->layout(screen_size_);
-        }
-    }
+		// screen size changed, tell scenes to layout
+		for(const auto &scene_info: scenes_) {
+			scene_info.scene_ptr->layout(screen_size_);
+		}
+	}
 
-    // update scenes
-    for(auto &info: scenes_) {
-        if(const auto err = info.scene_ptr->update(GetFrameTime()).ko(); err) {
-            return error(std::format("Failed to update scene with id: {} name: {}", info.id, info.name), *err);
-        }
-    }
+	// update scenes
+	for(auto &info: scenes_) {
+		if(const auto err = info.scene_ptr->update(GetFrameTime()).ko(); err) {
+			return error(std::format("Failed to update scene with id: {} name: {}", info.id, info.name), *err);
+		}
+	}
 
-    // dispatch events
-    event_bus_.dispatch();
+	// dispatch events
+	event_bus_.dispatch();
 
-    return true;
+	return true;
 }
 
 auto engine::app::setup_log() -> result<> {
-    spdlog::set_pattern(empty_format);
-    const auto version_str = std::format("{}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
-    SPDLOG_INFO(std::vformat(banner, std::make_format_args(version_str)));
+	spdlog::set_pattern(empty_format);
+	const auto version_str = std::format("{}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
+	SPDLOG_INFO(std::vformat(banner, std::make_format_args(version_str)));
 
-    spdlog::set_pattern(color_line_format);
-    SetTraceLogCallback(log_callback);
+	spdlog::set_pattern(color_line_format);
+	SetTraceLogCallback(log_callback);
 
 #ifdef NDEBUG
-    spdlog::set_level(spdlog::level::err);
-    SetTraceLogLevel(LOG_ERROR);
+	spdlog::set_level(spdlog::level::err);
+	SetTraceLogLevel(LOG_ERROR);
 #else
-    spdlog::set_level(spdlog::level::debug);
-    SetTraceLogLevel(LOG_DEBUG);
+	spdlog::set_level(spdlog::level::debug);
+	SetTraceLogLevel(LOG_DEBUG);
 #endif
-    return true;
+	return true;
 }
 
 void engine::app::log_callback(const int log_level, const char *text, va_list args) {
-    constexpr std::size_t initial_size = 1024;
+	constexpr std::size_t initial_size = 1024;
 
-    // One buffer per thread, reused across calls
-    thread_local std::vector<char> buffer(initial_size);
+	// One buffer per thread, reused across calls
+	thread_local std::vector<char> buffer(initial_size);
 
-    va_list args_copy{};      // NOLINT(*-pro-type-vararg)
-    va_copy(args_copy, args); // NOLINT(*-pro-bounds-array-to-pointer-decay)
-    int const needed =
-        std::vsnprintf(buffer.data(), buffer.size(), text, args_copy); // NOLINT(*-pro-bounds-array-to-pointer-decay)
-    va_end(args_copy);                                                 // NOLINT(*-pro-bounds-array-to-pointer-decay)
+	va_list args_copy{};	  // NOLINT(*-pro-type-vararg)
+	va_copy(args_copy, args); // NOLINT(*-pro-bounds-array-to-pointer-decay)
+	int const needed =
+		std::vsnprintf(buffer.data(), buffer.size(), text, args_copy); // NOLINT(*-pro-bounds-array-to-pointer-decay)
+	va_end(args_copy);												   // NOLINT(*-pro-bounds-array-to-pointer-decay)
 
-    if(needed < 0) {
-        SPDLOG_ERROR("[raylib] log formatting error in log callback");
-        return;
-    }
+	if(needed < 0) {
+		SPDLOG_ERROR("[raylib] log formatting error in log callback");
+		return;
+	}
 
-    if(static_cast<std::size_t>(needed) >= buffer.size()) {
-        // Grow once (or very rarely)
-        buffer.resize(static_cast<std::size_t>(needed) + 1);
-        std::vsnprintf(buffer.data(), buffer.size(), text, args);
-    }
+	if(static_cast<std::size_t>(needed) >= buffer.size()) {
+		// Grow once (or very rarely)
+		buffer.resize(static_cast<std::size_t>(needed) + 1);
+		std::vsnprintf(buffer.data(), buffer.size(), text, args);
+	}
 
-    spdlog::level::level_enum level = spdlog::level::info;
-    switch(log_level) {
-    case LOG_TRACE:
-        level = spdlog::level::trace;
-        break;
-    case LOG_DEBUG:
-        level = spdlog::level::debug;
-        break;
-    case LOG_INFO:
-        level = spdlog::level::info;
-        break;
-    case LOG_WARNING:
-        level = spdlog::level::warn;
-        break;
-    case LOG_ERROR:
-        level = spdlog::level::err;
-        break;
-    case LOG_FATAL:
-        level = spdlog::level::critical;
-        break;
-    default:
-        break;
-    }
+	spdlog::level::level_enum level = spdlog::level::info;
+	switch(log_level) {
+	case LOG_TRACE:
+		level = spdlog::level::trace;
+		break;
+	case LOG_DEBUG:
+		level = spdlog::level::debug;
+		break;
+	case LOG_INFO:
+		level = spdlog::level::info;
+		break;
+	case LOG_WARNING:
+		level = spdlog::level::warn;
+		break;
+	case LOG_ERROR:
+		level = spdlog::level::err;
+		break;
+	case LOG_FATAL:
+		level = spdlog::level::critical;
+		break;
+	default:
+		break;
+	}
 
-    spdlog::log(level, "[raylib] {}", buffer.data());
+	spdlog::log(level, "[raylib] {}", buffer.data());
 }
 
 auto engine::app::draw() const -> result<> {
-    BeginDrawing();
-    ClearBackground(Color{.r = 20, .g = 49, .b = 59, .a = 255});
+	BeginDrawing();
+	ClearBackground(Color{.r = 20, .g = 49, .b = 59, .a = 255});
 
-    // draw scenes
-    for(const auto &info: scenes_) {
-        if(!info.visible) {
-            continue;
-        }
-        if(const auto err = info.scene_ptr->draw().ko(); err) {
-            return error(std::format("Failed to draw scene with id: {} name:", info.id, info.name), *err);
-        }
-    }
+	// draw scenes
+	for(const auto &info: scenes_) {
+		if(!info.visible) {
+			continue;
+		}
+		if(const auto err = info.scene_ptr->draw().ko(); err) {
+			return error(std::format("Failed to draw scene with id: {} name:", info.id, info.name), *err);
+		}
+	}
 
-    EndDrawing();
-    return true;
+	EndDrawing();
+	return true;
 }
 auto engine::app::set_default_font(const std::string &path, const int size, const int texture_filter) -> result<> {
-    if(std::ifstream const font_file(path); !font_file.is_open()) {
-        return error(std::format("Can not load  font file: {}", path));
-    }
+	if(std::ifstream const font_file(path); !font_file.is_open()) {
+		return error(std::format("Can not load  font file: {}", path));
+	}
 
-    if(custom_default_font_) {
-        SPDLOG_DEBUG("unloading previous custom default font");
-        UnloadFont(default_font_);
-        custom_default_font_ = false;
-    }
+	if(custom_default_font_) {
+		SPDLOG_DEBUG("unloading previous custom default font");
+		UnloadFont(default_font_);
+		custom_default_font_ = false;
+	}
 
-    const auto font = LoadFontEx(path.c_str(), size, nullptr, 0);
-    set_default_font(font, size, texture_filter);
+	const auto font = LoadFontEx(path.c_str(), size, nullptr, 0);
+	set_default_font(font, size, texture_filter);
 
-    custom_default_font_ = true;
-    SPDLOG_DEBUG("Set default font to {}", path);
-    return true;
+	custom_default_font_ = true;
+	SPDLOG_DEBUG("Set default font to {}", path);
+	return true;
 }
 auto engine::app::load_sound(const std::string &name, const std::string &path) -> result<> {
-    if(std::ifstream const font_file(path); !font_file.is_open()) {
-        return error(std::format("can not load  font file: {}", path));
-    }
+	if(std::ifstream const font_file(path); !font_file.is_open()) {
+		return error(std::format("can not load  font file: {}", path));
+	}
 
-    if(sounds_.contains(name)) {
-        return error(std::format("sound with name {} is already loaded", name));
-    }
+	if(sounds_.contains(name)) {
+		return error(std::format("sound with name {} is already loaded", name));
+	}
 
-    Sound const sound = LoadSound(path.c_str());
+	Sound const sound = LoadSound(path.c_str());
 
-    if(!IsSoundValid(sound)) {
-        return error(std::format("sound not valid from path: {}", path));
-    }
+	if(!IsSoundValid(sound)) {
+		return error(std::format("sound not valid from path: {}", path));
+	}
 
-    sounds_.emplace(name, sound);
-    SPDLOG_DEBUG("loaded sound {} from {}", name, path);
+	sounds_.emplace(name, sound);
+	SPDLOG_DEBUG("loaded sound {} from {}", name, path);
 
-    return true;
+	return true;
 }
 
 auto engine::app::unload_sound(const std::string &name) -> result<> {
-    const auto find = sounds_.find(name);
-    if(find == sounds_.end()) {
-        return error(std::format("can't unload sound with name {}, is not loaded", name));
-    }
+	const auto find = sounds_.find(name);
+	if(find == sounds_.end()) {
+		return error(std::format("can't unload sound with name {}, is not loaded", name));
+	}
 
-    UnloadSound(find->second);
-    sounds_.erase(find);
-    SPDLOG_DEBUG("unloaded sound {}", name);
-    return true;
+	UnloadSound(find->second);
+	sounds_.erase(find);
+	SPDLOG_DEBUG("unloaded sound {}", name);
+	return true;
 }
 
 auto engine::app::play_sound(const std::string &name) -> result<> {
-    const auto find = sounds_.find(name);
-    if(find == sounds_.end()) {
-        return error(std::format("can't play sound with name {}, is not loaded", name));
-    }
-    PlaySound(find->second);
-    return true;
+	const auto find = sounds_.find(name);
+	if(find == sounds_.end()) {
+		return error(std::format("can't play sound with name {}, is not loaded", name));
+	}
+	PlaySound(find->second);
+	return true;
 }
 
 auto engine::app::set_default_font(const Font &font, const int size, const int texture_filter) -> void {
-    default_font_ = font;
-    default_font_size_ = size;
-    SetTextureFilter(font.texture, texture_filter);
-    GuiSetFont(default_font_);
-    GuiSetStyle(DEFAULT, TEXT_SIZE, size);
+	default_font_ = font;
+	default_font_size_ = size;
+	SetTextureFilter(font.texture, texture_filter);
+	GuiSetFont(default_font_);
+	GuiSetStyle(DEFAULT, TEXT_SIZE, size);
 }
 
 auto engine::app::init_sound() -> result<> {
-    InitAudioDevice();
-    if(IsAudioDeviceReady()) {
-        sound_initialized_ = true;
-        SPDLOG_INFO("audio device initialized");
-        return true;
-    }
-    return error("failed to initialize audio device");
+	InitAudioDevice();
+	if(IsAudioDeviceReady()) {
+		sound_initialized_ = true;
+		SPDLOG_INFO("audio device initialized");
+		return true;
+	}
+	return error("failed to initialize audio device");
 }
 
 auto engine::app::end_sound() -> result<> {
-    for(const auto &[name, sound]: sounds_) {
-        if(IsSoundPlaying(sound)) {
-            StopSound(sound);
-            SPDLOG_DEBUG("stopped playing sound {}", name);
-        }
-    }
+	for(const auto &[name, sound]: sounds_) {
+		if(IsSoundPlaying(sound)) {
+			StopSound(sound);
+			SPDLOG_DEBUG("stopped playing sound {}", name);
+		}
+	}
 
-    for(const auto &[name, sound]: sounds_) {
-        UnloadSound(sound);
-        SPDLOG_DEBUG("unloaded sound {}", name);
-    }
-    sounds_.clear();
+	for(const auto &[name, sound]: sounds_) {
+		UnloadSound(sound);
+		SPDLOG_DEBUG("unloaded sound {}", name);
+	}
+	sounds_.clear();
 
-    if(sound_initialized_) {
-        CloseAudioDevice();
-        sound_initialized_ = false;
-        SPDLOG_INFO("audio device closed");
-        return true;
-    }
-    SPDLOG_WARN("audio device was not initialized");
-    return true;
+	if(sound_initialized_) {
+		CloseAudioDevice();
+		sound_initialized_ = false;
+		SPDLOG_INFO("audio device closed");
+		return true;
+	}
+	SPDLOG_WARN("audio device was not initialized");
+	return true;
 }
 
 auto engine::app::parse_version(const std::string &path) -> result<version> {
-    std::ifstream const file(path);
-    if(!file.is_open()) {
-        return error(std::format("Version file not found: {}", path));
-    }
+	std::ifstream const file(path);
+	if(!file.is_open()) {
+		return error(std::format("Version file not found: {}", path));
+	}
 
-    std::stringstream buffer;
-    buffer << file.rdbuf();
+	std::stringstream buffer;
+	buffer << file.rdbuf();
 
-    std::error_code error_code;
-    jsoncons::json_decoder<jsoncons::json> decoder;
-    jsoncons::json_stream_reader reader(buffer, decoder);
-    reader.read(error_code);
+	std::error_code error_code;
+	jsoncons::json_decoder<jsoncons::json> decoder;
+	jsoncons::json_stream_reader reader(buffer, decoder);
+	reader.read(error_code);
 
-    if(error_code) {
-        return error(std::format("JSON parse error: {}", error_code.message()));
-    }
+	if(error_code) {
+		return error(std::format("JSON parse error: {}", error_code.message()));
+	}
 
-    const auto &parser = decoder.get_result();
+	const auto &parser = decoder.get_result();
 
-    // NOLINTNEXTLINE(*-pro-bounds-avoid-unchecked-container-access)
-    if(!parser.contains("version") || !parser["version"].is_object()) {
-        return error("Failed to parse version JSON: [\"version\"] field missing or not an object");
-    }
+	// NOLINTNEXTLINE(*-pro-bounds-avoid-unchecked-container-access)
+	if(!parser.contains("version") || !parser["version"].is_object()) {
+		return error("Failed to parse version JSON: [\"version\"] field missing or not an object");
+	}
 
-    const auto &object = parser["version"]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
-    return version{.major = object.get_value_or<int>("major", 0),
-                   .minor = object.get_value_or<int>("minor", 0),
-                   .patch = object.get_value_or<int>("patch", 0),
-                   .build = object.get_value_or<int>("build", 0)};
+	const auto &object = parser["version"]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+	return version{.major = object.get_value_or<int>("major", 0),
+				   .minor = object.get_value_or<int>("minor", 0),
+				   .patch = object.get_value_or<int>("patch", 0),
+				   .build = object.get_value_or<int>("build", 0)};
 }
