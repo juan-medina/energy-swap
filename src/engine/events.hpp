@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "spdlog/spdlog.h"
+
 #include <algorithm>
 #include <functional>
 #include <map>
@@ -55,8 +57,15 @@ public:
 
     template<typename Event>
     auto post(const Event &event) -> void {
+        // Clangd has trouble with std::static_pointer_cast in this context
+        // however it does not error on compilation, nor on runtime
+        // so we just do a empty statement just for the editor
+#ifdef CLANGD_ACTIVE
+        (void)event; // avoid unused variable warning
+#else
         auto blob = std::make_shared<Event>(event);
         queued_.push(queued_item{std::type_index(typeid(Event)), std::static_pointer_cast<void>(blob)});
+#endif
     }
 
     auto dispatch() -> void {
