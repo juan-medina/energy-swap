@@ -3,6 +3,7 @@
 
 #pragma once
 #include "../components/version_display.hpp"
+#include "../events.hpp"
 #include "scene.hpp"
 
 namespace engine {
@@ -29,8 +30,13 @@ public:
     auto layout(Vector2 screen_size) -> void override;
 
 private:
+    std::optional<std::reference_wrapper<app>> app_;
     version_display version_display_;
     static constexpr auto margin = 10.0F;
+    event_bus::token_t click_{0};
+    static auto on_version_click() -> void;
+
+    static auto open_url(const std::string &url) -> result<>;
 };
 
 } // namespace engine

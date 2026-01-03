@@ -3,14 +3,16 @@
 
 #pragma once
 
-#include "ui_component.hpp"
 #include "../scenes/scene.hpp"
+#include "ui_component.hpp"
 
 #include <raylib.h>
 
 #include <array>
 
 namespace engine {
+
+
 
 class version_display: public ui_component {
 public:
@@ -32,7 +34,12 @@ public:
     [[nodiscard]] auto draw() -> result<> override;
 
     auto set_font_size(const float &size) -> void override;
+
+    struct click {};
+
 private:
+    std::optional<std::reference_wrapper<app>> app_;
+
     struct part {
         std::string text;
         Color color;
@@ -55,10 +62,7 @@ private:
     float parts_spacing_ = 0.0F;
     float shadow_offset_ = 0.0F;
 
-    static auto open_url(const std::string &url) -> result<>;
-
     auto draw_parts(Vector2 pos, bool shadow) -> void;
     bool hover_{false};
-
 };
 } // namespace engine

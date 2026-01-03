@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #include "app.hpp"
@@ -133,6 +133,9 @@ auto engine::app::update() -> result<> {
             return error(std::format("Failed to update scene with id: {} name: {}", info.id, info.name), *err);
         }
     }
+
+    // dispatch events
+    event_bus_.dispatch();
 
     return true;
 }

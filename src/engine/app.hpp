@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "events.hpp"
 #include "result.hpp"
 #include "scenes/scene.hpp"
 
@@ -51,6 +52,20 @@ public:
 
     [[nodiscard]] auto get_default_font_size() const -> const int & {
         return default_font_size_;
+    }
+
+    template<typename Event>
+    auto subscribe(std::function<void(const Event &)> handler) -> event_bus::token_t {
+        return event_bus_.subscribe<Event>(std::move(handler));
+    }
+
+    auto unsubscribe(const event_bus::token_t token) -> void {
+        event_bus_.unsubscribe(token);
+    }
+
+    template<typename Event>
+    auto post_event(const Event &event) -> void {
+        event_bus_.post(event);
     }
 
 protected:
@@ -151,6 +166,8 @@ private:
     }
 
     auto set_default_font(const Font &font, int size, int texture_filter = TEXTURE_FILTER_POINT) -> void;
+
+    event_bus event_bus_;
 };
 
 } // namespace engine
