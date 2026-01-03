@@ -45,8 +45,6 @@ public:
 private:
     Font font_{};
     float font_size_ = 20.0F;
-    float parts_spacing_ = font_size_ / 10.0F;
-    float shadow_offset_ = font_size_ / 10.0F * 2.0F;
 };
 
 } // namespace engine
