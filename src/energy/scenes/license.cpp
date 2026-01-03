@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #include "license.hpp"
@@ -10,7 +10,9 @@
 namespace energy {
 
 auto license::init(engine::app &app) -> engine::result<> {
-    app_ = app;
+    if(const auto err = scene::init(app).ko(); err) {
+        return engine::error("Failed to initialize base component", *err);
+    }
 
     SPDLOG_INFO("License scene initialized");
 
@@ -37,6 +39,7 @@ auto license::init(engine::app &app) -> engine::result<> {
     accept_button_.set_position({.x = 0, .y = 0});
     accept_button_.set_size({.width = 100, .height = 40});
 
+    // bind to engine app directly (we have the app param)
     button_click_ = app.bind_event<engine::button::click>(this, &license::on_button_click);
 
     return true;
@@ -44,8 +47,7 @@ auto license::init(engine::app &app) -> engine::result<> {
 
 auto license::end() -> engine::result<> {
     app_->get().unsubscribe(button_click_);
-    app_.reset();
-    return true;
+    return scene::end();
 }
 
 auto license::update(float delta) -> engine::result<> {

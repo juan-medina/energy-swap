@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #include "ui_component.hpp"
@@ -8,22 +8,27 @@
 namespace engine {
 
 auto ui_component::init(app &app) -> result<> {
-    set_font(app.get_default_font());
-    set_font_size(static_cast<float>(app.get_default_font_size()));
+	if(const auto err = component::init(app).ko(); err) {
+		return error("Failed to initialize base component", *err);
+	}
 
-    return true;
+	set_font(app.get_default_font());
+	set_font_size(static_cast<float>(app.get_default_font_size()));
+
+	return true;
 }
 
 auto ui_component::end() -> result<> {
-    return true;
+	// Base component::end will reset the stored app reference.
+	return component::end();
 }
 
 auto ui_component::update(float /*delta*/) -> result<> {
-    return true;
+	return true;
 }
 
 auto ui_component::draw() -> result<> {
-    return true;
+	return true;
 }
 
 } // namespace engine

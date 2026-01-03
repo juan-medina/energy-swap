@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #pragma once
@@ -12,7 +12,7 @@ namespace engine {
 
 class app;
 
-class scene : public component {
+class scene: public component {
 public:
     scene() = default;
     ~scene() override = default;
@@ -25,12 +25,23 @@ public:
     scene(scene &&) noexcept = delete;
     auto operator=(scene &&) noexcept -> scene & = delete;
 
-    [[nodiscard]] auto init(app &app) -> result<> override = 0;
-    [[nodiscard]] auto end() -> result<> override = 0;
+    [[nodiscard]] auto init(app &app) -> result<> override {
+        return component::init(app);
+    }
 
-    [[nodiscard]] auto update(float delta) -> result<> override = 0;
-    [[nodiscard]] auto draw() -> result<> override = 0;
+    [[nodiscard]] auto end() -> result<> override {
+        return component::end();
+    }
 
+    // Default update/draw do nothing and succeed.
+    [[nodiscard]] auto update(float /*delta*/) -> result<> override {
+        return true;
+    }
+    [[nodiscard]] auto draw() -> result<> override {
+        return true;
+    }
+
+    // Scenes must still implement layout.
     virtual auto layout(Vector2 screen_size) -> void = 0;
 };
 } // namespace engine

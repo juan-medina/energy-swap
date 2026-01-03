@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #pragma once
@@ -6,60 +6,79 @@
 #include "../result.hpp"
 #include <raylib.h>
 
+#include <optional>
+#include <functional>
+
 namespace engine {
 
 class app;
 
 struct size {
-    float width{};
-    float height{};
+	float width{};
+	float height{};
 };
 
 class component {
 public:
-    component() = default;
-    virtual ~component() = default;
+	component() = default;
+	virtual ~component() = default;
 
-    // Non-copyable
-    component(const component &) = delete;
-    auto operator=(const component &) -> component & = delete;
+	// Non-copyable
+	component(const component &) = delete;
+	auto operator=(const component &) -> component & = delete;
 
-    // Non-movable
-    component(component &&) noexcept = delete;
-    auto operator=(component &&) noexcept -> component & = delete;
+	// Non-movable
+	component(component &&) noexcept = delete;
+	auto operator=(component &&) noexcept -> component & = delete;
 
-    [[nodiscard]] virtual auto init(app &app) -> result<> = 0;
-    [[nodiscard]] virtual auto end() -> result<> = 0;
+	// Default implementations store / release the app reference.
+	// Subclasses that override should call the base implementation.
+	[[nodiscard]] virtual auto init(app &app) -> result<> {
+		app_ = app;
+		return true;
+	}
+	[[nodiscard]] virtual auto end() -> result<> {
+		app_.reset();
+		return true;
+	}
 
-    [[nodiscard]] virtual auto update(float delta) -> result<> = 0;
-    [[nodiscard]] virtual auto draw() -> result<> = 0;
+	[[nodiscard]] virtual auto update(float /*delta*/) -> result<> {
+	    return true;
+	}
 
-    auto set_position(const Vector2 &pos) -> void {
-        pos_ = pos;
-    }
+	[[nodiscard]] virtual auto draw() -> result<> {
+	    return true;
+	}
 
-    [[nodiscard]] auto get_pos() const -> const Vector2 & {
-        return pos_;
-    }
+	auto set_position(const Vector2 &pos) -> void {
+		pos_ = pos;
+	}
 
-    auto set_size(const size &size) -> void {
-        size_ = size;
-    }
+	[[nodiscard]] auto get_pos() const -> const Vector2 & {
+		return pos_;
+	}
 
-    [[nodiscard]] auto get_size() const -> const size & {
-        return size_;
-    }
+	auto set_size(const size &size) -> void {
+		size_ = size;
+	}
 
-    static auto point_inside(const Vector2 pos, const size size, const Vector2 point) -> bool {
-        return CheckCollisionPointRec(point, {.x = pos.x, .y = pos.y, .width = size.width, .height = size.height});
-    }
+	[[nodiscard]] auto get_size() const -> const size & {
+		return size_;
+	}
 
-    [[nodiscard]] auto point_inside(const Vector2 point) const -> bool {
-        return point_inside(pos_, size_, point);
-    }
+	static auto point_inside(const Vector2 pos, const size size, const Vector2 point) -> bool {
+		return CheckCollisionPointRec(point, {.x = pos.x, .y = pos.y, .width = size.width, .height = size.height});
+	}
+
+	[[nodiscard]] auto point_inside(const Vector2 point) const -> bool {
+		return point_inside(pos_, size_, point);
+	}
+
+protected:
+	std::optional<std::reference_wrapper<app>> app_;
 
 private:
-    Vector2 pos_{};
-    size size_{};
+	Vector2 pos_{};
+	size size_{};
 };
 } // namespace engine
