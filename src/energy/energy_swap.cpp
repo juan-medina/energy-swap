@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #include "energy_swap.hpp"
@@ -11,6 +11,8 @@ auto energy::energy_swap::init() -> engine::result<> {
 	if(const auto err = app::init().ko(); err) {
 		return engine::error{"failed to initialize base app", *err};
 	}
+
+	set_clear_color(clear_color);
 
 	if(const auto err = set_default_font(font_path, font_size).ko(); err) {
 		return engine::error{"failed to set default font", *err};

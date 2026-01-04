@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #pragma once
@@ -87,6 +87,10 @@ protected:
 	[[nodiscard]] virtual auto update() -> result<>;
 	[[nodiscard]] virtual auto draw() const -> result<>;
 
+	auto set_clear_color(const Color &color) -> void {
+		clear_color_ = color;
+	}
+
 	template<typename T>
 		requires std::is_base_of_v<scene, T>
 	auto register_scene(int layer = 0, bool visible = true) -> int {
@@ -156,6 +160,8 @@ private:
 	Vector2 screen_size_{};
 	static constexpr auto version_file_path = "resources/version/version.json";
 	version version_{};
+
+	Color clear_color_ = WHITE;
 
 	[[nodiscard]] auto setup_log() -> result<>;
 	[[nodiscard]] static auto parse_version(const std::string &path) -> result<version>;

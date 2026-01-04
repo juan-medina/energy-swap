@@ -218,7 +218,7 @@ void engine::app::log_callback(const int log_level, const char *text, va_list ar
 
 auto engine::app::draw() const -> result<> {
 	BeginDrawing();
-	ClearBackground(Color{.r = 20, .g = 49, .b = 59, .a = 255});
+	ClearBackground(clear_color_);
 
 	// draw scenes
 	for(const auto &info: scenes_) {
