@@ -93,7 +93,7 @@ protected:
 
 	template<typename T>
 		requires std::is_base_of_v<scene, T>
-	auto register_scene(int layer = 0, bool visible = true) -> int {
+	auto register_scene(int layer = 0, const bool visible = true) -> int {
 		int scene_id = ++last_scene_id_;
 
 		std::string name;
@@ -111,6 +111,12 @@ protected:
 			.id = scene_id, .name = name, .scene_ptr = std::make_unique<T>(), .layer = layer, .visible = visible});
 		sort_scenes();
 		return scene_id;
+	}
+
+	template<typename T>
+		requires std::is_base_of_v<scene, T>
+	auto register_scene(const bool visible) -> int {
+		return register_scene<T>(0, visible);
 	}
 
 	auto unregister_scene(const int scene_id) -> result<> {

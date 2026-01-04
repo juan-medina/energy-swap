@@ -4,6 +4,7 @@
 #include "energy_swap.hpp"
 
 #include "scenes/license.hpp"
+#include "scenes/menu.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -19,6 +20,7 @@ auto energy::energy_swap::init() -> engine::result<> {
 	}
 
 	license_scene_ = register_scene<license>();
+	menu_scene_ = register_scene<menu>(false);
 
 	license_accepted_ = on_event<license::accepted>(this, &energy_swap::on_license_accepted);
 
@@ -36,4 +38,5 @@ auto energy::energy_swap::end() -> engine::result<> {
 
 auto energy::energy_swap::on_license_accepted() -> void {
 	enable_scene(license_scene_, false);
+	enable_scene(menu_scene_, true);
 }

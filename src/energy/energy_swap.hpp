@@ -33,6 +33,8 @@ private:
 	int license_scene_{-1};
 	engine::event_bus::token_t license_accepted_{0};
 
+	int menu_scene_{-1};
+
 	static constexpr auto click_sound_path = "resources/sounds/click.wav";
 	static constexpr auto click_sound = "click";
 };
