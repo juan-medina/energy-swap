@@ -137,6 +137,9 @@ auto engine::app::update() -> result<> {
 
 	// update scenes
 	for(auto &info: scenes_) {
+		if(!info.visible) {
+			continue;
+		}
 		if(const auto err = info.scene_ptr->update(GetFrameTime()).ko(); err) {
 			return error(std::format("failed to update scene with id: {} name: {}", info.id, info.name), *err);
 		}
@@ -144,6 +147,8 @@ auto engine::app::update() -> result<> {
 
 	// dispatch events
 	event_bus_.dispatch();
+
+	update_music_stream();
 
 	return true;
 }
@@ -253,7 +258,7 @@ auto engine::app::set_default_font(const std::string &path, const int size, cons
 }
 auto engine::app::load_sound(const std::string &name, const std::string &path) -> result<> {
 	if(std::ifstream const font_file(path); !font_file.is_open()) {
-		return error(std::format("can not load  font file: {}", path));
+		return error(std::format("can not load sound file: {}", path));
 	}
 
 	if(sounds_.contains(name)) {
@@ -281,6 +286,42 @@ auto engine::app::unload_sound(const std::string &name) -> result<> {
 	UnloadSound(find->second);
 	sounds_.erase(find);
 	SPDLOG_DEBUG("unloaded sound {}", name);
+	return true;
+}
+
+auto engine::app::play_music(const std::string &path, bool loop) -> result<> {
+	if(std::ifstream const font_file(path); !font_file.is_open()) {
+		return error(std::format("can not load music file: {}", path));
+	}
+
+	if(music_playing_) {
+		if(const auto err = stop_music().ko(); err) {
+			return error("failed to stop previous music", *err);
+		}
+	}
+
+	background_music_ = LoadMusicStream(path.c_str());
+
+	if(!IsMusicValid(background_music_)) {
+		return error(std::format("music stream not valid from path: {}", path));
+	}
+	background_music_.looping = loop;
+	PlayMusicStream(background_music_);
+	music_playing_ = true;
+	SPDLOG_DEBUG("playing music from {}", path);
+	return true;
+}
+
+auto engine::app::stop_music() -> result<> {
+	if(!music_playing_) {
+		return error("previous music is not playing");
+	}
+
+	StopMusicStream(background_music_);
+	UnloadMusicStream(background_music_);
+	music_playing_ = false;
+	background_music_ = Music{};
+	SPDLOG_DEBUG("stopped music");
 	return true;
 }
 
@@ -325,6 +366,12 @@ auto engine::app::end_sound() -> result<> {
 	}
 	sounds_.clear();
 
+	if(music_playing_) {
+		if(const auto err = stop_music().ko(); err) {
+			return error("failed to stop music during app end", *err);
+		}
+	}
+
 	if(sound_initialized_) {
 		CloseAudioDevice();
 		sound_initialized_ = false;
@@ -333,6 +380,11 @@ auto engine::app::end_sound() -> result<> {
 	}
 	SPDLOG_WARN("audio device was not initialized");
 	return true;
+}
+auto engine::app::update_music_stream() const -> void {
+	if(music_playing_) {
+		UpdateMusicStream(background_music_);
+	}
 }
 
 auto engine::app::parse_version(const std::string &path) -> result<version> {

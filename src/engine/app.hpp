@@ -141,7 +141,7 @@ protected:
 		});
 	}
 
-	auto enable_scene(const int scene_id, bool enabled = true) -> result<> {
+	[[nodiscard]] auto enable_scene(const int scene_id, const bool enabled = true) -> result<> {
 		if(auto [scene_info_res, error] = find_scene_info(scene_id).ok(); !error) {
 			scene_info_res->get().visible = enabled;
 			return true;
@@ -149,11 +149,18 @@ protected:
 		return error(std::format("scene with id {} not found", scene_id));
 	}
 
+	[[nodiscard]] auto disable_scene(const int scene_id, const bool disabled = true) -> result<> {
+		return enable_scene(scene_id, !disabled);
+	}
+
 	[[nodiscard]] auto set_default_font(const std::string &path, int size, int texture_filter = TEXTURE_FILTER_POINT)
 		-> result<>;
 
 	[[nodiscard]] auto load_sound(const std::string &name, const std::string &path) -> result<>;
 	[[nodiscard]] auto unload_sound(const std::string &name) -> result<>;
+
+	[[nodiscard]] auto play_music(const std::string &path, bool loop = true) -> result<>;
+	[[nodiscard]] auto stop_music() -> result<>;
 
 private:
 	Font default_font_{};
@@ -201,6 +208,11 @@ private:
 	bool sound_initialized_{false};
 
 	std::map<std::string, Sound> sounds_;
+
+	Music background_music_{};
+	bool music_playing_{false};
+
+	auto update_music_stream() const -> void;
 };
 
 } // namespace engine

@@ -37,6 +37,16 @@ auto energy::energy_swap::end() -> engine::result<> {
 }
 
 auto energy::energy_swap::on_license_accepted() -> void {
-	enable_scene(license_scene_, false);
-	enable_scene(menu_scene_, true);
+	auto err = disable_scene(license_scene_).ko();
+	if(err) {
+		SPDLOG_ERROR("fail to disable license scene");
+	}
+
+	if(err = enable_scene(menu_scene_).ko(); err) {
+		SPDLOG_ERROR("fail to enable menu scene");
+	}
+
+	if(err = play_music("resources/music/menu.ogg").ko(); err) {
+		SPDLOG_ERROR("fail to play menu music");
+	}
 }
