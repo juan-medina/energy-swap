@@ -33,6 +33,8 @@ public:
 	auto layout(Vector2 screen_size) -> void override;
 
 private:
+	static constexpr auto large_font_size = 40;
+
 	engine::button play_button_;
 	engine::event_bus::token_t button_click_{0};
 

@@ -156,6 +156,10 @@ protected:
 	[[nodiscard]] auto set_default_font(const std::string &path, int size, int texture_filter = TEXTURE_FILTER_POINT)
 		-> result<>;
 
+	auto set_default_font_size(int size) -> void {
+		default_font_size_ = size;
+	}
+
 	[[nodiscard]] auto load_sound(const std::string &name, const std::string &path) -> result<>;
 	[[nodiscard]] auto unload_sound(const std::string &name) -> result<>;
 

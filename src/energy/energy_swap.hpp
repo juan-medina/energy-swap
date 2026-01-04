@@ -26,7 +26,8 @@ protected:
 
 private:
 	static constexpr auto font_path = "resources/fonts/PixeloidSans-mLxMm.ttf";
-	static constexpr auto font_size = 20;
+	static constexpr auto load_font_size = 40;
+	static constexpr auto default_font_size = 20;
 	static constexpr Color clear_color = Color{.r = 20, .g = 49, .b = 59, .a = 255};
 
 	auto on_license_accepted() -> void;
