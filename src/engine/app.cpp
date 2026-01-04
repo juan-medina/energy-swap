@@ -63,7 +63,7 @@ auto engine::app::init_scenes() -> result<> {
 	SPDLOG_INFO("init scenes");
 	for(auto &info: scenes_) {
 		if(const auto err = info.scene_ptr->init(*this).ko(); err) {
-			return error(std::format("Failed to initialize scene with id: {} name: {}", info.id, info.name), *err);
+			return error(std::format("failed to initialize scene with id: {} name: {}", info.id, info.name), *err);
 		}
 		SPDLOG_DEBUG("initialized scene with id: {} name: {}", info.id, info.name);
 	}
@@ -76,7 +76,7 @@ auto engine::app::end() -> result<> {
 	for(auto &info: scenes_) {
 		if(info.scene_ptr) {
 			if(const auto err = info.scene_ptr->end().ko(); err) {
-				return error(std::format("Error ending scene with id: {} name: {}", info.id, info.name), *err);
+				return error(std::format("error ending scene with id: {} name: {}", info.id, info.name), *err);
 			}
 			SPDLOG_DEBUG("end scene with id: {} name: {}", info.id, info.name);
 			info.scene_ptr.reset();
@@ -138,7 +138,7 @@ auto engine::app::update() -> result<> {
 	// update scenes
 	for(auto &info: scenes_) {
 		if(const auto err = info.scene_ptr->update(GetFrameTime()).ko(); err) {
-			return error(std::format("Failed to update scene with id: {} name: {}", info.id, info.name), *err);
+			return error(std::format("failed to update scene with id: {} name: {}", info.id, info.name), *err);
 		}
 	}
 
@@ -226,7 +226,7 @@ auto engine::app::draw() const -> result<> {
 			continue;
 		}
 		if(const auto err = info.scene_ptr->draw().ko(); err) {
-			return error(std::format("Failed to draw scene with id: {} name:", info.id, info.name), *err);
+			return error(std::format("failed to draw scene with id: {} name:", info.id, info.name), *err);
 		}
 	}
 
@@ -235,7 +235,7 @@ auto engine::app::draw() const -> result<> {
 }
 auto engine::app::set_default_font(const std::string &path, const int size, const int texture_filter) -> result<> {
 	if(std::ifstream const font_file(path); !font_file.is_open()) {
-		return error(std::format("Can not load  font file: {}", path));
+		return error(std::format("can not load  font file: {}", path));
 	}
 
 	if(custom_default_font_) {
@@ -248,7 +248,7 @@ auto engine::app::set_default_font(const std::string &path, const int size, cons
 	set_default_font(font, size, texture_filter);
 
 	custom_default_font_ = true;
-	SPDLOG_DEBUG("Set default font to {}", path);
+	SPDLOG_DEBUG("set default font to {}", path);
 	return true;
 }
 auto engine::app::load_sound(const std::string &name, const std::string &path) -> result<> {
@@ -338,7 +338,7 @@ auto engine::app::end_sound() -> result<> {
 auto engine::app::parse_version(const std::string &path) -> result<version> {
 	std::ifstream const file(path);
 	if(!file.is_open()) {
-		return error(std::format("Version file not found: {}", path));
+		return error(std::format("version file not found: {}", path));
 	}
 
 	std::stringstream buffer;
@@ -357,7 +357,7 @@ auto engine::app::parse_version(const std::string &path) -> result<version> {
 
 	// NOLINTNEXTLINE(*-pro-bounds-avoid-unchecked-container-access)
 	if(!parser.contains("version") || !parser["version"].is_object()) {
-		return error("Failed to parse version JSON: [\"version\"] field missing or not an object");
+		return error("failed to parse version JSON: [\"version\"] field missing or not an object");
 	}
 
 	const auto &object = parser["version"]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)

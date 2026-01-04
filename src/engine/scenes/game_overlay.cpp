@@ -95,7 +95,7 @@ auto game_overlay::open_url(const std::string &url) -> result<> {
 	if(pid > 0) {
 		return true;
 	}
-	return error("Failed to fork process to open URL");
+	return error("failed to fork process to open URL");
 #elif defined(__EMSCRIPTEN__)
 	using emscripten::val;
 

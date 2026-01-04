@@ -14,7 +14,7 @@ namespace engine {
 
 auto scroll_text::init(app &app) -> result<> {
 	if(const auto err = ui_component::init(app).ko(); err) {
-		return error("Failed to initialize base UI component", *err);
+		return error("failed to initialize base UI component", *err);
 	}
 	return true;
 }
@@ -27,7 +27,7 @@ auto scroll_text::end() -> result<> {
 auto scroll_text::update(float delta) -> result<> {
 	// Let base UI component run its update behavior first.
 	if(const auto err = ui_component::update(delta).ko(); err) {
-		return error("Failed to update base UI component", *err);
+		return error("failed to update base UI component", *err);
 	}
 
 	return true;
@@ -36,7 +36,7 @@ auto scroll_text::update(float delta) -> result<> {
 auto scroll_text::draw() -> result<> {
 	// Allow base to perform any draw-side work first.
 	if(const auto err = ui_component::draw().ko(); err) {
-		return error("Failed to draw base UI component", *err);
+		return error("failed to draw base UI component", *err);
 	}
 
 	GuiSetFont(get_font());

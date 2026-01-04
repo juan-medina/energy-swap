@@ -9,7 +9,7 @@ namespace engine {
 
 auto ui_component::init(app &app) -> result<> {
 	if(const auto err = component::init(app).ko(); err) {
-		return error("Failed to initialize base component", *err);
+		return error("failed to initialize base component", *err);
 	}
 
 	set_font(app.get_default_font());

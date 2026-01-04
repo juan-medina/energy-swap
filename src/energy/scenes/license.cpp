@@ -11,18 +11,18 @@ namespace energy {
 
 auto license::init(engine::app &app) -> engine::result<> {
 	if(const auto err = scene::init(app).ko(); err) {
-		return engine::error("Failed to initialize base component", *err);
+		return engine::error("failed to initialize base component", *err);
 	}
 
-	SPDLOG_INFO("License scene initialized");
+	SPDLOG_INFO("license scene initialized");
 
 	if(const auto err = scroll_text_.init(app).ko(); err) {
-		return engine::error("Failed to initialize scroll text component", *err);
+		return engine::error("failed to initialize scroll text component", *err);
 	}
 
 	char *text = nullptr;
 	if(text = LoadFileText(license_path); text == nullptr) {
-		return engine::error(std::format("Failed to load license file from {}", license_path));
+		return engine::error(std::format("failed to load license file from {}", license_path));
 	}
 
 	scroll_text_.set_text(text);

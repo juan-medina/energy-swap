@@ -115,14 +115,14 @@ protected:
 		if(find != scenes_.end()) {
 			if(find->scene_ptr) {
 				if(const auto err = find->scene_ptr->end().ko(); err) {
-					return error(std::format("Error ending scene with id: {} name: {}", scene_id, find->name), *err);
+					return error(std::format("error ending scene with id: {} name: {}", scene_id, find->name), *err);
 				}
 				find->scene_ptr.reset();
 			}
 			scenes_.erase(find);
 			return true;
 		}
-		return error(std::format("Scene with id {} not found", scene_id));
+		return error(std::format("scene with id {} not found", scene_id));
 	}
 
 	auto sort_scenes() -> void {
@@ -136,7 +136,7 @@ protected:
 			scene_info_res->get().visible = enabled;
 			return true;
 		}
-		return error(std::format("Scene with id {} not found", scene_id));
+		return error(std::format("scene with id {} not found", scene_id));
 	}
 
 	[[nodiscard]] auto set_default_font(const std::string &path, int size, int texture_filter = TEXTURE_FILTER_POINT)
@@ -177,7 +177,7 @@ private:
 				return std::ref(scene_info);
 			}
 		}
-		return error(std::format("Scene with id {} not found", scene_id));
+		return error(std::format("scene with id {} not found", scene_id));
 	}
 
 	auto set_default_font(const Font &font, int size, int texture_filter = TEXTURE_FILTER_POINT) -> void;

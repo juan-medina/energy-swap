@@ -22,11 +22,11 @@
 		}
 		return EXIT_SUCCESS;
 	} catch(const std::exception &e) {
-		std::fputs("Unhandled exception in main: ", stderr);
+		std::fputs("unhandled exception in main: ", stderr);
 		std::fputs(e.what(), stderr);
 		std::fputc('\n', stderr);
 	} catch(...) {
-		std::fputs("Unhandled non-standard exception in main\n", stderr);
+		std::fputs("unhandled non-standard exception in main\n", stderr);
 	}
 	return EXIT_FAILURE;
 }
