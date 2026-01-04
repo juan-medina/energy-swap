@@ -46,7 +46,7 @@ auto energy::energy_swap::on_license_accepted() -> void {
 		SPDLOG_ERROR("fail to enable menu scene");
 	}
 
-	if(err = play_music("resources/music/menu.ogg").ko(); err) {
+	if(err = play_music("resources/music/menu.ogg", 0.5F).ko(); err) {
 		SPDLOG_ERROR("fail to play menu music");
 	}
 }

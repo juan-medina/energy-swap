@@ -289,7 +289,7 @@ auto engine::app::unload_sound(const std::string &name) -> result<> {
 	return true;
 }
 
-auto engine::app::play_music(const std::string &path, bool loop) -> result<> {
+auto engine::app::play_music(const std::string &path, const float volume /* - 1.0F*/) -> result<> {
 	if(std::ifstream const font_file(path); !font_file.is_open()) {
 		return error(std::format("can not load music file: {}", path));
 	}
@@ -305,8 +305,9 @@ auto engine::app::play_music(const std::string &path, bool loop) -> result<> {
 	if(!IsMusicValid(background_music_)) {
 		return error(std::format("music stream not valid from path: {}", path));
 	}
-	background_music_.looping = loop;
+	background_music_.looping = true;
 	PlayMusicStream(background_music_);
+	SetMusicVolume(background_music_, volume);
 	music_playing_ = true;
 	SPDLOG_DEBUG("playing music from {}", path);
 	return true;
@@ -325,12 +326,15 @@ auto engine::app::stop_music() -> result<> {
 	return true;
 }
 
-auto engine::app::play_sound(const std::string &name) -> result<> {
+auto engine::app::play_sound(const std::string &name, const float volume /*= 1.0F*/) -> result<> {
 	const auto find = sounds_.find(name);
 	if(find == sounds_.end()) {
 		return error(std::format("can't play sound with name {}, is not loaded", name));
 	}
-	PlaySound(find->second);
+	auto &sound = find->second;
+	SetSoundPitch(sound, volume);
+	PlaySound(sound);
+
 	return true;
 }
 

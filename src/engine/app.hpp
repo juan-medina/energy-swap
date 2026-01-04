@@ -78,7 +78,7 @@ public:
 		event_bus_.post(event);
 	}
 
-	[[nodiscard]] auto play_sound(const std::string &name) -> result<>;
+	[[nodiscard]] auto play_sound(const std::string &name, float volume = 1.0F) -> result<>;
 
 protected:
 	[[nodiscard]] virtual auto init() -> result<>;
@@ -159,7 +159,7 @@ protected:
 	[[nodiscard]] auto load_sound(const std::string &name, const std::string &path) -> result<>;
 	[[nodiscard]] auto unload_sound(const std::string &name) -> result<>;
 
-	[[nodiscard]] auto play_music(const std::string &path, bool loop = true) -> result<>;
+	[[nodiscard]] auto play_music(const std::string &path, float volume = 1.0F) -> result<>;
 	[[nodiscard]] auto stop_music() -> result<>;
 
 private:
