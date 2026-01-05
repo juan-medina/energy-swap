@@ -22,7 +22,7 @@ auto menu::init(engine::app &app) -> engine::result<> {
 
 	play_button_.set_text("Play!");
 	play_button_.set_position({.x = 0, .y = 0});
-	play_button_.set_size({.width = 100, .height = 40});
+	play_button_.set_size({.width = 80, .height = 35});
 	play_button_.set_font_size(large_font_size);
 
 	button_click_ = app.bind_event<engine::button::click>(this, &menu::on_button_click);

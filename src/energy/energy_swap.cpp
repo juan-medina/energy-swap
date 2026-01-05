@@ -15,10 +15,9 @@ auto energy::energy_swap::init() -> engine::result<> {
 
 	set_clear_color(clear_color);
 
-	if(const auto err = set_default_font(font_path, load_font_size).ko(); err) {
+	if(const auto err = set_default_font(font_path).ko(); err) {
 		return engine::error{"failed to set default font", *err};
 	}
-	set_default_font_size(default_font_size);
 
 	license_scene_ = register_scene<license>();
 	menu_scene_ = register_scene<menu>(false);

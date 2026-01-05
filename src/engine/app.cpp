@@ -247,6 +247,7 @@ auto engine::app::draw() const -> result<> {
 	return true;
 }
 auto engine::app::set_default_font(const std::string &path, const int size, const int texture_filter) -> result<> {
+	auto font_size = size;
 	if(std::ifstream const font_file(path); !font_file.is_open()) {
 		return error(std::format("can not load  font file: {}", path));
 	}
@@ -257,8 +258,12 @@ auto engine::app::set_default_font(const std::string &path, const int size, cons
 		custom_default_font_ = false;
 	}
 
-	const auto font = LoadFontEx(path.c_str(), size, nullptr, 0);
-	set_default_font(font, size, texture_filter);
+	const auto font = LoadFontEx(path.c_str(), font_size, nullptr, 0);
+	if(font_size == 0) {
+		font_size = font.baseSize;
+	}
+
+	set_default_font(font, font_size, texture_filter);
 
 	custom_default_font_ = true;
 	SPDLOG_DEBUG("set default font to {}", path);

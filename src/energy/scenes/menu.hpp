@@ -38,7 +38,7 @@ private:
 	engine::size logo_size_{};
 	Vector2 logo_position_{};
 
-	static constexpr auto large_font_size = 24;
+	static constexpr auto large_font_size = 20;
 
 	engine::button play_button_;
 	engine::event_bus::token_t button_click_{0};

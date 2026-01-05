@@ -154,8 +154,8 @@ protected:
 		return enable_scene(scene_id, !disabled);
 	}
 
-	[[nodiscard]] auto set_default_font(const std::string &path, int size, int texture_filter = TEXTURE_FILTER_POINT)
-		-> result<>;
+	[[nodiscard]] auto
+	set_default_font(const std::string &path, int size = 0, int texture_filter = TEXTURE_FILTER_POINT) -> result<>;
 
 	auto set_default_font_size(int size) -> void {
 		default_font_size_ = size;

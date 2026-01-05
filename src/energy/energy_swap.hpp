@@ -25,9 +25,7 @@ protected:
 	[[nodiscard]] auto end() -> engine::result<> override;
 
 private:
-	static constexpr auto font_path = "resources/fonts/PixeloidSans-mLxMm.ttf";
-	static constexpr auto default_font_size = 12;
-	static constexpr auto load_font_size = default_font_size * 4;
+	static constexpr auto font_path = "resources/fonts/PixeloidSans_16.fnt";
 	static constexpr Color clear_color = Color{.r = 20, .g = 49, .b = 59, .a = 255};
 
 	auto on_license_accepted() -> void;
