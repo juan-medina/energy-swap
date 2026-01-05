@@ -231,6 +231,7 @@ auto engine::app::draw() const -> result<> {
 			return error(std::format("failed to draw scene with id: {} name:", info.id, info.name), *err);
 		}
 	}
+
 	EndTextureMode();
 	BeginDrawing();
 	ClearBackground(BLACK);

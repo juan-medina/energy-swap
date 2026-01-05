@@ -27,11 +27,13 @@ auto menu::init(engine::app &app) -> engine::result<> {
 
 	button_click_ = app.bind_event<engine::button::click>(this, &menu::on_button_click);
 
-	if(const auto err = logo_.init("resources/logo.png").ko(); err) {
-		return engine::error("failed to initialize logo texture", *err);
+	if(const auto err = title_.init(app).ko(); err) {
+		return engine::error("failed to initialize title label", *err);
 	}
 
-	logo_size_ = logo_.get_size();
+	title_.set_text("Energy Swap");
+	title_.set_font_size(60);
+
 	return true;
 }
 
@@ -40,7 +42,7 @@ auto menu::end() -> engine::result<> {
 		return engine::error("failed to end play button component", *err);
 	}
 
-	if(const auto err = logo_.end().ko(); err) {
+	if(const auto err = title_.end().ko(); err) {
 		return engine::error("failed to end logo texture", *err);
 	}
 
@@ -60,7 +62,7 @@ auto menu::draw() -> engine::result<> {
 		return engine::error("failed to draw play button component", *err);
 	}
 
-	if(const auto err = logo_.draw(logo_position_).ko(); err) {
+	if(const auto err = title_.draw().ko(); err) {
 		return engine::error("failed to draw logo texture", *err);
 	}
 
@@ -68,15 +70,17 @@ auto menu::draw() -> engine::result<> {
 }
 
 auto menu::layout(const engine::size screen_size) -> void {
-	logo_position_ = {
-		.x = (screen_size.width - logo_size_.width) / 2.0F,
-		.y = (screen_size.height * 0.2F) - (logo_size_.height / 2.0F),
-	};
+	const auto [label_width, label_height] = title_.get_size();
+	title_.set_position({
+		.x = (screen_size.width - label_width) / 2.0F,
+		.y = (screen_size.height * 0.2F) - (label_height / 2.0F),
+	});
 
-	const auto [width, height] = play_button_.get_size();
-	const float button_x = (screen_size.width - width) / 2.0F;
-	const float button_y = (screen_size.height - height) / 2.0F;
-	play_button_.set_position({.x = button_x, .y = button_y});
+	const auto [button_width, button_height] = play_button_.get_size();
+	play_button_.set_position({
+		.x = (screen_size.width - button_width) / 2.0F,
+		.y = (screen_size.height - button_height) / 2.0F,
+	});
 }
 
 auto menu::on_button_click(const engine::button::click &evt) const -> void {

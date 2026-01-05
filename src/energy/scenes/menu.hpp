@@ -8,7 +8,7 @@
 #include "../../engine/events.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
-#include "../../engine/render/sprites.hpp"
+#include "../../engine/components/label.hpp"
 
 namespace energy {
 
@@ -34,18 +34,13 @@ public:
 	auto layout(engine::size screen_size) -> void override;
 
 private:
-	engine::texture logo_;
-	engine::size logo_size_{};
-	Vector2 logo_position_{};
-
+	engine::label title_;
 	static constexpr auto large_font_size = 20;
 
 	engine::button play_button_;
 	engine::event_bus::token_t button_click_{0};
 
 	auto on_button_click(const engine::button::click &evt) const -> void;
-
-
 };
 
 } // namespace energy
