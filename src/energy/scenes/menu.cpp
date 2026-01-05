@@ -20,17 +20,30 @@ auto menu::init(engine::app &app) -> engine::result<> {
 		return engine::error("failed to initialize play button component", *err);
 	}
 
-	play_button_.set_text("Play");
+	play_button_.set_text("Play!");
 	play_button_.set_position({.x = 0, .y = 0});
 	play_button_.set_size({.width = 200, .height = 60});
 	play_button_.set_font_size(large_font_size);
 
 	button_click_ = app.bind_event<engine::button::click>(this, &menu::on_button_click);
 
+	if(const auto err = logo_.init("resources/logo.png").ko(); err) {
+		return engine::error("failed to initialize logo texture", *err);
+	}
+
+	logo_size_ = logo_.get_size();
 	return true;
 }
 
 auto menu::end() -> engine::result<> {
+	if(const auto err = play_button_.end().ko(); err) {
+		return engine::error("failed to end play button component", *err);
+	}
+
+	if(const auto err = logo_.end().ko(); err) {
+		return engine::error("failed to end logo texture", *err);
+	}
+
 	get_app().unsubscribe(button_click_);
 	return scene::end();
 }
@@ -46,10 +59,20 @@ auto menu::draw() -> engine::result<> {
 	if(const auto err = play_button_.draw().ko(); err) {
 		return engine::error("failed to draw play button component", *err);
 	}
+
+	if(const auto err = logo_.draw(logo_position_).ko(); err) {
+		return engine::error("failed to draw logo texture", *err);
+	}
+
 	return true;
 }
 
 auto menu::layout(const Vector2 screen_size) -> void {
+	logo_position_ = {
+		.x = (screen_size.x - logo_size_.width) / 2.0F,
+		.y = (screen_size.y * 0.2F) - (logo_size_.height / 2.0F),
+	};
+
 	const auto [width, height] = play_button_.get_size();
 	const float button_x = (screen_size.x - width) / 2.0F;
 	const float button_y = (screen_size.y - height) / 2.0F;
