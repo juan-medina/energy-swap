@@ -22,7 +22,8 @@ namespace engine {
 
 class app {
 public:
-	explicit app(std::string title): title_{std::move(title)} {}
+	explicit app(std::string title, const size design_resolution)
+		: title_{std::move(title)}, design_resolution_(design_resolution) {}
 	virtual ~app() = default;
 
 	// Non-copyable
@@ -174,7 +175,7 @@ private:
 	int last_scene_id_{0};
 
 	std::string title_{"Engine App"};
-	Vector2 screen_size_{};
+	size screen_size_{};
 	static constexpr auto version_file_path = "resources/version/version.json";
 	version version_{};
 
@@ -217,6 +218,13 @@ private:
 	bool music_playing_{false};
 
 	auto update_music_stream() const -> void;
+
+	[[nodiscard]] auto screen_size_changed(size screen_size) -> result<>;
+	size design_resolution_;
+	size drawing_resolution_{};
+	float scale_factor_{1.0F};
+
+	RenderTexture2D render_texture_{};
 };
 
 } // namespace engine

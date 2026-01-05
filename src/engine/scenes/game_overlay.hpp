@@ -27,7 +27,7 @@ public:
 	[[nodiscard]] auto update(float delta) -> result<> override;
 	[[nodiscard]] auto draw() -> result<> override;
 
-	auto layout(Vector2 screen_size) -> void override;
+	auto layout(size screen_size) -> void override;
 
 private:
 	version_display version_display_;

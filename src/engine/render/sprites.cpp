@@ -15,6 +15,7 @@ auto engine::texture::init(const std::string &path) -> result<> {
 		return error(std::format("failed to load texture from file {}", path));
 	}
 
+	SetTextureFilter(texture_, TEXTURE_FILTER_POINT);
 	texture_ = loaded_texture;
 	size_.width = static_cast<float>(loaded_texture.width);
 	size_.height = static_cast<float>(loaded_texture.height);

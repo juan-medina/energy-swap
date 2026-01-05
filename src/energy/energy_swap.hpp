@@ -9,7 +9,7 @@ namespace energy {
 
 class energy_swap: public engine::app {
 public:
-	energy_swap(): app("Energy Swapper") {}
+	energy_swap(): app("Energy Swapper", design_resolution) {}
 	~energy_swap() override = default;
 
 	// Non-copyable
@@ -26,8 +26,8 @@ protected:
 
 private:
 	static constexpr auto font_path = "resources/fonts/PixeloidSans-mLxMm.ttf";
-	static constexpr auto load_font_size = 40;
-	static constexpr auto default_font_size = 20;
+	static constexpr auto default_font_size = 12;
+	static constexpr auto load_font_size = default_font_size * 4;
 	static constexpr Color clear_color = Color{.r = 20, .g = 49, .b = 59, .a = 255};
 
 	auto on_license_accepted() -> void;
@@ -38,6 +38,8 @@ private:
 
 	static constexpr auto click_sound_path = "resources/sounds/click.wav";
 	static constexpr auto click_sound = "click";
+
+	static constexpr engine::size design_resolution{.width = 640, .height = 360};
 };
 
 } // namespace energy

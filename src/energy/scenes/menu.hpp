@@ -31,14 +31,14 @@ public:
 	[[nodiscard]] auto update(float delta) -> engine::result<> override;
 	[[nodiscard]] auto draw() -> engine::result<> override;
 
-	auto layout(Vector2 screen_size) -> void override;
+	auto layout(engine::size screen_size) -> void override;
 
 private:
 	engine::texture logo_;
 	engine::size logo_size_{};
 	Vector2 logo_position_{};
 
-	static constexpr auto large_font_size = 40;
+	static constexpr auto large_font_size = 24;
 
 	engine::button play_button_;
 	engine::event_bus::token_t button_click_{0};

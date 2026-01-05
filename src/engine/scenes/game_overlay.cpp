@@ -60,12 +60,12 @@ auto game_overlay::draw() -> result<> {
 	return true;
 }
 
-auto game_overlay::layout(const Vector2 screen_size) -> void {
+auto game_overlay::layout(const size screen_size) -> void {
 	// position version display at bottom-right corner with margin
 	const auto [width, height] = version_display_.get_size();
 	version_display_.set_position({
-		.x = screen_size.x - width - margin,
-		.y = screen_size.y - height - margin,
+		.x = screen_size.width - width - margin,
+		.y = screen_size.height - height - margin,
 	});
 }
 

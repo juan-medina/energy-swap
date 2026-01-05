@@ -106,6 +106,7 @@ auto engine::app::run() -> result<> {
 	}
 
 	while(!WindowShouldClose()) {
+		SetMouseScale(1 / scale_factor_, 1 / scale_factor_);
 		if(const auto err = update().ko(); err) {
 			return error("error updating the application", *err);
 		}
@@ -123,15 +124,11 @@ auto engine::app::run() -> result<> {
 }
 
 auto engine::app::update() -> result<> {
-	if(Vector2 const screen_size = {.x = static_cast<float>(GetScreenWidth()),
-									.y = static_cast<float>(GetScreenHeight())};
-	   screen_size_.x != screen_size.x || screen_size_.y != screen_size.y) {
-		screen_size_ = screen_size;
-		SPDLOG_DEBUG("display resized to {}x{}", static_cast<int>(screen_size_.x), static_cast<int>(screen_size_.y));
-
-		// screen size changed, tell scenes to layout
-		for(const auto &scene_info: scenes_) {
-			scene_info.scene_ptr->layout(screen_size_);
+	if(size const screen_size = {.width = static_cast<float>(GetScreenWidth()),
+								 .height = static_cast<float>(GetScreenHeight())};
+	   screen_size_.width != screen_size.width || screen_size_.height != screen_size.height) {
+		if(const auto err = screen_size_changed(screen_size).ko(); err) {
+			return error("failed to handle screen size change", *err);
 		}
 	}
 
@@ -222,7 +219,7 @@ void engine::app::log_callback(const int log_level, const char *text, va_list ar
 }
 
 auto engine::app::draw() const -> result<> {
-	BeginDrawing();
+	BeginTextureMode(render_texture_);
 	ClearBackground(clear_color_);
 
 	// draw scenes
@@ -234,7 +231,18 @@ auto engine::app::draw() const -> result<> {
 			return error(std::format("failed to draw scene with id: {} name:", info.id, info.name), *err);
 		}
 	}
-
+	EndTextureMode();
+	BeginDrawing();
+	ClearBackground(BLACK);
+	DrawTexturePro(render_texture_.texture,
+				   {.x = 0.0F,
+					.y = 0.0F,
+					.width = static_cast<float>(render_texture_.texture.width),
+					.height = static_cast<float>(-render_texture_.texture.height)},
+				   {.x = 0.0F, .y = 0.0F, .width = screen_size_.width, .height = screen_size_.height},
+				   {.x = 0.0F, .y = 0.0F},
+				   0.0F,
+				   WHITE);
 	EndDrawing();
 	return true;
 }
@@ -389,6 +397,43 @@ auto engine::app::update_music_stream() const -> void {
 	if(music_playing_) {
 		UpdateMusicStream(background_music_);
 	}
+}
+auto engine::app::screen_size_changed(const size screen_size) -> result<> {
+	screen_size_ = screen_size;
+
+	// scale is base on y-axis, x-axis is adjusted to keep aspect ratio
+	//  technically we want to draw more horizontally if the screen is wider
+	scale_factor_ = screen_size_.height / design_resolution_.height;
+	drawing_resolution_.height = design_resolution_.height;
+	drawing_resolution_.width = static_cast<float>(static_cast<int>(screen_size_.width / scale_factor_));
+
+	SPDLOG_DEBUG("display resized, design resolution ({},{}) real resolution ({}x{}), drawing resolution ({}x{}), "
+				 "scale factor {}",
+				 design_resolution_.width,
+				 design_resolution_.height,
+				 screen_size_.width,
+				 screen_size_.height,
+				 drawing_resolution_.width,
+				 drawing_resolution_.height,
+				 scale_factor_);
+
+	if(render_texture_.id != 0) {
+		UnloadRenderTexture(render_texture_);
+	}
+	render_texture_ =
+		LoadRenderTexture(static_cast<int>(drawing_resolution_.width), static_cast<int>(drawing_resolution_.height));
+	if(render_texture_.id == 0) {
+		return error("failed to create render texture on screen size change");
+	}
+
+	SetTextureFilter(render_texture_.texture, TEXTURE_FILTER_POINT);
+
+	// screen size changed, tell scenes to layout
+	for(const auto &scene_info: scenes_) {
+		scene_info.scene_ptr->layout(drawing_resolution_);
+	}
+
+	return true;
 }
 
 auto engine::app::parse_version(const std::string &path) -> result<version> {

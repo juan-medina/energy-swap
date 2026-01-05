@@ -42,6 +42,6 @@ public:
 	}
 
 	// Scenes must still implement layout.
-	virtual auto layout(Vector2 screen_size) -> void = 0;
+	virtual auto layout(size screen_size) -> void = 0;
 };
 } // namespace engine

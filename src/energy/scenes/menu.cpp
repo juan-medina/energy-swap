@@ -22,7 +22,7 @@ auto menu::init(engine::app &app) -> engine::result<> {
 
 	play_button_.set_text("Play!");
 	play_button_.set_position({.x = 0, .y = 0});
-	play_button_.set_size({.width = 200, .height = 60});
+	play_button_.set_size({.width = 100, .height = 40});
 	play_button_.set_font_size(large_font_size);
 
 	button_click_ = app.bind_event<engine::button::click>(this, &menu::on_button_click);
@@ -67,15 +67,15 @@ auto menu::draw() -> engine::result<> {
 	return true;
 }
 
-auto menu::layout(const Vector2 screen_size) -> void {
+auto menu::layout(const engine::size screen_size) -> void {
 	logo_position_ = {
-		.x = (screen_size.x - logo_size_.width) / 2.0F,
-		.y = (screen_size.y * 0.2F) - (logo_size_.height / 2.0F),
+		.x = (screen_size.width - logo_size_.width) / 2.0F,
+		.y = (screen_size.height * 0.2F) - (logo_size_.height / 2.0F),
 	};
 
 	const auto [width, height] = play_button_.get_size();
-	const float button_x = (screen_size.x - width) / 2.0F;
-	const float button_y = (screen_size.y - height) / 2.0F;
+	const float button_x = (screen_size.width - width) / 2.0F;
+	const float button_y = (screen_size.height - height) / 2.0F;
 	play_button_.set_position({.x = button_x, .y = button_y});
 }
 

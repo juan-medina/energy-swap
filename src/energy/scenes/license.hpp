@@ -31,7 +31,7 @@ public:
 	[[nodiscard]] auto update(float delta) -> engine::result<> override;
 	[[nodiscard]] auto draw() -> engine::result<> override;
 
-	auto layout(Vector2 screen_size) -> void override;
+	auto layout(engine::size screen_size) -> void override;
 
 	struct accepted {};
 
