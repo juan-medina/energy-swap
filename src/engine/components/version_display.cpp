@@ -90,6 +90,10 @@ auto engine::version_display::draw() -> result<> {
 		return error("failed to draw base UI component", *err);
 	}
 
+	if(!is_visible()) {
+		return true;
+	}
+
 	const auto pos = get_pos();
 	draw_parts({.x = pos.x + shadow_offset_, .y = pos.y + shadow_offset_}, true);
 	draw_parts(pos, false);

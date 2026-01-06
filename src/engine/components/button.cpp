@@ -36,6 +36,10 @@ auto engine::button::draw() -> result<> {
 		return error("failed to draw base UI component", *err);
 	}
 
+	if(!is_visible()) {
+		return true;
+	}
+
 	const auto [x, y] = get_pos();
 	const auto [width, height] = get_size();
 

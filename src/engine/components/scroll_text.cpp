@@ -39,6 +39,10 @@ auto scroll_text::draw() -> result<> {
 		return error("failed to draw base UI component", *err);
 	}
 
+	if(!is_visible()) {
+		return true;
+	}
+
 	GuiSetFont(get_font());
 	GuiSetStyle(DEFAULT, TEXT_SIZE, static_cast<int>(get_font_size()));
 

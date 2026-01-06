@@ -74,6 +74,14 @@ public:
 		return point_inside(pos_, size_, point);
 	}
 
+	auto set_visible(const bool visible) -> void {
+		visible_ = visible;
+	}
+
+	[[nodiscard]] auto is_visible() const -> bool {
+		return visible_;
+	}
+
 protected:
 	[[nodiscard]] auto get_app() -> app & {
 		assert(app_.has_value() && "app is not set");
@@ -89,5 +97,6 @@ private:
 	std::optional<std::reference_wrapper<app>> app_;
 	Vector2 pos_{};
 	size size_{};
+	bool visible_ = true;
 };
 } // namespace engine

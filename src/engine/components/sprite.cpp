@@ -26,6 +26,10 @@ auto sprite::update(const float delta) -> result<> {
 }
 
 auto sprite::draw() -> result<> {
+	if(!is_visible()) {
+		return true;
+	}
+
 	if(const auto err = get_app().draw_sprite(sprite_sheet_, frame_, get_pos(), tint_).ko(); err) {
 		return error("failed to draw sprite", *err);
 	}
