@@ -27,12 +27,20 @@ auto game::init(engine::app &app) -> engine::result<> {
 		return engine::error("failed to initialize sprite sheet", *err);
 	}
 
+	if(const auto err = battery_sprite_.init(app, sprite_sheet_name, sprite_frame).ko(); err) {
+		return engine::error("failed to initialize battery sprite", *err);
+	}
+
 	return true;
 }
 
 auto game::end() -> engine::result<> {
 	if(const auto err = title_.end().ko(); err) {
 		return engine::error("failed to end logo texture", *err);
+	}
+
+	if(const auto err = battery_sprite_.end().ko(); err) {
+		return engine::error("failed to end battery sprite", *err);
 	}
 
 	if(const auto err = get_app().unload_sprite_sheet(sprite_sheet_name).ko(); err) {
@@ -51,7 +59,7 @@ auto game::draw() -> engine::result<> {
 		return engine::error("failed to draw title label", *err);
 	}
 
-	if(const auto err = get_app().draw_sprite(sprite_sheet_name, sprite_frame, sprite_pos_).ko(); err) {
+	if(const auto err = battery_sprite_.draw().ko(); err) {
 		return engine::error("failed to draw sprite from sprite sheet", *err);
 	}
 
@@ -65,8 +73,7 @@ auto game::layout(const engine::size screen_size) -> void {
 		.y = (screen_size.height * 0.2F) - (label_height / 2.0F),
 	});
 
-	sprite_pos_.y = screen_size.height * 0.5F;
-	sprite_pos_.x = (screen_size.width * 0.5F);
+	battery_sprite_.set_position({.x = (screen_size.width * 0.5F), .y = screen_size.height * 0.5F});
 }
 
 } // namespace energy

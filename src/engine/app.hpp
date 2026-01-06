@@ -27,8 +27,8 @@ class app {
 public:
 	explicit app(
 		std::string name, std::string team, std::string title, std::string banner, const size design_resolution)
-		: name_{std::move(name)}, team_{std::move(team)}, title_{std::move(title)}, banner_{std::move(banner)},
-		  design_resolution_(design_resolution) {}
+		: name_{std::move(name)}, team_{std::move(team)}, title_{std::move(title)}, design_resolution_(design_resolution),
+		  banner_{std::move(banner)} {}
 	virtual ~app() = default;
 
 	// Non-copyable

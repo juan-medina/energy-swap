@@ -8,6 +8,7 @@
 #include "../../engine/events.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
+#include "../../engine/components/sprite.hpp"
 
 namespace energy {
 
@@ -36,7 +37,7 @@ private:
 	engine::label title_;
 	static constexpr auto large_font_size = 20;
 
-	Vector2 sprite_pos_{};
+	engine::sprite battery_sprite_;
 	static constexpr auto sprite_sheet_name = "sprites";
 	static constexpr auto sprite_sheet_path = "resources/sprites/sprites.json";
 	static constexpr auto sprite_frame = "battery.png";
