@@ -38,16 +38,20 @@ private:
 	static constexpr auto font_path = "resources/fonts/PixeloidSans_16.fnt";
 	static constexpr Color clear_color = Color{.r = 20, .g = 49, .b = 59, .a = 255};
 
-	auto on_license_accepted() -> void;
-	int license_scene_{-1};
-	engine::event_bus::token_t license_accepted_{0};
-
-	int menu_scene_{-1};
-
 	static constexpr auto click_sound_path = "resources/sounds/click.wav";
 	static constexpr auto click_sound = "click";
 
 	static constexpr engine::size design_resolution{.width = 640, .height = 360};
+
+	int license_scene_{-1};
+	engine::event_bus::token_t license_accepted_{0};
+	auto on_license_accepted() -> void;
+
+	int menu_scene_{-1};
+	engine::event_bus::token_t go_to_game_ {0};
+	auto on_go_to_game() -> void;
+
+	int game_scene_{-1};
 };
 
 } // namespace energy

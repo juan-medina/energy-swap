@@ -83,9 +83,9 @@ auto menu::layout(const engine::size screen_size) -> void {
 	});
 }
 
-auto menu::on_button_click(const engine::button::click &evt) const -> void {
+auto menu::on_button_click(const engine::button::click &evt) -> void {
 	if(evt.id == play_button_.get_id()) {
-		SPDLOG_INFO("play button clicked");
+		get_app().post_event(go_to_game{});
 	}
 }
 

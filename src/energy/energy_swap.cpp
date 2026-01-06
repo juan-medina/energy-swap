@@ -5,6 +5,7 @@
 
 #include "scenes/license.hpp"
 #include "scenes/menu.hpp"
+#include "scenes/game.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -19,14 +20,16 @@ auto energy::energy_swap::init() -> engine::result<> {
 		return engine::error{"failed to set default font", *err};
 	}
 
-	license_scene_ = register_scene<license>();
-	menu_scene_ = register_scene<menu>(false);
-
-	license_accepted_ = on_event<license::accepted>(this, &energy_swap::on_license_accepted);
-
 	if(const auto err = load_sound(click_sound, click_sound_path).ko(); err) {
 		return engine::error{"failed to load button sound", *err};
 	}
+
+	license_scene_ = register_scene<license>();
+	menu_scene_ = register_scene<menu>(false);
+	game_scene_ = register_scene<game>(false);
+
+	license_accepted_ = on_event<license::accepted>(this, &energy_swap::on_license_accepted);
+	go_to_game_ = on_event<menu::go_to_game>(this, &energy_swap::on_go_to_game);
 
 	return true;
 }
@@ -48,5 +51,16 @@ auto energy::energy_swap::on_license_accepted() -> void {
 
 	if(err = play_music("resources/music/menu.ogg", 0.5F).ko(); err) {
 		SPDLOG_ERROR("fail to play menu music");
+	}
+}
+
+auto energy::energy_swap::on_go_to_game() -> void {
+	auto err = disable_scene(menu_scene_).ko();
+	if(err) {
+		SPDLOG_ERROR("fail to disable menu scene");
+	}
+
+	if(err = enable_scene(game_scene_).ko(); err) {
+		SPDLOG_ERROR("fail to enable game scene");
 	}
 }

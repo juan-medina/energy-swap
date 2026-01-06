@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Juan Medina
+﻿// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #pragma once
@@ -12,18 +12,18 @@
 
 namespace energy {
 
-class menu: public engine::scene {
+class game: public engine::scene {
 public:
-	menu() = default;
-	~menu() override = default;
+	game() = default;
+	~game() override = default;
 
 	// Non-copyable
-	menu(const menu &) = delete;
-	auto operator=(const menu &) -> menu & = delete;
+	game(const game &) = delete;
+	auto operator=(const game &) -> game & = delete;
 
 	// Non-movable
-	menu(menu &&) noexcept = delete;
-	auto operator=(menu &&) noexcept -> menu & = delete;
+	game(game &&) noexcept = delete;
+	auto operator=(game &&) noexcept -> game & = delete;
 
 	[[nodiscard]] auto init(engine::app &app) -> engine::result<> override;
 	[[nodiscard]] auto end() -> engine::result<> override;
@@ -33,16 +33,9 @@ public:
 
 	auto layout(engine::size screen_size) -> void override;
 
-	struct go_to_game {};
-
 private:
 	engine::label title_;
 	static constexpr auto large_font_size = 20;
-
-	engine::button play_button_;
-	engine::event_bus::token_t button_click_{0};
-
-	auto on_button_click(const engine::button::click &evt) -> void;
 };
 
 } // namespace energy
