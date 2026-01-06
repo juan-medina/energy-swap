@@ -23,9 +23,9 @@ public:
 	sprite_sheet(const sprite_sheet &) = delete;
 	auto operator=(const sprite_sheet &) -> sprite_sheet & = delete;
 
-	// Non-movable
-	sprite_sheet(sprite_sheet &&) noexcept = delete;
-	auto operator=(sprite_sheet &&) noexcept -> sprite_sheet & = delete;
+	// Movable
+	sprite_sheet(sprite_sheet &&) noexcept = default;
+	auto operator=(sprite_sheet &&) noexcept -> sprite_sheet & = default;
 
 	auto init(const std::string &path) -> result<>;
 	auto end() -> result<>;

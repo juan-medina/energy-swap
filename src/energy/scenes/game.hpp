@@ -6,7 +6,6 @@
 #include "../../engine/app.hpp"
 #include "../../engine/components/label.hpp"
 #include "../../engine/events.hpp"
-#include "../../engine/render/sprite_sheet.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
 
@@ -36,10 +35,10 @@ public:
 private:
 	engine::label title_;
 	static constexpr auto large_font_size = 20;
-	engine::sprite_sheet sprite_sheet_;
-	static constexpr auto sprite_sheet_path = "resources/sprites/sprites.json";
 
-	Vector2 sprite_pos_;
+	Vector2 sprite_pos_{};
+	static constexpr auto sprite_sheet_name = "sprites";
+	static constexpr auto sprite_sheet_path = "resources/sprites/sprites.json";
 	static constexpr auto sprite_frame = "battery.png";
 };
 

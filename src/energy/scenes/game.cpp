@@ -23,7 +23,7 @@ auto game::init(engine::app &app) -> engine::result<> {
 	title_.set_text("Game");
 	title_.set_font_size(30);
 
-	if(const auto err = sprite_sheet_.init(sprite_sheet_path).ko(); err) {
+	if(const auto err = app.load_sprite_sheet(sprite_sheet_name, sprite_sheet_path).ko(); err) {
 		return engine::error("failed to initialize sprite sheet", *err);
 	}
 
@@ -35,7 +35,7 @@ auto game::end() -> engine::result<> {
 		return engine::error("failed to end logo texture", *err);
 	}
 
-	if(const auto err = sprite_sheet_.end().ko(); err) {
+	if(const auto err = get_app().unload_sprite_sheet(sprite_sheet_name).ko(); err) {
 		return engine::error("failed to end sprite sheet", *err);
 	}
 
@@ -51,7 +51,7 @@ auto game::draw() -> engine::result<> {
 		return engine::error("failed to draw title label", *err);
 	}
 
-	if(const auto err = sprite_sheet_.draw(sprite_frame, sprite_pos_).ko(); err) {
+	if(const auto err = get_app().draw_sprite(sprite_sheet_name, sprite_frame, sprite_pos_).ko(); err) {
 		return engine::error("failed to draw sprite from sprite sheet", *err);
 	}
 

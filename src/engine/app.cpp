@@ -83,6 +83,15 @@ auto engine::app::end() -> result<> {
 		return error("audio device could not be ended", *err);
 	}
 
+	SPDLOG_INFO("ending sprite sheets");
+	for(auto &[name, sheet]: sprite_sheets_) {
+		if(const auto err = sheet.end().ko(); err) {
+			return error(std::format("failed to end sprite sheet with name: {}", name), *err);
+		}
+		SPDLOG_DEBUG("ended sprite sheet with name: {}", name);
+	}
+	sprite_sheets_.clear();
+
 	return true;
 }
 
@@ -341,6 +350,46 @@ auto engine::app::play_sound(const std::string &name, const float volume /*= 1.0
 	SetSoundPitch(sound, volume);
 	PlaySound(sound);
 
+	return true;
+}
+auto engine::app::load_sprite_sheet(const std::string &name, const std::string &path) -> result<> {
+	if(sprite_sheets_.contains(name)) {
+		return error(std::format("sprite sheet with name {} is already loaded", name));
+	}
+	sprite_sheet sheet;
+	if(const auto err = sheet.init(path).ko(); err) {
+		return error(std::format("failed to load sprite sheet from path: {}", path), *err);
+	}
+	sprite_sheets_.emplace(name, std::move(sheet));
+	SPDLOG_DEBUG("loaded sprite sheet {} from {}", name, path);
+	return true;
+}
+
+auto engine::app::unload_sprite_sheet(const std::string &name) -> result<> {
+	const auto find = sprite_sheets_.find(name);
+	if(find == sprite_sheets_.end()) {
+		return error(std::format("can't unload sprite sheet with name {}, is not loaded", name));
+	}
+	if(const auto err = find->second.end().ko(); err) {
+		return error(std::format("failed to unload sprite sheet with name: {}", name), *err);
+	}
+	sprite_sheets_.erase(find);
+	SPDLOG_DEBUG("unloaded sprite sheet {}", name);
+	return true;
+}
+
+auto engine::app::draw_sprite(const std::string &sprite_sheet,
+							  const std::string &frame,
+							  const Vector2 &position,
+							  const Color &tint) -> result<> {
+	const auto find = sprite_sheets_.find(sprite_sheet);
+	if(find == sprite_sheets_.end()) {
+		return error(std::format("can't draw sprite, sprite sheet: {}, is not loaded", sprite_sheet));
+	}
+	const auto &sheet = find->second;
+	if(const auto err = sheet.draw(frame, position, tint).ko(); err) {
+		return error(std::format("failed to draw frame {} from sprite sheet {}", frame, sprite_sheet), *err);
+	}
 	return true;
 }
 

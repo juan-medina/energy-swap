@@ -4,6 +4,7 @@
 #pragma once
 
 #include "events.hpp"
+#include "render/sprite_sheet.hpp"
 #include "result.hpp"
 #include "scenes/scene.hpp"
 
@@ -12,6 +13,7 @@
 #include <algorithm>
 #include <memory>
 #include <spdlog/spdlog.h>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -83,6 +85,13 @@ public:
 	}
 
 	[[nodiscard]] auto play_sound(const std::string &name, float volume = 1.0F) -> result<>;
+
+	[[nodiscard]] auto load_sprite_sheet(const std::string &name, const std::string &path) -> result<>;
+	[[nodiscard]] auto unload_sprite_sheet(const std::string &name) -> result<>;
+	[[nodiscard]] auto draw_sprite(const std::string &sprite_sheet,
+								   const std::string &frame,
+								   const Vector2 &position,
+								   const Color &tint = WHITE) -> result<>;
 
 protected:
 	[[nodiscard]] virtual auto init() -> result<>;
@@ -218,7 +227,7 @@ private:
 	auto end_sound() -> result<>;
 	bool sound_initialized_{false};
 
-	std::map<std::string, Sound> sounds_;
+	std::unordered_map<std::string, Sound> sounds_;
 
 	Music background_music_{};
 	bool music_playing_{false};
@@ -233,6 +242,8 @@ private:
 	RenderTexture2D render_texture_{};
 
 	std::string banner_ = "Engine Application v{}";
+
+	std::unordered_map<std::string, sprite_sheet> sprite_sheets_;
 };
 
 } // namespace engine

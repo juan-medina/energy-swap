@@ -19,9 +19,9 @@ public:
 	texture(const texture &) = delete;
 	auto operator=(const texture &) -> texture & = delete;
 
-	// Non-movable
-	texture(texture &&) noexcept = delete;
-	auto operator=(texture &&) noexcept -> texture & = delete;
+	// Movable
+	texture(texture &&) noexcept = default;
+	auto operator=(texture &&) noexcept -> texture & = default;
 
 	[[nodiscard]] auto draw(const Vector2 &pos) const -> result<>;
 
