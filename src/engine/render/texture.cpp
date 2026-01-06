@@ -1,7 +1,9 @@
 ﻿// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
-#include "sprites.hpp"
+#include "texture.hpp"
+
+#include "spdlog/spdlog.h"
 
 #include <fstream>
 
@@ -19,6 +21,8 @@ auto engine::texture::init(const std::string &path) -> result<> {
 	texture_ = loaded_texture;
 	size_.width = static_cast<float>(loaded_texture.width);
 	size_.height = static_cast<float>(loaded_texture.height);
+
+	SPDLOG_DEBUG("texture: loaded from file: {} ({}x{})", path, size_.width, size_.height);
 
 	return true;
 }

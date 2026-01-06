@@ -4,11 +4,11 @@
 #pragma once
 
 #include "../../engine/app.hpp"
-#include "../../engine/components/button.hpp"
+#include "../../engine/components/label.hpp"
 #include "../../engine/events.hpp"
+#include "../../engine/render/sprite_sheet.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
-#include "../../engine/components/label.hpp"
 
 namespace energy {
 
@@ -36,6 +36,11 @@ public:
 private:
 	engine::label title_;
 	static constexpr auto large_font_size = 20;
+	engine::sprite_sheet sprite_sheet_;
+	static constexpr auto sprite_sheet_path = "resources/sprites/sprites.json";
+
+	Vector2 sprite_pos_;
+	static constexpr auto sprite_frame = "battery.png";
 };
 
 } // namespace energy
