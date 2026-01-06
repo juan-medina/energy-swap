@@ -11,16 +11,6 @@
 #include <raygui.h>
 #include <spdlog/spdlog.h>
 
-static const auto banner = R"(
-  ______                               _____
- |  ____|                             / ____|
- | |__   _ __   ___ _ __ __ _ _   _  | (_____      ____ _ _ __
- |  __| | '_ \ / _ \ '__/ _` | | | |  \___ \ \ /\ / / _` | '_ \
- | |____| | | |  __/ | | (_| | |_| |  ____) \ V  V / (_| | |_) |
- |______|_| |_|\___|_|  \__, |\__, | |_____/ \_/\_/ \__,_| .__/
-                         __/ | __/ |                     | |
-                        |___/ |___/                      |_| v{})";
-
 static const auto empty_format = "%v";
 static const auto color_line_format = "[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v %@";
 
@@ -153,7 +143,7 @@ auto engine::app::update() -> result<> {
 auto engine::app::setup_log() -> result<> {
 	spdlog::set_pattern(empty_format);
 	const auto version_str = std::format("{}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
-	SPDLOG_INFO(std::vformat(banner, std::make_format_args(version_str)));
+	SPDLOG_INFO(std::vformat(banner_, std::make_format_args(version_str)));
 
 	spdlog::set_pattern(color_line_format);
 	SetTraceLogCallback(log_callback);
@@ -165,6 +155,8 @@ auto engine::app::setup_log() -> result<> {
 	spdlog::set_level(spdlog::level::debug);
 	SetTraceLogLevel(LOG_DEBUG);
 #endif
+
+	SPDLOG_DEBUG("Application: \"{}\", Team: \"{}\", Title: \"{}\"", name_, team_, title_);
 	return true;
 }
 

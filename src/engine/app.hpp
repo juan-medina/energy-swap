@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <memory>
 #include <spdlog/spdlog.h>
+#include <utility>
 #include <vector>
 
 #if defined(__GNUG__) && !defined(__EMSCRIPTEN__) && !defined(__APPLE__)
@@ -22,8 +23,10 @@ namespace engine {
 
 class app {
 public:
-	explicit app(std::string title, const size design_resolution)
-		: title_{std::move(title)}, design_resolution_(design_resolution) {}
+	explicit app(
+		std::string name, std::string team, std::string title, std::string banner, const size design_resolution)
+		: name_{std::move(name)}, team_{std::move(team)}, title_{std::move(title)}, banner_{std::move(banner)},
+		  design_resolution_(design_resolution) {}
 	virtual ~app() = default;
 
 	// Non-copyable
@@ -168,6 +171,9 @@ protected:
 	[[nodiscard]] auto stop_music() -> result<>;
 
 private:
+	std::string name_;
+	std::string team_;
+
 	Font default_font_{};
 	int default_font_size_{12};
 
@@ -225,6 +231,8 @@ private:
 	float scale_factor_{1.0F};
 
 	RenderTexture2D render_texture_{};
+
+	std::string banner_ = "Engine Application v{}";
 };
 
 } // namespace engine

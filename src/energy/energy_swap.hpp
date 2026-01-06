@@ -8,8 +8,18 @@
 namespace energy {
 
 class energy_swap: public engine::app {
+	static constexpr auto banner = R"(
+  ______                               _____
+ |  ____|                             / ____|
+ | |__   _ __   ___ _ __ __ _ _   _  | (_____      ____ _ _ __
+ |  __| | '_ \ / _ \ '__/ _` | | | |  \___ \ \ /\ / / _` | '_ \
+ | |____| | | |  __/ | | (_| | |_| |  ____) \ V  V / (_| | |_) |
+ |______|_| |_|\___|_|  \__, |\__, | |_____/ \_/\_/ \__,_| .__/
+                         __/ | __/ |                     | |
+                        |___/ |___/                      |_| v{})";
+
 public:
-	energy_swap(): app("Energy Swapper", design_resolution) {}
+	energy_swap(): app("energy-swap", "juan-medina", "Energy Swap", banner, design_resolution) {}
 	~energy_swap() override = default;
 
 	// Non-copyable
