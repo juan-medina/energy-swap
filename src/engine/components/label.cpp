@@ -7,7 +7,9 @@
 
 #include <raygui.h>
 
-auto engine::label::init(app &app) -> result<> {
+namespace engine {
+
+auto label::init(app &app) -> result<> {
 	if(const auto err = ui_component::init(app).ko(); err) {
 		return error("failed to initialize base UI component", *err);
 	}
@@ -15,11 +17,11 @@ auto engine::label::init(app &app) -> result<> {
 	return true;
 }
 
-auto engine::label::end() -> result<> {
+auto label::end() -> result<> {
 	return ui_component::end();
 }
 
-auto engine::label::update(float delta) -> result<> {
+auto label::update(const float delta) -> result<> {
 	if(const auto err = ui_component::update(delta).ko(); err) {
 		return error("failed to update base UI component", *err);
 	}
@@ -27,7 +29,7 @@ auto engine::label::update(float delta) -> result<> {
 	return true;
 }
 
-auto engine::label::draw() -> result<> {
+auto label::draw() -> result<> {
 	if(const auto err = ui_component::draw().ko(); err) {
 		return error("failed to draw base UI component", *err);
 	}
@@ -52,16 +54,18 @@ auto engine::label::draw() -> result<> {
 	return true;
 }
 
-auto engine::label::set_text(const std::string &text) -> void {
+auto label::set_text(const std::string &text) -> void {
 	text_ = text;
 	calculate_size();
 }
-auto engine::label::set_font_size(const float &size) -> void {
+auto label::set_font_size(const float &size) -> void {
 	ui_component::set_font_size(size);
 	calculate_size();
 }
 
-auto engine::label::calculate_size() -> void {
+auto label::calculate_size() -> void {
 	const auto [x, y] = MeasureTextEx(get_font(), text_.c_str(), get_font_size(), 1.0F);
 	set_size({.width = x, .height = y});
 }
+
+} // namespace engine

@@ -20,7 +20,8 @@
 #	include <emscripten/val.h>
 #endif
 
-auto engine::version_display::init(app &app) -> result<> {
+namespace engine {
+auto version_display::init(app &app) -> result<> {
 	if(const auto err = ui_component::init(app).ko(); err) {
 		return error("failed to initialize base UI component", *err);
 	}
@@ -55,12 +56,12 @@ auto engine::version_display::init(app &app) -> result<> {
 	return true;
 }
 
-auto engine::version_display::end() -> result<> {
+auto version_display::end() -> result<> {
 	parts_ = {};
 	return ui_component::end();
 }
 
-auto engine::version_display::update(float delta) -> result<> {
+auto version_display::update(float delta) -> result<> {
 	if(const auto err = ui_component::update(delta).ko(); err) {
 		return error("failed to update base UI component", *err);
 	}
@@ -85,7 +86,7 @@ auto engine::version_display::update(float delta) -> result<> {
 	return true;
 }
 
-auto engine::version_display::draw() -> result<> {
+auto version_display::draw() -> result<> {
 	if(const auto err = ui_component::draw().ko(); err) {
 		return error("failed to draw base UI component", *err);
 	}
@@ -101,7 +102,7 @@ auto engine::version_display::draw() -> result<> {
 	return true;
 }
 
-auto engine::version_display::draw_parts(const Vector2 pos, bool shadow) -> void {
+auto version_display::draw_parts(const Vector2 pos, bool shadow) -> void {
 	auto part_pos = pos;
 	for(const auto &[text, color, offset]: parts_) {
 		part_pos.x = pos.x + offset;
@@ -109,8 +110,10 @@ auto engine::version_display::draw_parts(const Vector2 pos, bool shadow) -> void
 	}
 }
 
-void engine::version_display::set_font_size(const float &size) {
+void version_display::set_font_size(const float &size) {
 	ui_component::set_font_size(size);
 	parts_spacing_ = size / 10.0F;
 	shadow_offset_ = size / 10.0F * 2.0F;
 }
+
+} // namespace engine

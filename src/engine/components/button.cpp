@@ -7,11 +7,12 @@
 
 #include <raygui.h>
 
-int engine::button::next_id = 0;
+namespace engine {
+int button::next_id = 0;
 
-engine::button::button(): id_(++next_id) {}
+button::button(): id_(++next_id) {}
 
-auto engine::button::init(app &app) -> result<> {
+auto button::init(app &app) -> result<> {
 	if(const auto err = ui_component::init(app).ko(); err) {
 		return error("failed to initialize base UI component", *err);
 	}
@@ -19,11 +20,11 @@ auto engine::button::init(app &app) -> result<> {
 	return true;
 }
 
-auto engine::button::end() -> result<> {
+auto button::end() -> result<> {
 	return ui_component::end();
 }
 
-auto engine::button::update(float delta) -> result<> {
+auto button::update(float delta) -> result<> {
 	if(const auto err = ui_component::update(delta).ko(); err) {
 		return error("failed to update base UI component", *err);
 	}
@@ -31,7 +32,7 @@ auto engine::button::update(float delta) -> result<> {
 	return true;
 }
 
-auto engine::button::draw() -> result<> {
+auto button::draw() -> result<> {
 	if(const auto err = ui_component::draw().ko(); err) {
 		return error("failed to draw base UI component", *err);
 	}
@@ -55,3 +56,5 @@ auto engine::button::draw() -> result<> {
 
 	return true;
 }
+
+} // namespace engine

@@ -7,7 +7,9 @@
 #include "scenes/license.hpp"
 #include "scenes/menu.hpp"
 
-auto energy::energy_swap::init() -> engine::result<> {
+namespace energy {
+
+auto energy_swap::init() -> engine::result<> {
 	if(const auto err = app::init().ko(); err) {
 		return engine::error{"failed to initialize base app", *err};
 	}
@@ -32,12 +34,12 @@ auto energy::energy_swap::init() -> engine::result<> {
 	return true;
 }
 
-auto energy::energy_swap::end() -> engine::result<> {
+auto energy_swap::end() -> engine::result<> {
 	unsubscribe(license_accepted_);
 	return app::end();
 }
 
-auto energy::energy_swap::on_license_accepted() -> engine::result<> {
+auto energy_swap::on_license_accepted() -> engine::result<> {
 	auto err = disable_scene(license_scene_).ko();
 	if(err) {
 		return engine::error("fail to disable license scene", *err);
@@ -54,7 +56,7 @@ auto energy::energy_swap::on_license_accepted() -> engine::result<> {
 	return true;
 }
 
-auto energy::energy_swap::on_go_to_game() -> engine::result<> {
+auto energy_swap::on_go_to_game() -> engine::result<> {
 	auto err = disable_scene(menu_scene_).ko();
 	if(err) {
 		return engine::error("fail to disable menu scene", *err);
@@ -66,3 +68,5 @@ auto energy::energy_swap::on_go_to_game() -> engine::result<> {
 
 	return true;
 }
+
+} // namespace energy

@@ -7,7 +7,9 @@
 
 #include <fstream>
 
-auto engine::texture::init(const std::string &path) -> result<> {
+namespace engine {
+
+auto texture::init(const std::string &path) -> result<> {
 	if(std::ifstream const font_file(path); !font_file.is_open()) {
 		return error(std::format("can not load texture file: {}", path));
 	}
@@ -27,7 +29,7 @@ auto engine::texture::init(const std::string &path) -> result<> {
 	return true;
 }
 
-auto engine::texture::end() -> result<> {
+auto texture::end() -> result<> {
 	UnloadTexture(texture_);
 	texture_ = Texture2D{};
 	size_ = size{.width = 0, .height = 0};
@@ -35,7 +37,7 @@ auto engine::texture::end() -> result<> {
 	return true;
 }
 
-auto engine::texture::draw(const Vector2 &pos) const -> result<> {
+auto texture::draw(const Vector2 &pos) const -> result<> {
 	if(texture_.id == 0) {
 		return error("texture not initialized");
 	}
@@ -43,14 +45,16 @@ auto engine::texture::draw(const Vector2 &pos) const -> result<> {
 	return true;
 }
 
-auto engine::texture::draw(const Rectangle origin,
-						   const Rectangle dest,
-						   const Color tint,
-						   const float rotation,
-						   const Vector2 rotation_center) const -> result<> {
+auto texture::draw(const Rectangle origin,
+				   const Rectangle dest,
+				   const Color tint,
+				   const float rotation,
+				   const Vector2 rotation_center) const -> result<> {
 	if(texture_.id == 0) {
 		return error("texture not initialized");
 	}
 	DrawTexturePro(texture_, origin, dest, rotation_center, rotation, tint);
 	return true;
 }
+
+} // namespace engine

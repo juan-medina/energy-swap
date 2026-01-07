@@ -11,10 +11,12 @@
 #include <raygui.h>
 #include <spdlog/spdlog.h>
 
+namespace engine {
+
 static const auto empty_format = "%v";
 static const auto color_line_format = "[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v %@";
 
-auto engine::app::init() -> result<> {
+auto app::init() -> result<> {
 	auto [version, err] = parse_version(version_file_path).ok();
 	if(err) {
 		return error("error parsing the version", *err);
@@ -48,7 +50,7 @@ auto engine::app::init() -> result<> {
 	return true;
 }
 
-auto engine::app::init_scenes() -> result<> {
+auto app::init_scenes() -> result<> {
 	// init scenes
 	SPDLOG_INFO("init scenes");
 	for(auto &info: scenes_) {
@@ -60,7 +62,7 @@ auto engine::app::init_scenes() -> result<> {
 	return true;
 }
 
-auto engine::app::end() -> result<> {
+auto app::end() -> result<> {
 	// end scenes
 	SPDLOG_INFO("ending scenes");
 	for(auto &info: scenes_) {
@@ -95,7 +97,7 @@ auto engine::app::end() -> result<> {
 	return true;
 }
 
-auto engine::app::run() -> result<> {
+auto app::run() -> result<> {
 	if(const auto err = init().ko(); err) {
 		return error("error init the application", *err);
 	}
@@ -122,7 +124,7 @@ auto engine::app::run() -> result<> {
 	return true;
 }
 
-auto engine::app::update() -> result<> {
+auto app::update() -> result<> {
 	if(size const screen_size = {.width = static_cast<float>(GetScreenWidth()),
 								 .height = static_cast<float>(GetScreenHeight())};
 	   screen_size_.width != screen_size.width || screen_size_.height != screen_size.height) {
@@ -151,7 +153,7 @@ auto engine::app::update() -> result<> {
 	return true;
 }
 
-auto engine::app::setup_log() -> result<> {
+auto app::setup_log() -> result<> {
 	spdlog::set_pattern(empty_format);
 	const auto version_str = std::format("{}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
 	SPDLOG_INFO(std::vformat(banner_, std::make_format_args(version_str)));
@@ -171,7 +173,7 @@ auto engine::app::setup_log() -> result<> {
 	return true;
 }
 
-void engine::app::log_callback(const int log_level, const char *text, va_list args) {
+void app::log_callback(const int log_level, const char *text, va_list args) {
 	constexpr std::size_t initial_size = 1024;
 
 	// One buffer per thread, reused across calls
@@ -221,7 +223,7 @@ void engine::app::log_callback(const int log_level, const char *text, va_list ar
 	spdlog::log(level, "[raylib] {}", buffer.data());
 }
 
-auto engine::app::draw() const -> result<> {
+auto app::draw() const -> result<> {
 	BeginTextureMode(render_texture_);
 	ClearBackground(clear_color_);
 
@@ -250,7 +252,7 @@ auto engine::app::draw() const -> result<> {
 	EndDrawing();
 	return true;
 }
-auto engine::app::set_default_font(const std::string &path, const int size, const int texture_filter) -> result<> {
+auto app::set_default_font(const std::string &path, const int size, const int texture_filter) -> result<> {
 	auto font_size = size;
 	if(std::ifstream const font_file(path); !font_file.is_open()) {
 		return error(std::format("can not load  font file: {}", path));
@@ -273,7 +275,7 @@ auto engine::app::set_default_font(const std::string &path, const int size, cons
 	SPDLOG_DEBUG("set default font to {}", path);
 	return true;
 }
-auto engine::app::load_sound(const std::string &name, const std::string &path) -> result<> {
+auto app::load_sound(const std::string &name, const std::string &path) -> result<> {
 	if(std::ifstream const font_file(path); !font_file.is_open()) {
 		return error(std::format("can not load sound file: {}", path));
 	}
@@ -294,7 +296,7 @@ auto engine::app::load_sound(const std::string &name, const std::string &path) -
 	return true;
 }
 
-auto engine::app::unload_sound(const std::string &name) -> result<> {
+auto app::unload_sound(const std::string &name) -> result<> {
 	const auto find = sounds_.find(name);
 	if(find == sounds_.end()) {
 		return error(std::format("can't unload sound with name {}, is not loaded", name));
@@ -306,7 +308,7 @@ auto engine::app::unload_sound(const std::string &name) -> result<> {
 	return true;
 }
 
-auto engine::app::play_music(const std::string &path, const float volume /* - 1.0F*/) -> result<> {
+auto app::play_music(const std::string &path, const float volume /* - 1.0F*/) -> result<> {
 	if(std::ifstream const font_file(path); !font_file.is_open()) {
 		return error(std::format("can not load music file: {}", path));
 	}
@@ -330,7 +332,7 @@ auto engine::app::play_music(const std::string &path, const float volume /* - 1.
 	return true;
 }
 
-auto engine::app::stop_music() -> result<> {
+auto app::stop_music() -> result<> {
 	if(!music_playing_) {
 		return error("previous music is not playing");
 	}
@@ -343,7 +345,7 @@ auto engine::app::stop_music() -> result<> {
 	return true;
 }
 
-auto engine::app::play_sound(const std::string &name, const float volume /*= 1.0F*/) -> result<> {
+auto app::play_sound(const std::string &name, const float volume /*= 1.0F*/) -> result<> {
 	const auto find = sounds_.find(name);
 	if(find == sounds_.end()) {
 		return error(std::format("can't play sound with name {}, is not loaded", name));
@@ -354,7 +356,7 @@ auto engine::app::play_sound(const std::string &name, const float volume /*= 1.0
 
 	return true;
 }
-auto engine::app::load_sprite_sheet(const std::string &name, const std::string &path) -> result<> {
+auto app::load_sprite_sheet(const std::string &name, const std::string &path) -> result<> {
 	if(sprite_sheets_.contains(name)) {
 		return error(std::format("sprite sheet with name {} is already loaded", name));
 	}
@@ -367,7 +369,7 @@ auto engine::app::load_sprite_sheet(const std::string &name, const std::string &
 	return true;
 }
 
-auto engine::app::unload_sprite_sheet(const std::string &name) -> result<> {
+auto app::unload_sprite_sheet(const std::string &name) -> result<> {
 	const auto find = sprite_sheets_.find(name);
 	if(find == sprite_sheets_.end()) {
 		return error(std::format("can't unload sprite sheet with name {}, is not loaded", name));
@@ -380,10 +382,10 @@ auto engine::app::unload_sprite_sheet(const std::string &name) -> result<> {
 	return true;
 }
 
-auto engine::app::draw_sprite(const std::string &sprite_sheet,
-							  const std::string &frame,
-							  const Vector2 &position,
-							  const Color &tint) -> result<> {
+auto app::draw_sprite(const std::string &sprite_sheet,
+					  const std::string &frame,
+					  const Vector2 &position,
+					  const Color &tint) -> result<> {
 	const auto find = sprite_sheets_.find(sprite_sheet);
 	if(find == sprite_sheets_.end()) {
 		return error(std::format("can't draw sprite, sprite sheet: {}, is not loaded", sprite_sheet));
@@ -395,7 +397,7 @@ auto engine::app::draw_sprite(const std::string &sprite_sheet,
 	return true;
 }
 
-auto engine::app::set_default_font(const Font &font, const int size, const int texture_filter) -> void {
+auto app::set_default_font(const Font &font, const int size, const int texture_filter) -> void {
 	default_font_ = font;
 	default_font_size_ = size;
 	SetTextureFilter(font.texture, texture_filter);
@@ -403,7 +405,7 @@ auto engine::app::set_default_font(const Font &font, const int size, const int t
 	GuiSetStyle(DEFAULT, TEXT_SIZE, size);
 }
 
-auto engine::app::init_sound() -> result<> {
+auto app::init_sound() -> result<> {
 	InitAudioDevice();
 	if(IsAudioDeviceReady()) {
 		sound_initialized_ = true;
@@ -413,7 +415,7 @@ auto engine::app::init_sound() -> result<> {
 	return error("failed to initialize audio device");
 }
 
-auto engine::app::end_sound() -> result<> {
+auto app::end_sound() -> result<> {
 	for(const auto &[name, sound]: sounds_) {
 		if(IsSoundPlaying(sound)) {
 			StopSound(sound);
@@ -442,12 +444,12 @@ auto engine::app::end_sound() -> result<> {
 	SPDLOG_WARN("audio device was not initialized");
 	return true;
 }
-auto engine::app::update_music_stream() const -> void {
+auto app::update_music_stream() const -> void {
 	if(music_playing_) {
 		UpdateMusicStream(background_music_);
 	}
 }
-auto engine::app::screen_size_changed(const size screen_size) -> result<> {
+auto app::screen_size_changed(const size screen_size) -> result<> {
 	screen_size_ = screen_size;
 
 	// scale is base on y-axis, x-axis is adjusted to keep aspect ratio
@@ -485,7 +487,7 @@ auto engine::app::screen_size_changed(const size screen_size) -> result<> {
 	return true;
 }
 
-auto engine::app::parse_version(const std::string &path) -> result<version> {
+auto app::parse_version(const std::string &path) -> result<version> {
 	std::ifstream const file(path);
 	if(!file.is_open()) {
 		return error(std::format("version file not found: {}", path));
@@ -516,3 +518,5 @@ auto engine::app::parse_version(const std::string &path) -> result<version> {
 				   .patch = object.get_value_or<int>("patch", 0),
 				   .build = object.get_value_or<int>("build", 0)};
 }
+
+} // namespace engine
