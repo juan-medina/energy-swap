@@ -40,19 +40,9 @@ auto game::init(engine::app &app) -> engine::result<> {
 		battery_displays_.at(index).set_battery(batteries_.at(ordered));
 	}
 
-	// TEST SETUP
-	toggle_batteries(6);
-	batteries_.at(0).add(1);
-	batteries_.at(1).add(2);
-	batteries_.at(1).add(2);
-	batteries_.at(2).add(3);
-	batteries_.at(2).add(3);
-	batteries_.at(2).add(4);
-	batteries_.at(2).add(4);
-	batteries_.at(3).add(5);
-	batteries_.at(3).add(5);
-	batteries_.at(3).add(5);
-	batteries_.at(3).add(5);
+	if(const auto err = setup_puzzle("577016603334600013562444100015772225-14").ko(); err) {
+		return engine::error("failed to setup puzzle", *err);
+	}
 
 	return true;
 }
@@ -76,7 +66,6 @@ auto game::end() -> engine::result<> {
 }
 
 auto game::update(const float delta) -> engine::result<> {
-
 	for(auto &sprite: battery_displays_) {
 		if(const auto err = sprite.update(delta).ko(); err) {
 			return engine::error("failed to update battery display", *err);
@@ -128,12 +117,28 @@ auto game::layout(const engine::size screen_size) -> void {
 
 #include <array>
 
-auto game::toggle_batteries(const int number) -> void {
-	int index = 0;
+auto game::toggle_batteries(const size_t number) -> void {
+	auto index = static_cast<size_t>(0);
 	for(const auto battery_num: battery_order) {
 		battery_displays_.at(index).set_visible(battery_num < number);
 		++index;
 	}
+}
+
+auto game::setup_puzzle(const std::string &puzzle_str) -> engine::result<> {
+	auto [puzzle, error] = puzzle::from_string(puzzle_str).ok();
+	if(error) {
+		return engine::error("failed to parse puzzle from string: {}", *error);
+	}
+	current_puzzle_ = *puzzle;
+	auto const total_batteries = current_puzzle_.size();
+	toggle_batteries(total_batteries);
+
+	for(auto i = static_cast<size_t>(0); i < total_batteries; ++i) {
+		batteries_.at(i) = current_puzzle_.at(i);
+	}
+
+	return true;
 }
 
 } // namespace energy

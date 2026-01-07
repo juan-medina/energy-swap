@@ -4,7 +4,9 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <vector>
+#include "../../engine/result.hpp"
 
 namespace energy {
 
@@ -35,12 +37,15 @@ public:
 
 	auto transfer_energy_from(battery &other) -> void;
 
-	[[nodiscard]] auto at(const int index) const -> int {
-		if(index < 0 || static_cast<size_t>(index) >= energies_.size()) {
+	[[nodiscard]] auto at(const size_t index) const -> int {
+		if(index >= energies_.size()) {
 			return 0;
 		}
-		return energies_.at(static_cast<size_t>(index));
+		return energies_.at(index);
 	}
+
+	[[nodiscard]] auto string() const -> std::string;
+	[[nodiscard]] static auto from_string(const std::string &str) -> engine::result<battery>;
 
 private:
 	enum class state : std::uint8_t { normal, empty, full, closed };

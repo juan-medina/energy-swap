@@ -61,7 +61,7 @@ auto battery_display::update(const float delta) -> engine::result<> {
 	}
 
 	for(size_t i = 0; i < segments_.size(); ++i) {
-		const auto color_index = battery_->get().at(static_cast<int>(i));
+		const auto color_index = battery_->get().at(i);
 		const auto color = energy_colors.at(color_index);
 		segments_.at(i).set_tint(color);
 	}

@@ -5,6 +5,8 @@
 
 #include <algorithm>
 #include <cassert>
+#include <format>
+#include <string>
 
 namespace energy {
 
@@ -70,6 +72,35 @@ void battery::transfer_energy_from(battery &other) {
 		add(energy_type);
 		other.remove();
 	}
+}
+
+auto battery::string() const -> std::string {
+	std::string result;
+	for(const auto energy: energies_) {
+		result += std::format("{:X}", energy);
+	}
+	return std::format("{:0<{}}", result, max_energy);
+	;
+}
+
+auto battery::from_string(const std::string &str) -> engine::result<battery> {
+	battery new_battery;
+	auto total = 0;
+	for(const char character: str) {
+		if(character == '0') {
+			continue;
+		}
+		const int energy_type = std::stoi(std::string(1, character), nullptr, 16);
+		if(energy_type > max_energy_types) {
+			return engine::error(std::format("invalid energy type in battery string: {}", character));
+		}
+		new_battery.add(energy_type);
+		++total;
+		if(total > max_energy) {
+			return engine::error(std::format("battery string has more energies than allowed: {} str: {}", total, str));
+		}
+	}
+	return new_battery;
 }
 
 } // namespace energy

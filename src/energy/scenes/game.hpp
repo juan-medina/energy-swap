@@ -9,6 +9,7 @@
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
 #include "../components/battery_display.hpp"
+#include "../data/puzzle.hpp"
 
 namespace energy {
 
@@ -44,8 +45,12 @@ private:
 	static constexpr auto sprite_sheet_name = "sprites";
 	static constexpr auto sprite_sheet_path = "resources/sprites/sprites.json";
 
-	auto toggle_batteries(int number) -> void;
-	static constexpr std::array battery_order{8, 4, 0, 1, 5, 9, 10, 6, 2, 3, 7, 11};
+	auto toggle_batteries(size_t number) -> void;
+	static constexpr std::array<size_t, 12> battery_order{8, 4, 0, 1, 5, 9, 10, 6, 2, 3, 7, 11};
+
+	puzzle current_puzzle_;
+
+	[[nodiscard]] auto setup_puzzle(const std::string &puzzle_str) -> engine::result<>;
 };
 
 } // namespace energy
