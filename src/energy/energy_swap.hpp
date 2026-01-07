@@ -45,11 +45,11 @@ private:
 
 	int license_scene_{-1};
 	int license_accepted_{0};
-	auto on_license_accepted() -> void;
+	auto on_license_accepted() -> engine::result<>;
 
 	int menu_scene_{-1};
 	int go_to_game_ {0};
-	auto on_go_to_game() -> void;
+	auto on_go_to_game() -> engine::result<>;
 
 	int game_scene_{-1};
 };

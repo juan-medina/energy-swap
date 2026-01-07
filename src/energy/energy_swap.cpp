@@ -3,11 +3,9 @@
 
 #include "energy_swap.hpp"
 
+#include "scenes/game.hpp"
 #include "scenes/license.hpp"
 #include "scenes/menu.hpp"
-#include "scenes/game.hpp"
-
-#include <spdlog/spdlog.h>
 
 auto energy::energy_swap::init() -> engine::result<> {
 	if(const auto err = app::init().ko(); err) {
@@ -39,28 +37,32 @@ auto energy::energy_swap::end() -> engine::result<> {
 	return app::end();
 }
 
-auto energy::energy_swap::on_license_accepted() -> void {
+auto energy::energy_swap::on_license_accepted() -> engine::result<> {
 	auto err = disable_scene(license_scene_).ko();
 	if(err) {
-		SPDLOG_ERROR("fail to disable license scene");
+		return engine::error("fail to disable license scene", *err);
 	}
 
 	if(err = enable_scene(menu_scene_).ko(); err) {
-		SPDLOG_ERROR("fail to enable menu scene");
+		return engine::error("fail to enable menu scene", *err);
 	}
 
 	if(err = play_music("resources/music/menu.ogg", 0.5F).ko(); err) {
-		SPDLOG_ERROR("fail to play menu music");
+		return engine::error("fail to play menu music", *err);
 	}
+
+	return true;
 }
 
-auto energy::energy_swap::on_go_to_game() -> void {
+auto energy::energy_swap::on_go_to_game() -> engine::result<> {
 	auto err = disable_scene(menu_scene_).ko();
 	if(err) {
-		SPDLOG_ERROR("fail to disable menu scene");
+		return engine::error("fail to disable menu scene", *err);
 	}
 
 	if(err = enable_scene(game_scene_).ko(); err) {
-		SPDLOG_ERROR("fail to enable game scene");
+		return engine::error("fail to enable game scene", *err);
 	}
+
+	return true;
 }

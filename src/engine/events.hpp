@@ -3,13 +3,14 @@
 
 #pragma once
 
-#include "spdlog/spdlog.h"
+#include "result.hpp"
 
 #include <algorithm>
 #include <functional>
 #include <map>
 #include <memory>
 #include <queue>
+#include <spdlog/spdlog.h>
 #include <typeindex>
 #include <typeinfo>
 #include <utility>
@@ -19,7 +20,6 @@ namespace engine {
 
 class event_bus {
 public:
-
 	event_bus() = default;
 	~event_bus() = default;
 
@@ -30,15 +30,15 @@ public:
 	auto operator=(event_bus &&) noexcept -> event_bus & = delete;
 
 	template<typename Event>
-	auto subscribe(std::function<void(const Event &)> handler) -> int {
+	auto subscribe(std::function<result<>(const Event &)> handler) -> int {
 		const auto key = std::type_index(typeid(Event));
 		const int token_id = ++last_token_;
 
 		auto wrapper = [wrapp_handler = std::move(handler)](const void *evt_ptr) -> auto {
-			wrapp_handler(*static_cast<const Event *>(evt_ptr));
+			return wrapp_handler(*static_cast<const Event *>(evt_ptr));
 		};
 
-		subscribers_[key].emplace_back(subscriber{.id = token_id, .fn = std::move(wrapper)});
+		subscribers_[key].emplace_back(subscriber{.id = token_id, .func = std::move(wrapper)});
 		return token_id;
 	}
 
@@ -67,26 +67,29 @@ public:
 #endif
 	}
 
-	auto dispatch() -> void {
+	[[nodiscard]] auto dispatch() -> result<> {
 		std::queue<queued_item> local_queue;
 		{
 			if(queued_.empty()) {
-				return;
+				return true;
 			}
 			std::swap(local_queue, queued_);
 		}
 
 		while(!local_queue.empty()) {
 			const auto &[type, payload] = local_queue.front();
-			dispatch_erased(type, payload.get());
+			if(const auto err = dispatch_erased(type, payload.get()).ko(); err) {
+				return error("dispatch erased failed", *err);
+			}
 			local_queue.pop();
 		}
+		return true;
 	}
 
 private:
 	struct subscriber {
 		int id{};
-		std::function<void(const void *)> fn;
+		std::function<result<>(const void *)> func;
 	};
 
 	struct queued_item {
@@ -98,21 +101,24 @@ private:
 	std::queue<queued_item> queued_;
 	int last_token_{0};
 
-	auto dispatch_erased(const std::type_index &type, const void *payload) -> void {
-		std::vector<std::function<void(const void *)>> handlers;
+	[[nodiscard]] auto dispatch_erased(const std::type_index &type, const void *payload) -> result<> {
+		std::vector<std::function<result<>(const void *)>> handlers;
 		{
 			const auto find = subscribers_.find(type);
 			if(find == subscribers_.end()) {
-				return;
+				return true;
 			}
 			handlers.reserve(find->second.size());
-			for(const auto &sub: find->second) {
-				handlers.push_back(sub.fn);
+			for(const auto &[event_id, func]: find->second) {
+				handlers.push_back(func);
 			}
 		}
 		for(const auto &func: handlers) {
-			func(payload);
+			if(const auto err = func(payload).ko(); err) {
+				return error("event handler function failed", *err);
+			}
 		}
+		return true;
 	}
 };
 

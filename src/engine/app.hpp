@@ -27,8 +27,8 @@ class app {
 public:
 	explicit app(
 		std::string name, std::string team, std::string title, std::string banner, const size design_resolution)
-		: name_{std::move(name)}, team_{std::move(team)}, title_{std::move(title)}, design_resolution_(design_resolution),
-		  banner_{std::move(banner)} {}
+		: name_{std::move(name)}, team_{std::move(team)}, title_{std::move(title)},
+		  design_resolution_(design_resolution), banner_{std::move(banner)} {}
 	virtual ~app() = default;
 
 	// Non-copyable
@@ -61,18 +61,18 @@ public:
 	}
 
 	template<typename Event>
-	auto subscribe(std::function<void(const Event &)> handler) -> int {
+	auto subscribe(std::function<result<>(const Event &)> handler) -> int {
 		return event_bus_.subscribe<Event>(std::move(handler));
 	}
 
 	template<typename Event, typename T, typename Func>
 	auto bind_event(T *instance, Func func) -> int {
-		return subscribe<Event>([instance, func](const Event &evt) -> auto { (instance->*func)(evt); });
+		return subscribe<Event>([instance, func](const Event &evt) -> result<> { return (instance->*func)(evt); });
 	}
 
 	template<typename Event, typename T, typename Func>
 	auto on_event(T *instance, Func func) -> int {
-		return subscribe<Event>([instance, func](const Event &) -> auto { (instance->*func)(); });
+		return subscribe<Event>([instance, func](const Event &) -> result<> { return (instance->*func)(); });
 	}
 
 	auto unsubscribe(const int token) -> void {

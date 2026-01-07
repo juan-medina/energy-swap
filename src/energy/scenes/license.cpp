@@ -85,10 +85,11 @@ auto license::layout(const engine::size screen_size) -> void {
 	accept_button_.set_position({.x = button_x, .y = button_y});
 }
 
-auto license::on_button_click(const engine::button::click &evt) -> void {
+auto license::on_button_click(const engine::button::click &evt) -> engine::result<> {
 	if(evt.id == accept_button_.get_id()) {
 		get_app().post_event(accepted{});
 	}
+	return true;
 }
 
 } // namespace energy

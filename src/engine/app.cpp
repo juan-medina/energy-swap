@@ -142,7 +142,9 @@ auto engine::app::update() -> result<> {
 	}
 
 	// dispatch events
-	event_bus_.dispatch();
+	if(const auto err = event_bus_.dispatch().ko(); err) {
+		return error("error dispatching events", *err);
+	}
 
 	update_music_stream();
 

@@ -32,7 +32,10 @@ auto game_overlay::init(app &app) -> result<> {
 	}
 
 	using click = version_display::click;
-	click_ = get_app().subscribe<click>([](const click &) -> void { open_url("https://juan-medina.com"); });
+	click_ = get_app().subscribe<click>([](const click &) -> result<> {
+		open_url("https://juan-medina.com");
+		return true;
+	});
 
 	return true;
 }

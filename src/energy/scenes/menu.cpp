@@ -83,10 +83,11 @@ auto menu::layout(const engine::size screen_size) -> void {
 	});
 }
 
-auto menu::on_button_click(const engine::button::click &evt) -> void {
+auto menu::on_button_click(const engine::button::click &evt) -> engine::result<> {
 	if(evt.id == play_button_.get_id()) {
 		get_app().post_event(go_to_game{});
 	}
+	return true;
 }
 
 } // namespace energy
