@@ -3,6 +3,8 @@
 
 #include "battery_display.hpp"
 
+#include "../../engine/app.hpp"
+
 #include <spdlog/spdlog.h>
 
 namespace energy {
@@ -51,29 +53,21 @@ auto battery_display::update(const float delta) -> engine::result<> {
 	}
 	assert(battery_.has_value() && "Battery reference not set for battery display");
 
+	hover_ = false;
 	set_tint(WHITE);
 
-	bool hover = false;
 	if(const auto &bat = battery_->get(); bat.closed()) {
 		set_tint(energy_colors.at(battery_->get().at(0)));
 	} else {
 		if(point_inside(GetMousePosition())) {
-			hover = true;
-
+			hover_ = true;
 			if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-				selected_ = !selected_;
+				get_app().post_event(click{idx_});
 			}
 		}
 	}
 
-	set_scale(1.0F);
-	if(selected_ && hover) {
-		set_scale(hover_selected_scale);
-	} else if(selected_) {
-		set_scale(selected_scale);
-	} else if(hover) {
-		set_scale(hover_scale);
-	}
+	adjust_scale();
 
 	for(size_t i = 0; i < segments_.size(); ++i) {
 		const auto color_index = battery_->get().at(i);
@@ -92,6 +86,11 @@ void battery_display::set_scale(float scale) {
 	readjust_segments();
 }
 
+auto battery_display::set_selected(const bool selected) -> void {
+	selected_ = selected;
+	adjust_scale();
+}
+
 auto battery_display::readjust_segments() -> void {
 	const auto pos = get_position();
 	Vector2 segment_pos = pos;
@@ -99,6 +98,17 @@ auto battery_display::readjust_segments() -> void {
 	for(auto &segment: segments_) {
 		segment_pos.y -= (10.0F * get_scale());
 		segment.set_position(segment_pos);
+	}
+}
+
+auto battery_display::adjust_scale() -> void {
+	set_scale(1.0F);
+	if(selected_ && hover_) {
+		set_scale(hover_selected_scale);
+	} else if(selected_) {
+		set_scale(selected_scale);
+	} else if(hover_) {
+		set_scale(hover_scale);
 	}
 }
 

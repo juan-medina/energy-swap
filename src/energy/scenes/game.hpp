@@ -51,6 +51,9 @@ private:
 	puzzle current_puzzle_;
 
 	[[nodiscard]] auto setup_puzzle(const std::string &puzzle_str) -> engine::result<>;
+
+	int battery_click_;
+	auto on_battery_click(const battery_display::click &click) -> engine::result<>;
 };
 
 } // namespace energy

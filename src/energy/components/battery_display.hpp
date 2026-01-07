@@ -29,6 +29,24 @@ public:
 
 	auto set_scale(float scale) -> void override;
 
+	auto set_id(const size_t &idx) -> void {
+		idx_ = idx;
+	}
+
+	[[nodiscard]] auto get_id() const -> size_t {
+		return idx_;
+	}
+
+	[[nodiscard]] auto is_selected() const -> bool {
+		return selected_;
+	}
+
+	auto set_selected(bool selected) -> void;
+
+	struct click {
+		size_t index;
+	};
+
 private:
 	static constexpr auto hover_scale = 1.25F;
 	static constexpr auto selected_scale = 1.4F;
@@ -52,7 +70,11 @@ private:
 	}};
 
 	auto readjust_segments() -> void;
+	auto adjust_scale() -> void;
+
+	bool hover_ = false;
 	bool selected_ = false;
+	size_t idx_ = 0;
 };
 
 } // namespace energy

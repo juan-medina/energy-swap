@@ -38,9 +38,12 @@ auto game::init(engine::app &app) -> engine::result<> {
 	for(const auto index: std::views::iota(0, max_batteries)) {
 		const auto ordered = battery_order.at(index);
 		battery_displays_.at(index).set_battery(batteries_.at(ordered));
+		battery_displays_.at(index).set_id(index);
 	}
 
-	if(const auto err = setup_puzzle("577016603334600013562444100015772225-14").ko(); err) {
+	battery_click_ = app.bind_event<battery_display::click>(this, &game::on_battery_click);
+
+	if(const auto err = setup_puzzle("577016603334600013562444100015772225-1").ko(); err) {
 		return engine::error("failed to setup puzzle", *err);
 	}
 
@@ -136,6 +139,37 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> engine::result<> {
 
 	for(auto i = static_cast<size_t>(0); i < total_batteries; ++i) {
 		batteries_.at(i) = current_puzzle_.at(i);
+	}
+
+	return true;
+}
+
+auto game::on_battery_click(const battery_display::click &click) -> engine::result<> {
+	const auto clicked_index = battery_order.at(click.index);
+
+	// use std find to locate if we have a selected battery
+	const auto selected_it =
+		std::ranges::find_if(battery_displays_, [](const battery_display &battery_display) -> bool {
+			return battery_display.is_selected();
+		});
+
+	// if we have none
+	if(selected_it == battery_displays_.end()) {
+		// select the clicked battery if it's not closed
+		if(!batteries_.at(clicked_index).closed()) {
+			battery_displays_.at(click.index).set_selected(true);
+		}
+		return true;
+	}
+
+	// deselect it
+	battery_displays_.at(selected_it->get_id()).set_selected(false);
+
+	const auto selected_index = battery_order.at(selected_it->get_id());
+	auto &from_battery = batteries_.at(selected_index);
+
+	if(auto &to_battery = batteries_.at(clicked_index); to_battery.can_get_from(from_battery)) {
+		to_battery.transfer_energy_from(from_battery);
 	}
 
 	return true;
