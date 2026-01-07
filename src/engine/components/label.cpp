@@ -56,7 +56,7 @@ auto engine::label::set_text(const std::string &text) -> void {
 	text_ = text;
 	calculate_size();
 }
-auto engine::label::set_font_size(float size) -> void {
+auto engine::label::set_font_size(const float &size) -> void {
 	ui_component::set_font_size(size);
 	calculate_size();
 }

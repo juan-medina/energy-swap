@@ -7,6 +7,13 @@
 
 namespace engine {
 
+auto sprite::init(app &app) -> result<> {
+	if(const auto err = component::init(app).ko(); err) {
+		return error("failed to initialize base component", *err);
+	}
+	return error("sprite component requires sprite sheet and frame to be initialize");
+}
+
 auto sprite::init(app &app, const std::string &sprite_sheet, const std::string &frame) -> result<> {
 	if(const auto err = component::init(app).ko(); err) {
 		return error("failed to initialize base UI component", *err);

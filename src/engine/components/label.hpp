@@ -32,7 +32,7 @@ public:
 		return text_;
 	}
 
-	auto set_font_size(float size) -> void;
+	auto set_font_size(const float &size) -> void override;
 
 private:
 	std::string text_{"label"};

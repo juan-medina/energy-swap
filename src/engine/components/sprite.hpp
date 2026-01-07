@@ -4,7 +4,7 @@
 #pragma once
 
 #include "../scenes/scene.hpp"
-#include "ui_component.hpp"
+#include "component.hpp"
 
 #include <raylib.h>
 
@@ -23,6 +23,7 @@ public:
 	sprite(sprite &&) noexcept = delete;
 	auto operator=(sprite &&) noexcept -> sprite & = delete;
 
+	[[nodiscard]] auto init(app &app) -> result<> override;
 	[[nodiscard]] auto init(app &app, const std::string &sprite_sheet, const std::string &frame) -> result<>;
 	[[nodiscard]] auto end() -> result<> override;
 
