@@ -34,9 +34,21 @@ public:
 		tint_ = tint;
 	}
 
+	virtual auto set_scale(float scale) -> void;
+
+	[[nodiscard]] auto get_scale() const -> float {
+		return scale_;
+	}
+
+	[[nodiscard]] auto point_inside(Vector2 point) const -> bool override;
+
 private:
 	Color tint_ = WHITE;
 	std::string sprite_sheet_;
 	std::string frame_;
+	float scale_ = 1.0F;
+
+	size original_size_;
+	Vector2 pivot_{};
 };
 } // namespace engine

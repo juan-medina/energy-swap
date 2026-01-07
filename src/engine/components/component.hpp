@@ -54,7 +54,7 @@ public:
 		pos_ = pos;
 	}
 
-	[[nodiscard]] auto get_pos() const -> const Vector2 & {
+	[[nodiscard]] auto get_position() const -> const Vector2 & {
 		return pos_;
 	}
 
@@ -70,7 +70,7 @@ public:
 		return CheckCollisionPointRec(point, {.x = pos.x, .y = pos.y, .width = size.width, .height = size.height});
 	}
 
-	[[nodiscard]] auto point_inside(const Vector2 point) const -> bool {
+	[[nodiscard]] virtual auto point_inside(const Vector2 point) const -> bool {
 		return point_inside(pos_, size_, point);
 	}
 
@@ -92,7 +92,6 @@ protected:
 		assert(app_.has_value() && "app is not set");
 		return app_->get();
 	}
-
 private:
 	std::optional<std::reference_wrapper<app>> app_;
 	Vector2 pos_{};

@@ -41,7 +41,7 @@ auto button::draw() -> result<> {
 		return true;
 	}
 
-	const auto [x, y] = get_pos();
+	const auto [x, y] = get_position();
 	const auto [width, height] = get_size();
 
 	GuiSetFont(get_font());

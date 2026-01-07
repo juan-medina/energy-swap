@@ -22,6 +22,21 @@ auto sprite::init(app &app, const std::string &sprite_sheet, const std::string &
 	sprite_sheet_ = sprite_sheet;
 	frame_ = frame;
 
+	auto [size, err] = app.get_sprite_size(sprite_sheet_, frame_).ok();
+	if(err) {
+		return error("failed to get sprite size", *err);
+	}
+
+	original_size_ = *size;
+	set_size(original_size_);
+
+	std::optional<Vector2> pivot;
+	std::tie(pivot, err) = app.get_sprite_pivot(sprite_sheet_, frame_).ok();
+	if(err) {
+		return error("failed to get sprite pivot", *err);
+	}
+	pivot_ = *pivot;
+
 	return true;
 }
 
@@ -37,10 +52,23 @@ auto sprite::draw() -> result<> {
 		return true;
 	}
 
-	if(const auto err = get_app().draw_sprite(sprite_sheet_, frame_, get_pos(), tint_).ko(); err) {
+	if(const auto err = get_app().draw_sprite(sprite_sheet_, frame_, get_position(), scale_, tint_).ko(); err) {
 		return error("failed to draw sprite", *err);
 	}
 	return component::draw();
+}
+
+auto sprite::set_scale(const float scale) -> void {
+	scale_ = scale;
+	set_size({.width = original_size_.width * scale_, .height = original_size_.height * scale_});
+}
+auto sprite::point_inside(const Vector2 point) const -> bool {
+	const auto [pos_x, pos_y] = get_position();
+	const auto size = get_size();
+	const auto [pivot_x, pivot_y] = pivot_;
+
+	return component::point_inside(
+		{.x = pos_x - (pivot_x * size.width), .y = pos_y - (pivot_y * size.height)}, size, point);
 }
 
 } // namespace engine

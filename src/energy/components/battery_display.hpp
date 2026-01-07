@@ -27,7 +27,11 @@ public:
 	auto set_position(const Vector2 &pos) -> void override;
 	[[nodiscard]] auto update(float delta) -> engine::result<> override;
 
+	auto set_scale(float scale) -> void override;
+
 private:
+	static constexpr auto hover_scale = 1.50F;
+
 	std::optional<std::reference_wrapper<battery>> battery_;
 	std::array<sprite, 4> segments_;
 
@@ -44,6 +48,8 @@ private:
 		{.r = 0xE3, .g = 0x77, .b = 0xC2, .a = 0xFF}, // pink
 		{.r = 0x1F, .g = 0x77, .b = 0xB4, .a = 0xFF}, // blue
 	}};
+
+	auto readjust_segments()-> void;
 };
 
 } // namespace energy

@@ -42,13 +42,9 @@ auto battery_display::draw() -> engine::result<> {
 
 void battery_display::set_position(const Vector2 &pos) {
 	sprite::set_position(pos);
-	Vector2 segment_pos = pos;
-	segment_pos.y = pos.y + 30.0F;
-	for(auto &segment: segments_) {
-		segment_pos.y -= 10.0F;
-		segment.set_position(segment_pos);
-	}
+	readjust_segments();
 }
+
 auto battery_display::update(const float delta) -> engine::result<> {
 	if(!is_visible()) {
 		return true;
@@ -56,8 +52,14 @@ auto battery_display::update(const float delta) -> engine::result<> {
 	assert(battery_.has_value() && "Battery reference not set for battery display");
 
 	set_tint(WHITE);
+
+	set_scale(1.0F);
 	if(const auto &bat = battery_->get(); bat.closed()) {
 		set_tint(energy_colors.at(battery_->get().at(0)));
+	} else {
+		if(point_inside(GetMousePosition())) {
+			set_scale(hover_scale);
+		}
 	}
 
 	for(size_t i = 0; i < segments_.size(); ++i) {
@@ -67,6 +69,24 @@ auto battery_display::update(const float delta) -> engine::result<> {
 	}
 
 	return sprite::update(delta);
+}
+
+void battery_display::set_scale(float scale) {
+	sprite::set_scale(scale);
+	for(auto &segment: segments_) {
+		segment.set_scale(scale);
+	}
+	readjust_segments();
+}
+
+auto battery_display::readjust_segments() -> void {
+	const auto pos = get_position();
+	Vector2 segment_pos = pos;
+	segment_pos.y = pos.y + (29.0F * get_scale());
+	for(auto &segment: segments_) {
+		segment_pos.y -= (10.0F * get_scale());
+		segment.set_position(segment_pos);
+	}
 }
 
 } // namespace energy

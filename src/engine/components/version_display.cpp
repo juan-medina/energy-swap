@@ -95,7 +95,7 @@ auto version_display::draw() -> result<> {
 		return true;
 	}
 
-	const auto pos = get_pos();
+	const auto pos = get_position();
 	draw_parts({.x = pos.x + shadow_offset_, .y = pos.y + shadow_offset_}, true);
 	draw_parts(pos, false);
 

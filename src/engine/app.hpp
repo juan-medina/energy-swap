@@ -91,7 +91,14 @@ public:
 	[[nodiscard]] auto draw_sprite(const std::string &sprite_sheet,
 								   const std::string &frame,
 								   const Vector2 &position,
+								   const float &scale,
 								   const Color &tint = WHITE) -> result<>;
+
+	[[nodiscard]] auto get_sprite_size(const std::string &sprite_sheet,
+									   const std::string &frame) const -> result<size>;
+
+	[[nodiscard]] auto get_sprite_pivot(const std::string &sprite_sheet,
+									   const std::string &frame) const -> result<Vector2>;
 
 protected:
 	[[nodiscard]] virtual auto init() -> result<>;

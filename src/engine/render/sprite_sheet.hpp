@@ -29,10 +29,13 @@ public:
 
 	auto init(const std::string &path) -> result<>;
 	auto end() -> result<>;
-	[[nodiscard]] auto draw(const std::string &frame_name, const Vector2 &pos, const Color &tint = WHITE) const
+	[[nodiscard]] auto
+	draw(const std::string &frame_name, const Vector2 &pos, const float &scale, const Color &tint = WHITE) const
 		-> result<>;
 
 	[[nodiscard]] auto frame_size(const std::string &frame_name) const -> result<size>;
+
+	[[nodiscard]] auto frame_pivot(const std::string &frame_name) const -> result<Vector2>;
 
 private:
 	struct frame {

@@ -49,7 +49,8 @@ auto sprite_sheet::end() -> result<> {
 	}
 	return true;
 }
-auto sprite_sheet::draw(const std::string &frame_name, const Vector2 &pos, const Color &tint) const -> result<> {
+auto sprite_sheet::draw(const std::string &frame_name, const Vector2 &pos, const float &scale, const Color &tint) const
+	-> result<> {
 	const auto frame_entry = frames_.find(frame_name);
 	if(frame_entry == frames_.end()) {
 		return error(std::format("frame not found in sprite sheet: {}", frame_name));
@@ -57,10 +58,10 @@ auto sprite_sheet::draw(const std::string &frame_name, const Vector2 &pos, const
 
 	const auto &[origin, pivot] = frame_entry->second;
 	const Rectangle destination = {
-		.x = pos.x - (pivot.x * origin.width),
-		.y = pos.y - (pivot.y * origin.height),
-		.width = origin.width,
-		.height = origin.height,
+		.x = pos.x - (pivot.x * origin.width * scale),
+		.y = pos.y - (pivot.y * origin.height * scale),
+		.width = origin.width * scale,
+		.height = origin.height * scale,
 	};
 
 	if(const auto err = texture_.draw(origin, destination, tint, 0.0F, Vector2{.x = 0.0F, .y = 0.0F}).ko(); err) {
@@ -77,6 +78,15 @@ auto sprite_sheet::frame_size(const std::string &frame_name) const -> result<siz
 	}
 	const auto &[origin, pivot] = frame_entry->second;
 	return size{.width = origin.width, .height = origin.height};
+}
+
+auto sprite_sheet::frame_pivot(const std::string &frame_name) const -> result<Vector2> {
+	const auto frame_entry = frames_.find(frame_name);
+	if(frame_entry == frames_.end()) {
+		return error(std::format("frame not found in sprite sheet: {}", frame_name));
+	}
+	const auto &[origin, pivot] = frame_entry->second;
+	return pivot;
 }
 
 auto sprite_sheet::parse_frames(const jsoncons::json &parser) -> result<> {

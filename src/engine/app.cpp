@@ -385,16 +385,36 @@ auto app::unload_sprite_sheet(const std::string &name) -> result<> {
 auto app::draw_sprite(const std::string &sprite_sheet,
 					  const std::string &frame,
 					  const Vector2 &position,
+					  const float &scale,
 					  const Color &tint) -> result<> {
 	const auto find = sprite_sheets_.find(sprite_sheet);
 	if(find == sprite_sheets_.end()) {
 		return error(std::format("can't draw sprite, sprite sheet: {}, is not loaded", sprite_sheet));
 	}
 	const auto &sheet = find->second;
-	if(const auto err = sheet.draw(frame, position, tint).ko(); err) {
+	if(const auto err = sheet.draw(frame, position, scale, tint).ko(); err) {
 		return error(std::format("failed to draw frame {} from sprite sheet {}", frame, sprite_sheet), *err);
 	}
 	return true;
+}
+auto app::get_sprite_size(const std::string &sprite_sheet, const std::string &frame) const -> result<size> {
+	const auto find = sprite_sheets_.find(sprite_sheet);
+	if(find == sprite_sheets_.end()) {
+		return error(std::format("can't get sprite size, sprite sheet: {}, is not loaded", sprite_sheet));
+	}
+	const auto &sheet = find->second;
+
+	return sheet.frame_size(frame);
+}
+
+auto app::get_sprite_pivot(const std::string &sprite_sheet, const std::string &frame) const -> result<Vector2> {
+	const auto find = sprite_sheets_.find(sprite_sheet);
+	if(find == sprite_sheets_.end()) {
+		return error(std::format("can't get sprite pivot, sprite sheet: {}, is not loaded", sprite_sheet));
+	}
+	const auto &sheet = find->second;
+
+	return sheet.frame_pivot(frame);
 }
 
 auto app::set_default_font(const Font &font, const int size, const int texture_filter) -> void {

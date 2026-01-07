@@ -46,7 +46,7 @@ auto scroll_text::draw() -> result<> {
 	GuiSetFont(get_font());
 	GuiSetStyle(DEFAULT, TEXT_SIZE, static_cast<int>(get_font_size()));
 
-	auto [x, y] = get_pos();
+	auto [x, y] = get_position();
 	const auto [width, height] = get_size();
 	const auto bound = Rectangle{.x = x, .y = y, .width = width, .height = height};
 	GuiScrollPanel(bound, title_.c_str(), content_, &scroll_, &view_);

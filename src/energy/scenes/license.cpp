@@ -81,7 +81,7 @@ auto license::layout(const engine::size screen_size) -> void {
 
 	const auto [width, height] = accept_button_.get_size();
 	float const button_x = (screen_size.width - width) / 2.0F;
-	float const button_y = scroll_text_.get_pos().y + scroll_text_.get_size().height + 10;
+	float const button_y = scroll_text_.get_position().y + scroll_text_.get_size().height + 10;
 	accept_button_.set_position({.x = button_x, .y = button_y});
 }
 
