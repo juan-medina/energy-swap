@@ -53,13 +53,26 @@ auto battery_display::update(const float delta) -> engine::result<> {
 
 	set_tint(WHITE);
 
-	set_scale(1.0F);
+	bool hover = false;
 	if(const auto &bat = battery_->get(); bat.closed()) {
 		set_tint(energy_colors.at(battery_->get().at(0)));
 	} else {
 		if(point_inside(GetMousePosition())) {
-			set_scale(hover_scale);
+			hover = true;
+
+			if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+				selected_ = !selected_;
+			}
 		}
+	}
+
+	set_scale(1.0F);
+	if(selected_ && hover) {
+		set_scale(hover_selected_scale);
+	} else if(selected_) {
+		set_scale(selected_scale);
+	} else if(hover) {
+		set_scale(hover_scale);
 	}
 
 	for(size_t i = 0; i < segments_.size(); ++i) {

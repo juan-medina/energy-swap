@@ -30,7 +30,9 @@ public:
 	auto set_scale(float scale) -> void override;
 
 private:
-	static constexpr auto hover_scale = 1.50F;
+	static constexpr auto hover_scale = 1.25F;
+	static constexpr auto selected_scale = 1.4F;
+	static constexpr auto hover_selected_scale = 1.5F;
 
 	std::optional<std::reference_wrapper<battery>> battery_;
 	std::array<sprite, 4> segments_;
@@ -49,7 +51,8 @@ private:
 		{.r = 0x1F, .g = 0x77, .b = 0xB4, .a = 0xFF}, // blue
 	}};
 
-	auto readjust_segments()-> void;
+	auto readjust_segments() -> void;
+	bool selected_ = false;
 };
 
 } // namespace energy
