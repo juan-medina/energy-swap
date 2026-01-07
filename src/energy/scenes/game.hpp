@@ -5,10 +5,10 @@
 
 #include "../../engine/app.hpp"
 #include "../../engine/components/label.hpp"
-#include "../../engine/components/sprite.hpp"
 #include "../../engine/events.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
+#include "../components/battery_display.hpp"
 
 namespace energy {
 
@@ -38,11 +38,11 @@ private:
 	static constexpr auto large_font_size = 20;
 
 	static constexpr auto max_batteries = 12;
-	std::array<engine::sprite, max_batteries> battery_sprites_;
+	std::array<battery_display, max_batteries> battery_displays_;
+	std::array<battery, max_batteries> batteries_;
 
 	static constexpr auto sprite_sheet_name = "sprites";
 	static constexpr auto sprite_sheet_path = "resources/sprites/sprites.json";
-	static constexpr auto sprite_frame = "battery.png";
 
 	auto toggle_batteries(int number) -> void;
 	static constexpr std::array battery_order{8, 4, 0, 1, 5, 9, 10, 6, 2, 3, 7, 11};

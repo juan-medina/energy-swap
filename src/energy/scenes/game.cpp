@@ -5,6 +5,7 @@
 
 #include "../../engine/app.hpp"
 
+#include <ranges>
 #include <spdlog/spdlog.h>
 
 namespace energy {
@@ -27,15 +28,27 @@ auto game::init(engine::app &app) -> engine::result<> {
 		return engine::error("failed to initialize sprite sheet", *err);
 	}
 
-	for(auto &sprite: battery_sprites_) {
-		if(const auto err = sprite.init(app, sprite_sheet_name, sprite_frame).ko(); err) {
+	for(auto &battery_display: battery_displays_) {
+		if(const auto err = battery_display.init(app).ko(); err) {
 			return engine::error("failed to initialize battery sprite", *err);
 		}
-		sprite.set_visible(false);
+		battery_display.set_visible(false);
 	}
 
-	// show 6 batteries at start
+	for(const auto index: std::views::iota(0, max_batteries)) {
+		const auto ordered = battery_order.at(index);
+		battery_displays_.at(index).set_battery(batteries_.at(ordered));
+	}
+
+	// TEST SETUP
 	toggle_batteries(6);
+	batteries_.at(0).add(1);
+	batteries_.at(1).add(1);
+	batteries_.at(1).add(1);
+	batteries_.at(2).add(1);
+	batteries_.at(2).add(1);
+	batteries_.at(2).add(1);
+	batteries_.at(2).add(1);
 
 	return true;
 }
@@ -49,7 +62,7 @@ auto game::end() -> engine::result<> {
 		return engine::error("failed to end sprite sheet", *err);
 	}
 
-	for(auto &sprite: battery_sprites_) {
+	for(auto &sprite: battery_displays_) {
 		if(const auto err = sprite.end().ko(); err) {
 			return engine::error("failed to end battery sprite", *err);
 		}
@@ -67,7 +80,7 @@ auto game::draw() -> engine::result<> {
 		return engine::error("failed to draw title label", *err);
 	}
 
-	for(auto &sprite: battery_sprites_) {
+	for(auto &sprite: battery_displays_) {
 		if(const auto err = sprite.draw().ko(); err) {
 			return engine::error("failed to draw battery sprite", *err);
 		}
@@ -99,7 +112,7 @@ auto game::layout(const engine::size screen_size) -> void {
 		auto const col = i % cols;
 		auto const pos_x = start_x + (battery_width * static_cast<float>(col)) + (battery_width / 2.0F);
 		auto const pos_y = start_y + (battery_height * static_cast<float>(row)) + (battery_height / 2.0F);
-		battery_sprites_.at(i).set_position({.x = pos_x, .y = pos_y});
+		battery_displays_.at(i).set_position({.x = pos_x, .y = pos_y});
 	}
 }
 
@@ -108,7 +121,7 @@ auto game::layout(const engine::size screen_size) -> void {
 auto game::toggle_batteries(const int number) -> void {
 	int index = 0;
 	for(const auto battery_num: battery_order) {
-		battery_sprites_.at(index).set_visible(battery_num < number);
+		battery_displays_.at(index).set_visible(battery_num < number);
 		++index;
 	}
 }
