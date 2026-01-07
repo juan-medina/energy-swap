@@ -43,12 +43,16 @@ auto game::init(engine::app &app) -> engine::result<> {
 	// TEST SETUP
 	toggle_batteries(6);
 	batteries_.at(0).add(1);
-	batteries_.at(1).add(1);
-	batteries_.at(1).add(1);
-	batteries_.at(2).add(1);
-	batteries_.at(2).add(1);
-	batteries_.at(2).add(1);
-	batteries_.at(2).add(1);
+	batteries_.at(1).add(2);
+	batteries_.at(1).add(2);
+	batteries_.at(2).add(3);
+	batteries_.at(2).add(3);
+	batteries_.at(2).add(4);
+	batteries_.at(2).add(4);
+	batteries_.at(3).add(5);
+	batteries_.at(3).add(5);
+	batteries_.at(3).add(5);
+	batteries_.at(3).add(5);
 
 	return true;
 }
@@ -64,14 +68,20 @@ auto game::end() -> engine::result<> {
 
 	for(auto &sprite: battery_displays_) {
 		if(const auto err = sprite.end().ko(); err) {
-			return engine::error("failed to end battery sprite", *err);
+			return engine::error("failed to end battery display", *err);
 		}
 	}
 
 	return scene::end();
 }
 
-auto game::update(const float /*delta*/) -> engine::result<> {
+auto game::update(const float delta) -> engine::result<> {
+
+	for(auto &sprite: battery_displays_) {
+		if(const auto err = sprite.update(delta).ko(); err) {
+			return engine::error("failed to update battery display", *err);
+		}
+	}
 	return true;
 }
 

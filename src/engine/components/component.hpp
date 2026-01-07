@@ -50,7 +50,7 @@ public:
 		return true;
 	}
 
-	auto set_position(const Vector2 &pos) -> void {
+	virtual auto set_position(const Vector2 &pos) -> void {
 		pos_ = pos;
 	}
 

@@ -33,7 +33,14 @@ public:
 
 	[[nodiscard]] auto can_get_from(const battery &other) const -> bool;
 
-	void transfer_energy_from(battery& other);
+	auto transfer_energy_from(battery &other) -> void;
+
+	[[nodiscard]] auto at(const int index) const -> int {
+		if(index < 0 || static_cast<size_t>(index) >= energies_.size()) {
+			return 0;
+		}
+		return energies_.at(static_cast<size_t>(index));
+	}
 
 private:
 	enum class state : std::uint8_t { normal, empty, full, closed };
