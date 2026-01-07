@@ -3,10 +3,8 @@
 
 #pragma once
 
-#include "../../engine/app.hpp"
 #include "../../engine/components/button.hpp"
 #include "../../engine/components/scroll_text.hpp"
-#include "../../engine/events.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
 
@@ -39,7 +37,7 @@ private:
 	static constexpr auto license_path = "resources/license/license.txt";
 	engine::scroll_text scroll_text_;
 	engine::button accept_button_;
-	engine::event_bus::token_t button_click_{0};
+	int button_click_{0};
 
 	auto on_button_click(const engine::button::click &evt) -> void;
 };

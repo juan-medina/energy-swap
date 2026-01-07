@@ -40,7 +40,7 @@ private:
 	static constexpr auto large_font_size = 20;
 
 	engine::button play_button_;
-	engine::event_bus::token_t button_click_{0};
+	int button_click_{0};
 
 	auto on_button_click(const engine::button::click &evt) -> void;
 };

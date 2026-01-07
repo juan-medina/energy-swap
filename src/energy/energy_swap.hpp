@@ -44,11 +44,11 @@ private:
 	static constexpr engine::size design_resolution{.width = 640, .height = 360};
 
 	int license_scene_{-1};
-	engine::event_bus::token_t license_accepted_{0};
+	int license_accepted_{0};
 	auto on_license_accepted() -> void;
 
 	int menu_scene_{-1};
-	engine::event_bus::token_t go_to_game_ {0};
+	int go_to_game_ {0};
 	auto on_go_to_game() -> void;
 
 	int game_scene_{-1};

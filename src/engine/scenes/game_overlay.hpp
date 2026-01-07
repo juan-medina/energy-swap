@@ -32,7 +32,7 @@ public:
 private:
 	version_display version_display_;
 	static constexpr auto margin = 10.0F;
-	event_bus::token_t click_{0};
+	int click_{0};
 	static auto open_url(const std::string &url) -> result<>;
 };
 

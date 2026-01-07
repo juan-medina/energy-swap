@@ -19,7 +19,6 @@ namespace engine {
 
 class event_bus {
 public:
-	using token_t = std::size_t;
 
 	event_bus() = default;
 	~event_bus() = default;
@@ -31,9 +30,9 @@ public:
 	auto operator=(event_bus &&) noexcept -> event_bus & = delete;
 
 	template<typename Event>
-	auto subscribe(std::function<void(const Event &)> handler) -> token_t {
+	auto subscribe(std::function<void(const Event &)> handler) -> int {
 		const auto key = std::type_index(typeid(Event));
-		const token_t token_id = ++last_token_;
+		const int token_id = ++last_token_;
 
 		auto wrapper = [wrapp_handler = std::move(handler)](const void *evt_ptr) -> auto {
 			wrapp_handler(*static_cast<const Event *>(evt_ptr));
@@ -43,7 +42,7 @@ public:
 		return token_id;
 	}
 
-	auto unsubscribe(const token_t token) -> void {
+	auto unsubscribe(const int token) -> void {
 		for(auto it = subscribers_.begin(); it != subscribers_.end();) {
 			auto &vec = it->second;
 			std::erase_if(vec, [token](const subscriber &sub) -> bool { return sub.id == token; });
@@ -86,7 +85,7 @@ public:
 
 private:
 	struct subscriber {
-		token_t id{};
+		int id{};
 		std::function<void(const void *)> fn;
 	};
 
@@ -97,7 +96,7 @@ private:
 
 	std::map<std::type_index, std::vector<subscriber>> subscribers_;
 	std::queue<queued_item> queued_;
-	token_t last_token_{0};
+	int last_token_{0};
 
 	auto dispatch_erased(const std::type_index &type, const void *payload) -> void {
 		std::vector<std::function<void(const void *)>> handlers;
