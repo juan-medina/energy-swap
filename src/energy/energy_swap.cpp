@@ -66,6 +66,10 @@ auto energy_swap::on_go_to_game() -> engine::result<> {
 		return engine::error("fail to enable game scene", *err);
 	}
 
+	if(err = play_music("resources/music/game.ogg", 0.5F).ko(); err) {
+		return engine::error("fail to play menu music", *err);
+	}
+
 	return true;
 }
 
