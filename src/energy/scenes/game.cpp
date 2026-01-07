@@ -147,23 +147,24 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> engine::result<> {
 auto game::on_battery_click(const battery_display::click &click) -> engine::result<> {
 	const auto clicked_index = battery_order.at(click.index);
 
-	// use std find to locate if we have a selected battery
-	const auto selected_it =
+	// find if we have a selected battery
+	//	clang-tidy, only in WSL2, complains that we should use auto *const, when this is not a pointer
+	const auto selected_it = // NOLINT(*-qualified-auto)
 		std::ranges::find_if(battery_displays_, [](const battery_display &battery_display) -> bool {
 			return battery_display.is_selected();
 		});
 
 	// if we have none
 	if(selected_it == battery_displays_.end()) {
-		// select the clicked battery if it's not closed
-		if(!batteries_.at(clicked_index).closed()) {
+		// select the clicked battery if it's not closed or empty
+		if(!batteries_.at(clicked_index).closed() && !batteries_.at(clicked_index).empty()) {
 			battery_displays_.at(click.index).set_selected(true);
 		}
 		return true;
 	}
 
 	// deselect it
-	battery_displays_.at(selected_it->get_id()).set_selected(false);
+	selected_it->set_selected(false);
 
 	const auto selected_index = battery_order.at(selected_it->get_id());
 	auto &from_battery = batteries_.at(selected_index);
