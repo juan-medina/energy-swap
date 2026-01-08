@@ -263,6 +263,8 @@ auto app::enable_scene(const int scene_id, const bool enabled) -> result<> {
 					*enable_err);
 			}
 			SPDLOG_DEBUG("enabled scene with id: {} name: {}", scene_id, scene_info_res->get().name);
+			// layout on enable
+			scene_info_res->get().scene_ptr->layout(drawing_resolution_);
 		} else {
 			if(const auto disable_err = scene_info_res->get().scene_ptr->disable().ko(); disable_err) {
 				return error(

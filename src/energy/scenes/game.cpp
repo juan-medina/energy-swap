@@ -23,8 +23,13 @@ auto game::init(engine::app &app) -> engine::result<> {
 		return engine::error("failed to initialize title label", *err);
 	}
 
-	title_.set_text("Level 1");
-	title_.set_font_size(30);
+	if(const auto err = back_button_.init(app).ko(); err) {
+		return engine::error("failed to initialize back button", *err);
+	}
+
+	if(const auto err = next_button_.init(app).ko(); err) {
+		return engine::error("failed to initialize next button", *err);
+	}
 
 	if(const auto err = app.load_sprite_sheet(sprite_sheet_name, sprite_sheet_path).ko(); err) {
 		return engine::error("failed to initialize sprite sheet", *err);
@@ -45,12 +50,28 @@ auto game::init(engine::app &app) -> engine::result<> {
 
 	battery_click_ = app.bind_event<battery_display::click>(this, &game::on_battery_click);
 
+	back_button_.set_text("Back");
+	back_button_.set_position({.x = 0, .y = 0});
+	back_button_.set_size({.width = 45, .height = 25});
+
+	next_button_.set_text("Next");
+	next_button_.set_position({.x = 0, .y = 0});
+	next_button_.set_size({.width = 45, .height = 25});
+
 	return true;
 }
 
 auto game::end() -> engine::result<> {
 	if(const auto err = title_.end().ko(); err) {
 		return engine::error("failed to end logo texture", *err);
+	}
+
+	if(const auto err = back_button_.end().ko(); err) {
+		return engine::error("failed to end back button", *err);
+	}
+
+	if(const auto err = next_button_.end().ko(); err) {
+		return engine::error("failed to end next button", *err);
 	}
 
 	if(const auto err = get_app().unload_sprite_sheet(sprite_sheet_name).ko(); err) {
@@ -78,6 +99,14 @@ auto game::update(const float delta) -> engine::result<> {
 auto game::draw() -> engine::result<> {
 	if(const auto err = title_.draw().ko(); err) {
 		return engine::error("failed to draw title label", *err);
+	}
+
+	if(const auto err = back_button_.draw().ko(); err) {
+		return engine::error("failed to draw back button", *err);
+	}
+
+	if(const auto err = next_button_.draw().ko(); err) {
+		return engine::error("failed to draw next button", *err);
 	}
 
 	for(auto &sprite: battery_displays_) {
@@ -114,6 +143,23 @@ auto game::layout(const engine::size screen_size) -> void {
 		auto const pos_y = start_y + (battery_height * static_cast<float>(row)) + (battery_height / 2.0F);
 		battery_displays_.at(i).set_position({.x = pos_x, .y = pos_y});
 	}
+
+	constexpr auto button_v_gap = 10.0F;
+	constexpr auto button_h_gap = 10.0F;
+
+	const auto [button_width, button_height] = back_button_.get_size(); // assuming all buttons have the same size
+
+	const auto center_pos_x = screen_size.width * 0.5F;
+	const auto center_pos_y = screen_size.height - button_height - button_v_gap;
+
+	back_button_.set_position({
+		.x = center_pos_x - button_width - button_h_gap,
+		.y = center_pos_y,
+	});
+	next_button_.set_position({
+		.x = center_pos_x + button_h_gap,
+		.y = center_pos_y,
+	});
 }
 
 auto game::toggle_batteries(const size_t number) -> void {
@@ -141,6 +187,11 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> engine::result<> {
 }
 
 auto game::enable() -> engine::result<> {
+	const auto &app = dynamic_cast<energy_swap &>(get_app());
+
+	title_.set_text(std::format("Level {}", app.get_current_level()));
+	title_.set_font_size(30);
+
 	if(const auto err = scene::enable().ko(); err) {
 		return engine::error("failed to enable base scene", *err);
 	}
@@ -149,7 +200,6 @@ auto game::enable() -> engine::result<> {
 		return engine::error("fail to play game music", *err);
 	}
 
-	const auto &app = dynamic_cast<energy_swap &>(get_app());
 	const auto &level_str = app.get_current_level_string();
 
 	SPDLOG_DEBUG("setting up puzzle with level string: {}", level_str);

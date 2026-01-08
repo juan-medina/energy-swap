@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../../engine/app.hpp"
+#include "../../engine/components/button.hpp"
 #include "../../engine/components/label.hpp"
 #include "../../engine/events.hpp"
 #include "../../engine/result.hpp"
@@ -57,6 +58,9 @@ private:
 
 	int battery_click_{0};
 	auto on_battery_click(const battery_display::click &click) -> engine::result<>;
+
+	engine::button back_button_;
+	engine::button next_button_;
 };
 
 } // namespace energy
