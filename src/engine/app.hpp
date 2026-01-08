@@ -163,11 +163,13 @@ protected:
 		});
 	}
 
-	[[nodiscard]] auto enable_scene(const int scene_id, const bool enabled = true) -> result<>;
+	[[nodiscard]] auto enable_scene(int scene_id, bool enabled = true) -> result<>;
 
 	[[nodiscard]] auto disable_scene(const int scene_id, const bool disabled = true) -> result<> {
 		return enable_scene(scene_id, !disabled);
 	}
+
+	[[nodiscard]] auto re_enable_scene(int scene_id) -> result<>;
 
 	[[nodiscard]] auto
 	set_default_font(const std::string &path, int size = 0, int texture_filter = TEXTURE_FILTER_POINT) -> result<>;
@@ -231,6 +233,7 @@ private:
 
 	Music background_music_{};
 	bool music_playing_{false};
+	std::string current_music_path_;
 
 	auto update_music_stream() const -> void;
 

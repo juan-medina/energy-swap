@@ -39,6 +39,9 @@ public:
 
 	[[nodiscard]] auto enable() -> engine::result<> override;
 
+	struct next_level {};
+	struct back {};
+
 private:
 	engine::label title_;
 	static constexpr auto large_font_size = 20;
@@ -61,6 +64,9 @@ private:
 
 	engine::button back_button_;
 	engine::button next_button_;
+
+	int button_click_{0};
+	auto on_button_click(const engine::button::click &evt) -> engine::result<>;
 };
 
 } // namespace energy

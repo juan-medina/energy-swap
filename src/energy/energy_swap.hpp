@@ -65,6 +65,12 @@ private:
 	size_t current_level_{1};
 	static constexpr auto levels_path = "resources/levels/levels.txt";
 	auto load_levels() -> engine::result<>;
+
+	int next_level_{0};
+	auto on_next_level() -> engine::result<>;
+
+	int game_back_{0};
+	auto on_game_back() -> engine::result<>;
 };
 
 } // namespace energy

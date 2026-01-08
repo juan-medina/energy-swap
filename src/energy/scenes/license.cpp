@@ -39,7 +39,6 @@ auto license::init(engine::app &app) -> engine::result<> {
 	accept_button_.set_position({.x = 0, .y = 0});
 	accept_button_.set_size({.width = 60, .height = 30});
 
-	// bind to engine app directly (we have the app param)
 	button_click_ = app.bind_event<engine::button::click>(this, &license::on_button_click);
 
 	return true;

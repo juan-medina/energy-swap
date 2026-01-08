@@ -36,12 +36,17 @@ auto energy_swap::init() -> engine::result<> {
 
 	license_accepted_ = on_event<license::accepted>(this, &energy_swap::on_license_accepted);
 	go_to_game_ = on_event<menu::go_to_game>(this, &energy_swap::on_go_to_game);
+	next_level_ = on_event<game::next_level>(this, &energy_swap::on_next_level);
+	game_back_ = on_event<game::back>(this, &energy_swap::on_game_back);
 
 	return true;
 }
 
 auto energy_swap::end() -> engine::result<> {
 	unsubscribe(license_accepted_);
+	unsubscribe(go_to_game_);
+	unsubscribe(next_level_);
+	unsubscribe(game_back_);
 	return app::end();
 }
 
@@ -59,6 +64,7 @@ auto energy_swap::on_license_accepted() -> engine::result<> {
 }
 
 auto energy_swap::on_go_to_game() -> engine::result<> {
+	current_level_ = 1;
 	auto err = disable_scene(menu_scene_).ko();
 	if(err) {
 		return engine::error("fail to disable menu scene", *err);
@@ -88,6 +94,27 @@ auto energy_swap::load_levels() -> engine::result<> {
 	}
 
 	UnloadFileText(text);
+
+	return true;
+}
+
+auto energy_swap::on_next_level() -> engine::result<> {
+	current_level_++;
+	if(const auto err = re_enable_scene(game_scene_).ko(); err) {
+		return engine::error("fail to re-enable game scene", *err);
+	}
+	return true;
+}
+
+auto energy_swap::on_game_back() -> engine::result<> {
+	auto err = disable_scene(game_scene_).ko();
+	if(err) {
+		return engine::error("fail to disable game scene", *err);
+	}
+
+	if(err = enable_scene(menu_scene_).ko(); err) {
+		return engine::error("fail to enable menu scene", *err);
+	}
 
 	return true;
 }

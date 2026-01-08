@@ -58,6 +58,8 @@ auto game::init(engine::app &app) -> engine::result<> {
 	next_button_.set_position({.x = 0, .y = 0});
 	next_button_.set_size({.width = 45, .height = 25});
 
+	button_click_ = app.bind_event<engine::button::click>(this, &game::on_button_click);
+
 	return true;
 }
 
@@ -83,6 +85,8 @@ auto game::end() -> engine::result<> {
 			return engine::error("failed to end battery display", *err);
 		}
 	}
+
+	get_app().unsubscribe(button_click_);
 
 	return scene::end();
 }
@@ -238,6 +242,16 @@ auto game::on_battery_click(const battery_display::click &click) -> engine::resu
 
 	if(auto &to_battery = batteries_.at(clicked_index); to_battery.can_get_from(from_battery)) {
 		to_battery.transfer_energy_from(from_battery);
+	}
+
+	return true;
+}
+
+auto game::on_button_click(const engine::button::click &evt) -> engine::result<> {
+	if(evt.id == next_button_.get_id()) {
+		get_app().post_event(next_level{});
+	} else if(evt.id == back_button_.get_id()) {
+		get_app().post_event(back{});
 	}
 
 	return true;

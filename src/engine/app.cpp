@@ -278,6 +278,23 @@ auto app::enable_scene(const int scene_id, const bool enabled) -> result<> {
 	return error(std::format("scene with id {} not found", scene_id));
 }
 
+auto app::re_enable_scene(const int scene_id) -> result<> {
+	if(auto [scene_info_res, err] = find_scene_info(scene_id).ok(); !err) {
+		if(!scene_info_res->get().visible) {
+			return error(std::format("scene with id {} is not enabled", scene_id));
+		}
+		if(const auto enable_err = scene_info_res->get().scene_ptr->enable().ko(); enable_err) {
+			return error(
+				std::format("failed to re-enable scene with id: {} name: {}", scene_id, scene_info_res->get().name),
+				*enable_err);
+		}
+		SPDLOG_DEBUG("re-enabled scene with id: {} name: {}", scene_id, scene_info_res->get().name);
+		// layout on enable
+		scene_info_res->get().scene_ptr->layout(drawing_resolution_);
+	}
+	return true;
+}
+
 auto app::set_default_font(const std::string &path, const int size, const int texture_filter) -> result<> {
 	auto font_size = size;
 	if(std::ifstream const font_file(path); !font_file.is_open()) {
@@ -335,6 +352,11 @@ auto app::unload_sound(const std::string &name) -> result<> {
 }
 
 auto app::play_music(const std::string &path, const float volume /* - 1.0F*/) -> result<> {
+	if(current_music_path_ == path && music_playing_) {
+		SPDLOG_TRACE("already playing music {}", path);
+		return true;
+	}
+
 	if(std::ifstream const font_file(path); !font_file.is_open()) {
 		return error(std::format("can not load music file: {}", path));
 	}
@@ -354,6 +376,7 @@ auto app::play_music(const std::string &path, const float volume /* - 1.0F*/) ->
 	PlayMusicStream(background_music_);
 	SetMusicVolume(background_music_, volume);
 	music_playing_ = true;
+	current_music_path_ = path;
 	SPDLOG_DEBUG("playing music from {}", path);
 	return true;
 }
