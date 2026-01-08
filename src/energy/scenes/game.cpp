@@ -4,7 +4,9 @@
 #include "game.hpp"
 
 #include "../../engine/app.hpp"
+#include "../energy_swap.hpp"
 
+#include <array>
 #include <ranges>
 #include <spdlog/spdlog.h>
 
@@ -42,10 +44,6 @@ auto game::init(engine::app &app) -> engine::result<> {
 	}
 
 	battery_click_ = app.bind_event<battery_display::click>(this, &game::on_battery_click);
-
-	if(const auto err = setup_puzzle("577016603334600013562444100015772225-1").ko(); err) {
-		return engine::error("failed to setup puzzle", *err);
-	}
 
 	return true;
 }
@@ -118,8 +116,6 @@ auto game::layout(const engine::size screen_size) -> void {
 	}
 }
 
-#include <array>
-
 auto game::toggle_batteries(const size_t number) -> void {
 	auto index = static_cast<size_t>(0);
 	for(const auto battery_num: battery_order) {
@@ -139,6 +135,27 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> engine::result<> {
 
 	for(auto i = static_cast<size_t>(0); i < total_batteries; ++i) {
 		batteries_.at(i) = current_puzzle_.at(i);
+	}
+
+	return true;
+}
+
+auto game::enable() -> engine::result<> {
+	if(const auto err = scene::enable().ko(); err) {
+		return engine::error("failed to enable base scene", *err);
+	}
+
+	if(const auto err = get_app().play_music(game_music, 0.5F).ko(); err) {
+		return engine::error("fail to play game music", *err);
+	}
+
+	const auto &app = dynamic_cast<energy_swap &>(get_app());
+	const auto &level_str = app.get_current_level_string();
+
+	SPDLOG_DEBUG("setting up puzzle with level string: {}", level_str);
+
+	if(const auto err = setup_puzzle(level_str).ko(); err) {
+		return engine::error("failed to setup puzzle", *err);
 	}
 
 	return true;

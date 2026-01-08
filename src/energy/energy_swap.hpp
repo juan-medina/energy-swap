@@ -30,6 +30,10 @@ public:
 	energy_swap(energy_swap &&) noexcept = delete;
 	auto operator=(energy_swap &&) noexcept -> energy_swap & = delete;
 
+	[[nodiscard]] auto get_current_level_string() const -> const std::string & {
+		return levels_.at(current_level_);
+	}
+
 protected:
 	[[nodiscard]] auto init() -> engine::result<> override;
 	[[nodiscard]] auto end() -> engine::result<> override;
@@ -48,10 +52,15 @@ private:
 	auto on_license_accepted() -> engine::result<>;
 
 	int menu_scene_{-1};
-	int go_to_game_ {0};
+	int go_to_game_{0};
 	auto on_go_to_game() -> engine::result<>;
 
 	int game_scene_{-1};
+
+	std::vector<std::string> levels_;
+	size_t current_level_{1};
+	static constexpr auto levels_path = "resources/levels/levels.txt";
+	auto load_levels() -> engine::result<>;
 };
 
 } // namespace energy

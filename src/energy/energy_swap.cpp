@@ -7,6 +7,8 @@
 #include "scenes/license.hpp"
 #include "scenes/menu.hpp"
 
+#include <fstream>
+
 namespace energy {
 
 auto energy_swap::init() -> engine::result<> {
@@ -22,6 +24,10 @@ auto energy_swap::init() -> engine::result<> {
 
 	if(const auto err = load_sound(click_sound, click_sound_path).ko(); err) {
 		return engine::error{"failed to load button sound", *err};
+	}
+
+	if(const auto err = load_levels().ko(); err) {
+		return engine::error{"failed to load levels", *err};
 	}
 
 	license_scene_ = register_scene<license>();
@@ -49,10 +55,6 @@ auto energy_swap::on_license_accepted() -> engine::result<> {
 		return engine::error("fail to enable menu scene", *err);
 	}
 
-	if(err = play_music("resources/music/menu.ogg", 0.5F).ko(); err) {
-		return engine::error("fail to play menu music", *err);
-	}
-
 	return true;
 }
 
@@ -66,9 +68,26 @@ auto energy_swap::on_go_to_game() -> engine::result<> {
 		return engine::error("fail to enable game scene", *err);
 	}
 
-	if(err = play_music("resources/music/game.ogg", 0.5F).ko(); err) {
-		return engine::error("fail to play menu music", *err);
+	return true;
+}
+
+auto energy_swap::load_levels() -> engine::result<> {
+	if(std::ifstream const level_file(levels_path); !level_file.is_open()) {
+		return engine::error(std::format("can not load levels file: {}", levels_path));
 	}
+
+	char *text = nullptr;
+	if(text = LoadFileText(levels_path); text == nullptr) {
+		return engine::error(std::format("failed to load levels file from {}", levels_path));
+	}
+
+	std::istringstream stream(text);
+	std::string line;
+	while(std::getline(stream, line)) {
+		levels_.emplace_back(line);
+	}
+
+	UnloadFileText(text);
 
 	return true;
 }

@@ -83,6 +83,18 @@ auto menu::layout(const engine::size screen_size) -> void {
 	});
 }
 
+auto menu::enable() -> engine::result<> {
+	if(const auto err = scene::enable().ko(); err) {
+		return engine::error("failed to enable base scene", *err);
+	}
+
+	if(const auto err = get_app().play_music("resources/music/menu.ogg", 0.5F).ko(); err) {
+		return engine::error(menu_music_path, *err);
+	}
+
+	return true;
+}
+
 auto menu::on_button_click(const engine::button::click &evt) -> engine::result<> {
 	if(evt.id == play_button_.get_id()) {
 		get_app().post_event(go_to_game{});

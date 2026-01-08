@@ -252,6 +252,30 @@ auto app::draw() const -> result<> {
 	EndDrawing();
 	return true;
 }
+
+auto app::enable_scene(const int scene_id, const bool enabled) -> result<> {
+	if(auto [scene_info_res, err] = find_scene_info(scene_id).ok(); !err) {
+		scene_info_res->get().visible = enabled;
+		if(enabled) {
+			if(const auto enable_err = scene_info_res->get().scene_ptr->enable().ko(); enable_err) {
+				return error(
+					std::format("failed to enable scene with id: {} name: {}", scene_id, scene_info_res->get().name),
+					*enable_err);
+			}
+			SPDLOG_DEBUG("enabled scene with id: {} name: {}", scene_id, scene_info_res->get().name);
+		} else {
+			if(const auto disable_err = scene_info_res->get().scene_ptr->disable().ko(); disable_err) {
+				return error(
+					std::format("failed to disable scene with id: {} name: {}", scene_id, scene_info_res->get().name),
+					*disable_err);
+			}
+			SPDLOG_DEBUG("disabled scene with id: {} name: {}", scene_id, scene_info_res->get().name);
+		}
+		return true;
+	}
+	return error(std::format("scene with id {} not found", scene_id));
+}
+
 auto app::set_default_font(const std::string &path, const int size, const int texture_filter) -> result<> {
 	auto font_size = size;
 	if(std::ifstream const font_file(path); !font_file.is_open()) {
@@ -397,6 +421,7 @@ auto app::draw_sprite(const std::string &sprite_sheet,
 	}
 	return true;
 }
+
 auto app::get_sprite_size(const std::string &sprite_sheet, const std::string &frame) const -> result<size> {
 	const auto find = sprite_sheets_.find(sprite_sheet);
 	if(find == sprite_sheets_.end()) {

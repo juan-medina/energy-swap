@@ -33,7 +33,14 @@ public:
 		return component::end();
 	}
 
-	// Default update/draw do nothing and succeed.
+	[[nodiscard]] virtual auto enable() -> result<> {
+		return true;
+	}
+
+	[[nodiscard]] virtual auto disable() -> result<> {
+		return true;
+	}
+
 	[[nodiscard]] auto update(float /*delta*/) -> result<> override {
 		return true;
 	}
@@ -41,7 +48,6 @@ public:
 		return true;
 	}
 
-	// Scenes must still implement layout.
 	virtual auto layout(size screen_size) -> void = 0;
 };
 } // namespace engine

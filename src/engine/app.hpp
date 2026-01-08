@@ -94,11 +94,13 @@ public:
 								   const float &scale,
 								   const Color &tint = WHITE) -> result<>;
 
-	[[nodiscard]] auto get_sprite_size(const std::string &sprite_sheet,
-									   const std::string &frame) const -> result<size>;
+	[[nodiscard]] auto get_sprite_size(const std::string &sprite_sheet, const std::string &frame) const -> result<size>;
 
-	[[nodiscard]] auto get_sprite_pivot(const std::string &sprite_sheet,
-									   const std::string &frame) const -> result<Vector2>;
+	[[nodiscard]] auto get_sprite_pivot(const std::string &sprite_sheet, const std::string &frame) const
+		-> result<Vector2>;
+
+	[[nodiscard]] auto play_music(const std::string &path, float volume = 1.0F) -> result<>;
+	[[nodiscard]] auto stop_music() -> result<>;
 
 protected:
 	[[nodiscard]] virtual auto init() -> result<>;
@@ -161,13 +163,7 @@ protected:
 		});
 	}
 
-	[[nodiscard]] auto enable_scene(const int scene_id, const bool enabled = true) -> result<> {
-		if(auto [scene_info_res, error] = find_scene_info(scene_id).ok(); !error) {
-			scene_info_res->get().visible = enabled;
-			return true;
-		}
-		return error(std::format("scene with id {} not found", scene_id));
-	}
+	[[nodiscard]] auto enable_scene(const int scene_id, const bool enabled = true) -> result<>;
 
 	[[nodiscard]] auto disable_scene(const int scene_id, const bool disabled = true) -> result<> {
 		return enable_scene(scene_id, !disabled);
@@ -182,9 +178,6 @@ protected:
 
 	[[nodiscard]] auto load_sound(const std::string &name, const std::string &path) -> result<>;
 	[[nodiscard]] auto unload_sound(const std::string &name) -> result<>;
-
-	[[nodiscard]] auto play_music(const std::string &path, float volume = 1.0F) -> result<>;
-	[[nodiscard]] auto stop_music() -> result<>;
 
 private:
 	std::string name_;

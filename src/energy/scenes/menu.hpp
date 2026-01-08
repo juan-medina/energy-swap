@@ -5,10 +5,10 @@
 
 #include "../../engine/app.hpp"
 #include "../../engine/components/button.hpp"
+#include "../../engine/components/label.hpp"
 #include "../../engine/events.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
-#include "../../engine/components/label.hpp"
 
 namespace energy {
 
@@ -35,9 +35,12 @@ public:
 
 	struct go_to_game {};
 
+	auto enable() -> engine::result<> override;
+
 private:
 	engine::label title_;
 	static constexpr auto large_font_size = 20;
+	static constexpr auto menu_music_path = "resources/music/menu.ogg";
 
 	engine::button play_button_;
 	int button_click_{0};

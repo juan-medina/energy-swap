@@ -34,6 +34,10 @@ public:
 
 	auto layout(engine::size screen_size) -> void override;
 
+	[[nodiscard]] auto setup_puzzle(const std::string &puzzle_str) -> engine::result<>;
+
+	[[nodiscard]] auto enable() -> engine::result<> override;
+
 private:
 	engine::label title_;
 	static constexpr auto large_font_size = 20;
@@ -44,15 +48,14 @@ private:
 
 	static constexpr auto sprite_sheet_name = "sprites";
 	static constexpr auto sprite_sheet_path = "resources/sprites/sprites.json";
+	static constexpr auto game_music = "resources/music/game.ogg";
 
 	auto toggle_batteries(size_t number) -> void;
 	static constexpr std::array<size_t, 12> battery_order{8, 4, 0, 1, 5, 9, 10, 6, 2, 3, 7, 11};
 
 	puzzle current_puzzle_;
 
-	[[nodiscard]] auto setup_puzzle(const std::string &puzzle_str) -> engine::result<>;
-
-	int battery_click_;
+	int battery_click_{0};
 	auto on_battery_click(const battery_display::click &click) -> engine::result<>;
 };
 
