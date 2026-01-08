@@ -3,13 +3,17 @@
 
 #include "energy_swap.hpp"
 
+#include "../../src/engine/app.hpp"
 #include "../engine/result.hpp"
+#include "raylib.h"
 #include "scenes/game.hpp"
 #include "scenes/license.hpp"
 #include "scenes/menu.hpp"
 
-#include <fstream>
 #include <format>
+#include <fstream>
+#include <optional>
+#include <sstream>
 
 namespace energy {
 

@@ -10,6 +10,7 @@
 #include <raylib.h>
 
 #include <filesystem>
+#include <jsoncons/basic_json.hpp>
 #include <jsoncons/json.hpp>
 #include <string>
 #include <system_error>

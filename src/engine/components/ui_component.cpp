@@ -7,6 +7,8 @@
 #include "../result.hpp"
 #include "component.hpp"
 
+#include <optional>
+
 namespace engine {
 
 auto ui_component::init(app &app) -> result<> {

@@ -3,15 +3,17 @@
 
 #include "label.hpp"
 
-#include "../app.hpp"
 #include "../result.hpp"
+#include "component.hpp"
 #include "ui_component.hpp"
 
 #include <raylib.h>
 
+#include <optional>
 #include <raygui.h>
 
 namespace engine {
+class app;
 
 auto label::init(app &app) -> result<> {
 	if(const auto err = ui_component::init(app).ko(); err) {

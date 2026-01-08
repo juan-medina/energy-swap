@@ -11,19 +11,8 @@
 
 #include <algorithm>
 #include <cassert>
+#include <optional>
 #include <string>
-
-#ifdef _WIN32
-#	include <windows.h>
-
-#	include <shellapi.h>
-
-#elif defined(__APPLE__) || defined(__linux__)
-#	include <unistd.h>
-#elif defined(__EMSCRIPTEN__)
-#	include <emscripten/emscripten.h>
-#	include <emscripten/val.h>
-#endif
 
 namespace engine {
 auto version_display::init(app &app) -> result<> {

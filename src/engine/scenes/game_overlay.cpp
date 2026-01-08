@@ -4,13 +4,16 @@
 #include "game_overlay.hpp"
 
 #include "../app.hpp"
+#include "../components/component.hpp"
+#include "../components/version_display.hpp"
 #include "../result.hpp"
 
-#include <raylib.h>
+#include <functional>
+#include <optional>
+#include <vector>
 
 #ifdef _WIN32
 #	include <windows.h>
-
 #	include <shellapi.h>
 
 #elif defined(__APPLE__) || defined(__linux__)

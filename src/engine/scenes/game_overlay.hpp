@@ -7,7 +7,11 @@
 #include "../result.hpp"
 #include "scene.hpp"
 
+#include <string>
+
 namespace engine {
+class app;
+struct size;
 
 class game_overlay: public scene {
 public:

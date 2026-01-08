@@ -3,18 +3,20 @@
 
 #include "scroll_text.hpp"
 
-#include "../app.hpp"
 #include "../result.hpp"
+#include "component.hpp"
 #include "ui_component.hpp"
 
 #include <raylib.h>
 
 #include <algorithm>
+#include <optional>
 #include <raygui.h>
 #include <sstream>
 #include <string>
 
 namespace engine {
+class app;
 
 auto scroll_text::init(app &app) -> result<> {
 	if(const auto err = ui_component::init(app).ko(); err) {

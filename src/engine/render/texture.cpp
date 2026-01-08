@@ -3,14 +3,15 @@
 
 #include "texture.hpp"
 
+#include "../components/component.hpp"
 #include "../result.hpp"
 
 #include <raylib.h>
 
+#include <format>
 #include <fstream>
 #include <spdlog/spdlog.h>
 #include <string>
-#include <format>
 
 namespace engine {
 

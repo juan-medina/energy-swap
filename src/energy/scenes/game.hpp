@@ -14,7 +14,13 @@
 #include "../data/puzzle.hpp"
 
 #include <array>
+#include <stddef.h>
 #include <string>
+
+namespace engine {
+class app;
+struct size;
+} // namespace engine
 
 namespace energy {
 

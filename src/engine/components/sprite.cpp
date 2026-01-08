@@ -6,6 +6,7 @@
 #include "../app.hpp"
 #include "../result.hpp"
 #include "component.hpp"
+#include "raylib.h"
 
 #include <optional>
 

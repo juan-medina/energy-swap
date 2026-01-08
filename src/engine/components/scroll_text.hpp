@@ -13,6 +13,7 @@
 #include <vector>
 
 namespace engine {
+class app;
 
 class scroll_text: public ui_component {
 public:

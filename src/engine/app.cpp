@@ -7,17 +7,24 @@
 #include "render/sprite_sheet.hpp"
 #include "result.hpp"
 #include "scenes/game_overlay.hpp"
+#include "spdlog/common.h"
+#include "spdlog/spdlog-inl.h"
 
 #include <raylib.h>
 
 #include <cstdarg>
-#include <cstddef>
+#include <cstdio>
 #include <format>
 #include <fstream>
-#include <jsoncons/json.hpp>
+#include <jsoncons/basic_json.hpp>
+#include <jsoncons/json_decoder.hpp>
+#include <jsoncons/json_reader.hpp>
+#include <jsoncons/source.hpp>
 #include <raygui.h>
+#include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
-#include <type_traits>
+#include <sstream>
+#include <system_error>
 #include <vector>
 
 namespace engine {

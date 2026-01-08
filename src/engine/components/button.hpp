@@ -10,6 +10,7 @@
 #include <string>
 
 namespace engine {
+class app;
 
 class button: public ui_component {
 public:

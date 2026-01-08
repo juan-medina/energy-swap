@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
+#include "../engine/result.hpp"
 #include "energy_swap.hpp"
 
 #ifndef __EMSCRIPTEN__
@@ -8,8 +9,11 @@
 #endif
 
 #include <cstdio>
-#include <spdlog/spdlog.h>
 #include <cstdlib>
+#include <exception>
+#include <optional>
+#include <spdlog/spdlog.h>
+#include <string>
 
 [[nodiscard]] auto main(int /*argc*/, char * /*argv*/[]) -> int {
 	try {

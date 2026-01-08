@@ -4,9 +4,14 @@
 #include "battery_display.hpp"
 
 #include "../../engine/app.hpp"
+#include "../../engine/components/sprite.hpp"
+#include "../../engine/result.hpp"
+#include "../data/battery.hpp"
 
-#include <spdlog/spdlog.h>
 #include <raylib.h>
+
+#include <assert.h>
+#include <memory>
 
 namespace energy {
 

@@ -11,8 +11,15 @@
 
 #include <format>
 #include <fstream>
-#include <jsoncons/json.hpp>
+#include <jsoncons/json_decoder.hpp>
+#include <jsoncons/json_object.hpp>
+#include <jsoncons/json_reader.hpp>
+#include <jsoncons/source.hpp>
+#include <optional>
+#include <sstream>
 #include <string>
+#include <system_error>
+#include <utility>
 
 namespace engine {
 

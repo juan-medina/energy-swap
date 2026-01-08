@@ -92,6 +92,7 @@ protected:
 		assert(app_.has_value() && "app is not set");
 		return app_->get();
 	}
+
 private:
 	std::optional<std::reference_wrapper<app>> app_;
 	Vector2 pos_{};

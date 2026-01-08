@@ -13,6 +13,7 @@
 #include <string>
 
 namespace engine {
+class app;
 
 class version_display: public ui_component {
 public:

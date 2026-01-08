@@ -4,13 +4,20 @@
 #include "game.hpp"
 
 #include "../../engine/app.hpp"
+#include "../../engine/components/button.hpp"
 #include "../../engine/components/component.hpp"
+#include "../../engine/components/label.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes//scene.hpp"
+#include "../components/battery_display.hpp"
+#include "../data/battery.hpp"
+#include "../data/puzzle.hpp"
 #include "../energy_swap.hpp"
 
 #include <array>
 #include <format>
+#include <functional>
+#include <optional>
 #include <ranges>
 #include <spdlog/spdlog.h>
 

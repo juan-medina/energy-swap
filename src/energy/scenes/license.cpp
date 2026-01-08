@@ -4,16 +4,19 @@
 #include "license.hpp"
 
 #include "../../engine/app.hpp"
+#include "../../engine/components/button.hpp"
 #include "../../engine/components/component.hpp"
+#include "../../engine/components/scroll_text.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
 
 #include <raylib.h>
 
+#include <algorithm>
 #include <format>
+#include <optional>
 #include <spdlog/spdlog.h>
 #include <string>
-#include <utility>
 
 namespace energy {
 

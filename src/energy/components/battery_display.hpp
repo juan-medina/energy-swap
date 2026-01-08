@@ -7,11 +7,19 @@
 #include "../../engine/components/sprite.hpp"
 #include "../../engine/result.hpp"
 #include "../data/battery.hpp"
+#include "raylib.h"
 
 #include <array>
+#include <functional>
 #include <optional>
+#include <stddef.h>
+
+namespace engine {
+class app;
+} // namespace engine
 
 namespace energy {
+class battery;
 
 class battery_display: public engine::sprite {
 public:

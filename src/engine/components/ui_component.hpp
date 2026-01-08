@@ -11,6 +11,7 @@
 #include <string>
 
 namespace engine {
+class app;
 
 class ui_component: public component {
 public:

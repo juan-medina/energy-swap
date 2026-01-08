@@ -4,10 +4,14 @@
 #include "menu.hpp"
 
 #include "../../engine/app.hpp"
+#include "../../engine/components/button.hpp"
 #include "../../engine/components/component.hpp"
+#include "../../engine/components/label.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
 
+#include <memory>
+#include <optional>
 #include <spdlog/spdlog.h>
 
 namespace energy {

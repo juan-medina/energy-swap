@@ -12,11 +12,17 @@
 #include <raylib.h>
 
 #include <algorithm>
+#include <cstdlib>
 #include <format>
+#include <functional>
 #include <memory>
+#include <optional>
+#include <ranges>
 #include <spdlog/spdlog.h>
+#include <stdarg.h>
 #include <string>
 #include <type_traits>
+#include <typeinfo>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -26,6 +32,7 @@
 #endif
 
 namespace engine {
+class sprite_sheet;
 
 class app {
 public:

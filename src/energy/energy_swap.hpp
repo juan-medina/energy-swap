@@ -3,11 +3,14 @@
 
 #pragma once
 
+#include "..//engine/components/component.hpp"
 #include "../engine/app.hpp"
 #include "../engine/result.hpp"
 
 #include <raylib.h>
 
+#include <stddef.h>
+#include <string>
 #include <vector>
 
 namespace energy {

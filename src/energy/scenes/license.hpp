@@ -9,6 +9,11 @@
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
 
+namespace engine {
+class app;
+struct size;
+} // namespace engine
+
 namespace energy {
 
 class license: public engine::scene {
