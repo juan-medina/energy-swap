@@ -3,10 +3,12 @@
 
 #include "puzzle.hpp"
 
-#include "spdlog/spdlog.h"
+#include "../../engine/result.hpp"
+#include "battery.hpp"
 
 #include <algorithm>
-#include <ranges>
+#include <cstddef>
+#include <string>
 
 namespace energy {
 

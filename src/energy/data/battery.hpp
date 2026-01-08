@@ -3,10 +3,11 @@
 
 #pragma once
 
+#include "../../engine/result.hpp"
+
 #include <cstdint>
 #include <string>
 #include <vector>
-#include "../../engine/result.hpp"
 
 namespace energy {
 

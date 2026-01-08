@@ -4,6 +4,9 @@
 #include "menu.hpp"
 
 #include "../../engine/app.hpp"
+#include "../../engine/components/component.hpp"
+#include "../../engine/result.hpp"
+#include "../../engine/scenes/scene.hpp"
 
 #include <spdlog/spdlog.h>
 

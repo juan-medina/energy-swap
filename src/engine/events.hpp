@@ -10,9 +10,7 @@
 #include <map>
 #include <memory>
 #include <queue>
-#include <spdlog/spdlog.h>
 #include <typeindex>
-#include <typeinfo>
 #include <utility>
 #include <vector>
 

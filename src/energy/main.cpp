@@ -9,6 +9,7 @@
 
 #include <cstdio>
 #include <spdlog/spdlog.h>
+#include <cstdlib>
 
 [[nodiscard]] auto main(int /*argc*/, char * /*argv*/[]) -> int {
 	try {

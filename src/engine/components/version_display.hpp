@@ -3,12 +3,14 @@
 
 #pragma once
 
+#include "../result.hpp"
 #include "../scenes/scene.hpp"
 #include "ui_component.hpp"
 
 #include <raylib.h>
 
 #include <array>
+#include <string>
 
 namespace engine {
 

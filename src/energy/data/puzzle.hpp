@@ -6,6 +6,8 @@
 #include "../../engine/result.hpp"
 #include "battery.hpp"
 
+#include <cstddef>
+#include <string>
 #include <vector>
 
 namespace energy {

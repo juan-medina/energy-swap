@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../../engine/components/button.hpp"
+#include "../../engine/components/component.hpp"
 #include "../../engine/components/scroll_text.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"

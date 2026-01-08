@@ -4,8 +4,16 @@
 #include "license.hpp"
 
 #include "../../engine/app.hpp"
+#include "../../engine/components/component.hpp"
+#include "../../engine/result.hpp"
+#include "../../engine/scenes/scene.hpp"
 
+#include <raylib.h>
+
+#include <format>
 #include <spdlog/spdlog.h>
+#include <string>
+#include <utility>
 
 namespace energy {
 
@@ -49,7 +57,7 @@ auto license::end() -> engine::result<> {
 	return scene::end();
 }
 
-auto license::update(float delta) -> engine::result<> {
+auto license::update(const float delta) -> engine::result<> {
 	if(const auto err = scroll_text_.update(delta).ko(); err) {
 		return engine::error("failed to update scroll text component", *err);
 	}

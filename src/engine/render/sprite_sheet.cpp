@@ -3,10 +3,16 @@
 
 #include "sprite_sheet.hpp"
 
+#include "../components/component.hpp"
+#include "../result.hpp"
 #include "spdlog/spdlog.h"
 
+#include <raylib.h>
+
+#include <format>
 #include <fstream>
 #include <jsoncons/json.hpp>
+#include <string>
 
 namespace engine {
 

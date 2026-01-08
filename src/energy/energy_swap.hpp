@@ -4,6 +4,11 @@
 #pragma once
 
 #include "../engine/app.hpp"
+#include "../engine/result.hpp"
+
+#include <raylib.h>
+
+#include <vector>
 
 namespace energy {
 
@@ -44,7 +49,7 @@ protected:
 
 private:
 	static constexpr auto font_path = "resources/fonts/PixeloidSans_16.fnt";
-	static constexpr Color clear_color = Color{.r = 20, .g = 49, .b = 59, .a = 255};
+	static constexpr auto clear_color = Color{.r = 20, .g = 49, .b = 59, .a = 255};
 
 	static constexpr auto click_sound_path = "resources/sounds/click.wav";
 	static constexpr auto click_sound = "click";

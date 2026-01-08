@@ -6,6 +6,7 @@
 #include "../../engine/app.hpp"
 
 #include <spdlog/spdlog.h>
+#include <raylib.h>
 
 namespace energy {
 
@@ -78,7 +79,7 @@ auto battery_display::update(const float delta) -> engine::result<> {
 	return sprite::update(delta);
 }
 
-void battery_display::set_scale(float scale) {
+void battery_display::set_scale(const float scale) {
 	sprite::set_scale(scale);
 	for(auto &segment: segments_) {
 		segment.set_scale(scale);

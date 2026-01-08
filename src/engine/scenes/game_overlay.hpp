@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #pragma once
+#include "../components/component.hpp"
 #include "../components/version_display.hpp"
-#include "../events.hpp"
+#include "../result.hpp"
 #include "scene.hpp"
 
 namespace engine {

@@ -3,11 +3,13 @@
 
 #include "energy_swap.hpp"
 
+#include "../engine/result.hpp"
 #include "scenes/game.hpp"
 #include "scenes/license.hpp"
 #include "scenes/menu.hpp"
 
 #include <fstream>
+#include <format>
 
 namespace energy {
 

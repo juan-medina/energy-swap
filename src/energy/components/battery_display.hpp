@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include "../../engine/app.hpp"
 #include "../../engine/components/sprite.hpp"
+#include "../../engine/result.hpp"
 #include "../data/battery.hpp"
 
 #include <array>

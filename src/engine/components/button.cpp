@@ -4,6 +4,7 @@
 #include "button.hpp"
 
 #include "../app.hpp"
+#include "../result.hpp"
 
 #include <raygui.h>
 
@@ -24,7 +25,7 @@ auto button::end() -> result<> {
 	return ui_component::end();
 }
 
-auto button::update(float delta) -> result<> {
+auto button::update(const float delta) -> result<> {
 	if(const auto err = ui_component::update(delta).ko(); err) {
 		return error("failed to update base UI component", *err);
 	}

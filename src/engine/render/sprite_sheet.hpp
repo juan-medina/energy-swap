@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "../components/component.hpp"
 #include "../result.hpp"
 #include "texture.hpp"
 
@@ -10,6 +11,8 @@
 
 #include <filesystem>
 #include <jsoncons/json.hpp>
+#include <string>
+#include <system_error>
 #include <unordered_map>
 
 namespace engine {

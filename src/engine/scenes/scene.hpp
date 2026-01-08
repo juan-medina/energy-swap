@@ -6,8 +6,6 @@
 #include "../components/component.hpp"
 #include "../result.hpp"
 
-#include <raylib.h>
-
 namespace engine {
 
 class app;

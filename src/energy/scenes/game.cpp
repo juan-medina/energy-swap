@@ -4,9 +4,13 @@
 #include "game.hpp"
 
 #include "../../engine/app.hpp"
+#include "../../engine/components/component.hpp"
+#include "../../engine/result.hpp"
+#include "../../engine/scenes//scene.hpp"
 #include "../energy_swap.hpp"
 
 #include <array>
+#include <format>
 #include <ranges>
 #include <spdlog/spdlog.h>
 

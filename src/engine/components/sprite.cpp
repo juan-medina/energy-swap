@@ -4,6 +4,10 @@
 #include "sprite.hpp"
 
 #include "../app.hpp"
+#include "../result.hpp"
+#include "component.hpp"
+
+#include <optional>
 
 namespace engine {
 
@@ -30,12 +34,11 @@ auto sprite::init(app &app, const std::string &sprite_sheet, const std::string &
 	original_size_ = *size;
 	set_size(original_size_);
 
-	std::optional<Vector2> pivot;
-	std::tie(pivot, err) = app.get_sprite_pivot(sprite_sheet_, frame_).ok();
-	if(err) {
-		return error("failed to get sprite pivot", *err);
+	const auto result = app.get_sprite_pivot(sprite_sheet_, frame_);
+	if(result.has_error()) {
+		return error("failed to get sprite pivot", result.get_error());
 	}
-	pivot_ = *pivot;
+	pivot_ = result.get_value();
 
 	return true;
 }

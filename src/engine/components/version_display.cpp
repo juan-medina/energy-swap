@@ -4,9 +4,14 @@
 #include "version_display.hpp"
 
 #include "../app.hpp"
+#include "../result.hpp"
+#include "ui_component.hpp"
+
+#include <raylib.h>
 
 #include <algorithm>
 #include <cassert>
+#include <string>
 
 #ifdef _WIN32
 #	include <windows.h>
@@ -61,7 +66,7 @@ auto version_display::end() -> result<> {
 	return ui_component::end();
 }
 
-auto version_display::update(float delta) -> result<> {
+auto version_display::update(const float delta) -> result<> {
 	if(const auto err = ui_component::update(delta).ko(); err) {
 		return error("failed to update base UI component", *err);
 	}
@@ -102,7 +107,7 @@ auto version_display::draw() -> result<> {
 	return true;
 }
 
-auto version_display::draw_parts(const Vector2 pos, bool shadow) -> void {
+auto version_display::draw_parts(const Vector2 pos, const bool shadow) -> void {
 	auto part_pos = pos;
 	for(const auto &[text, color, offset]: parts_) {
 		part_pos.x = pos.x + offset;

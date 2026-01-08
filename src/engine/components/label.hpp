@@ -3,7 +3,11 @@
 
 #pragma once
 
+#include "../app.hpp"
+#include "../result.hpp"
 #include "ui_component.hpp"
+
+#include <string>
 
 namespace engine {
 
@@ -47,4 +51,3 @@ private:
 };
 
 } // namespace engine
-

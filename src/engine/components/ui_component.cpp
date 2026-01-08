@@ -4,6 +4,8 @@
 #include "ui_component.hpp"
 
 #include "../app.hpp"
+#include "../result.hpp"
+#include "component.hpp"
 
 namespace engine {
 

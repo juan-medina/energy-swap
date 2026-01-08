@@ -3,7 +3,12 @@
 
 #pragma once
 
+#include "../result.hpp"
 #include "component.hpp"
+
+#include <raylib.h>
+
+#include <string>
 
 namespace engine {
 

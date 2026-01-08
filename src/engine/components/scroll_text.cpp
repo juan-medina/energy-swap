@@ -3,12 +3,16 @@
 
 #include "scroll_text.hpp"
 
-#include "../../engine/app.hpp"
+#include "../app.hpp"
+#include "../result.hpp"
+#include "ui_component.hpp"
+
+#include <raylib.h>
 
 #include <algorithm>
 #include <raygui.h>
-#include <spdlog/spdlog.h>
 #include <sstream>
+#include <string>
 
 namespace engine {
 
@@ -24,7 +28,7 @@ auto scroll_text::end() -> result<> {
 	return ui_component::end();
 }
 
-auto scroll_text::update(float delta) -> result<> {
+auto scroll_text::update(const float delta) -> result<> {
 	// Let base UI component run its update behavior first.
 	if(const auto err = ui_component::update(delta).ko(); err) {
 		return error("failed to update base UI component", *err);

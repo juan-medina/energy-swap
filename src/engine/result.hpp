@@ -3,11 +3,12 @@
 
 #pragma once
 
+#include <cstddef>
 #include <format>
 #include <optional>
 #include <source_location>
 #include <string>
-#include <utility>
+#include <tuple>
 #include <variant>
 #include <vector>
 
@@ -36,11 +37,11 @@ public:
 	[[nodiscard]] auto to_string() const -> std::string {
 		std::string out;
 		for(size_t i = 0; i < causes_.size(); ++i) {
-			const auto &cause = causes_.at(i);
+			const auto &[message, location] = causes_.at(i);
 			if(i == 0) {
-				out += format_message_with_location(cause.message, cause.location);
+				out += format_message_with_location(message, location);
 			} else {
-				out += "\n  caused by: " + format_message_with_location(cause.message, cause.location);
+				out += "\n  caused by: " + format_message_with_location(message, location);
 			}
 		}
 		return out;
@@ -89,14 +90,14 @@ public:
 			return {std::nullopt, *std::get_if<Error>(this)};
 		}
 		return {*std::get_if<Value>(this), std::nullopt};
-	};
+	}
 
 	[[nodiscard]] auto ko() const noexcept -> std::optional<Error> {
 		if(has_error()) {
 			return *std::get_if<Error>(this);
 		}
 		return std::nullopt;
-	};
+	}
 };
 
 } // namespace engine

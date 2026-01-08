@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "components/component.hpp"
 #include "events.hpp"
 #include "render/sprite_sheet.hpp"
 #include "result.hpp"
@@ -11,8 +12,11 @@
 #include <raylib.h>
 
 #include <algorithm>
+#include <format>
 #include <memory>
 #include <spdlog/spdlog.h>
+#include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -174,7 +178,7 @@ protected:
 	[[nodiscard]] auto
 	set_default_font(const std::string &path, int size = 0, int texture_filter = TEXTURE_FILTER_POINT) -> result<>;
 
-	auto set_default_font_size(int size) -> void {
+	auto set_default_font_size(const int size) -> void {
 		default_font_size_ = size;
 	}
 

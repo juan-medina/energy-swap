@@ -3,10 +3,13 @@
 
 #include "battery.hpp"
 
+#include "../../engine/result.hpp"
+
 #include <algorithm>
 #include <cassert>
 #include <format>
 #include <string>
+#include <vector>
 
 namespace energy {
 
@@ -80,7 +83,6 @@ auto battery::string() const -> std::string {
 		result += std::format("{:X}", energy);
 	}
 	return std::format("{:0<{}}", result, max_energy);
-	;
 }
 
 auto battery::from_string(const std::string &str) -> engine::result<battery> {

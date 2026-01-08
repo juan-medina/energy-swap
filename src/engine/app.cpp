@@ -3,13 +3,22 @@
 
 #include "app.hpp"
 
+#include "components/component.hpp"
+#include "render/sprite_sheet.hpp"
+#include "result.hpp"
 #include "scenes/game_overlay.hpp"
 
+#include <raylib.h>
+
 #include <cstdarg>
+#include <cstddef>
+#include <format>
 #include <fstream>
 #include <jsoncons/json.hpp>
 #include <raygui.h>
 #include <spdlog/spdlog.h>
+#include <type_traits>
+#include <vector>
 
 namespace engine {
 
@@ -399,7 +408,7 @@ auto app::play_sound(const std::string &name, const float volume /*= 1.0F*/) -> 
 	if(find == sounds_.end()) {
 		return error(std::format("can't play sound with name {}, is not loaded", name));
 	}
-	auto &sound = find->second;
+	const auto &sound = find->second;
 	SetSoundPitch(sound, volume);
 	PlaySound(sound);
 

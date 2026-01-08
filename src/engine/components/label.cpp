@@ -4,6 +4,10 @@
 #include "label.hpp"
 
 #include "../app.hpp"
+#include "../result.hpp"
+#include "ui_component.hpp"
+
+#include <raylib.h>
 
 #include <raygui.h>
 
