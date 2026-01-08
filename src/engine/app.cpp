@@ -12,7 +12,6 @@
 
 #include <raylib.h>
 
-#include <cstdarg>
 #include <cstdio>
 #include <format>
 #include <fstream>
