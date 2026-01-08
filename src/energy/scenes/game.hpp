@@ -67,6 +67,8 @@ private:
 
 	int button_click_{0};
 	auto on_button_click(const engine::button::click &evt) -> engine::result<>;
+
+	auto check_end() -> void;
 };
 
 } // namespace energy

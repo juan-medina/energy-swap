@@ -3,7 +3,8 @@
 
 #include "puzzle.hpp"
 
-#include <cassert>
+#include <algorithm>
+#include <ranges>
 
 namespace energy {
 
@@ -39,6 +40,11 @@ auto puzzle::from_string(const std::string &str) -> engine::result<puzzle> {
 	}
 
 	return result;
+}
+
+auto puzzle::is_solved() const -> bool {
+	return std::ranges::all_of(batteries_,
+							   [](const auto &battery) -> auto { return battery.closed() || battery.empty(); });
 }
 
 } // namespace energy

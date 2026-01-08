@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include "../../engine/result.hpp"
 #include "battery.hpp"
 
 #include <vector>
-#include "../../engine/result.hpp"
 
 namespace energy {
 
@@ -24,6 +24,8 @@ public:
 	}
 
 	[[nodiscard]] static auto from_string(const std::string &str) -> engine::result<puzzle>;
+
+	auto is_solved() const -> bool;
 
 private:
 	std::vector<battery> batteries_;

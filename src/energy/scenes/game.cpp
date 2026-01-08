@@ -164,6 +164,8 @@ auto game::layout(const engine::size screen_size) -> void {
 		.x = center_pos_x + button_h_gap,
 		.y = center_pos_y,
 	});
+
+	next_button_.set_visible(false);
 }
 
 auto game::toggle_batteries(const size_t number) -> void {
@@ -242,6 +244,10 @@ auto game::on_battery_click(const battery_display::click &click) -> engine::resu
 
 	if(auto &to_battery = batteries_.at(clicked_index); to_battery.can_get_from(from_battery)) {
 		to_battery.transfer_energy_from(from_battery);
+		// update puzzle state
+		current_puzzle_.at(selected_index) = from_battery;
+		current_puzzle_.at(clicked_index) = to_battery;
+		check_end();
 	}
 
 	return true;
@@ -255,6 +261,12 @@ auto game::on_button_click(const engine::button::click &evt) -> engine::result<>
 	}
 
 	return true;
+}
+
+auto game::check_end() -> void {
+	if(current_puzzle_.is_solved()) {
+		next_button_.set_visible(true);
+	}
 }
 
 } // namespace energy
