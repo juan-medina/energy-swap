@@ -30,8 +30,12 @@ public:
 	energy_swap(energy_swap &&) noexcept = delete;
 	auto operator=(energy_swap &&) noexcept -> energy_swap & = delete;
 
+	[[nodiscard]] auto get_current_level() const -> size_t {
+		return current_level_;
+	}
+
 	[[nodiscard]] auto get_current_level_string() const -> const std::string & {
-		return levels_.at(current_level_);
+		return levels_.at(current_level_ - 1);
 	}
 
 protected:
