@@ -7,6 +7,7 @@
 #include "../../engine/components/button.hpp"
 #include "../../engine/components/component.hpp"
 #include "../../engine/components/label.hpp"
+#include "../../engine/components/sprite_anim.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
 #include "../components/battery_display.hpp"
@@ -14,7 +15,7 @@
 #include "../data/puzzle.hpp"
 
 #include <array>
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 
 namespace engine {
@@ -83,6 +84,8 @@ private:
 	auto on_button_click(const engine::button::click &evt) -> engine::result<>;
 
 	auto check_end() -> void;
+
+	engine::sprite_anim spark_;
 };
 
 } // namespace energy

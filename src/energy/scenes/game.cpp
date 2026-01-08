@@ -7,6 +7,7 @@
 #include "../../engine/components/button.hpp"
 #include "../../engine/components/component.hpp"
 #include "../../engine/components/label.hpp"
+#include "../../engine/components/sprite_anim.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes//scene.hpp"
 #include "../components/battery_display.hpp"
@@ -15,6 +16,7 @@
 #include "../energy_swap.hpp"
 
 #include <array>
+#include <cstddef>
 #include <format>
 #include <functional>
 #include <optional>
@@ -83,6 +85,13 @@ auto game::init(engine::app &app) -> engine::result<> {
 
 	button_click_ = app.bind_event<engine::button::click>(this, &game::on_button_click);
 
+	if(const auto err = spark_.init(app, "sprites", "spark_{}.png", 6, 5.0F).ko(); err) {
+		return engine::error("failed to initialize spark animation", *err);
+	}
+
+	spark_.set_position({.x = 150, .y = 50});
+	spark_.set_scale(2.0F);
+	spark_.play();
 	return true;
 }
 
@@ -119,6 +128,10 @@ auto game::end() -> engine::result<> {
 
 	get_app().unsubscribe(button_click_);
 
+	if(const auto err = spark_.end().ko(); err) {
+		return engine::error("failed to end spark animation", *err);
+	}
+
 	return scene::end();
 }
 
@@ -128,6 +141,11 @@ auto game::update(const float delta) -> engine::result<> {
 			return engine::error("failed to update battery display", *err);
 		}
 	}
+
+	if(const auto err = spark_.update(delta).ko(); err) {
+		return engine::error("failed to update spark animation", *err);
+	}
+
 	return true;
 }
 
@@ -156,6 +174,10 @@ auto game::draw() -> engine::result<> {
 		if(const auto err = sprite.draw().ko(); err) {
 			return engine::error("failed to draw battery sprite", *err);
 		}
+	}
+
+	if(const auto err = spark_.draw().ko(); err) {
+		return engine::error("failed to draw spark animation", *err);
 	}
 
 	return true;

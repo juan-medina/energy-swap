@@ -27,7 +27,7 @@ public:
 	auto operator=(sprite &&) noexcept -> sprite & = delete;
 
 	[[nodiscard]] auto init(app &app) -> result<> override;
-	[[nodiscard]] auto init(app &app, const std::string &sprite_sheet, const std::string &frame) -> result<>;
+	[[nodiscard]] virtual auto init(app &app, const std::string &sprite_sheet, const std::string &frame) -> result<>;
 	[[nodiscard]] auto end() -> result<> override;
 
 	[[nodiscard]] auto update(float delta) -> result<> override;
@@ -44,6 +44,18 @@ public:
 	}
 
 	[[nodiscard]] auto point_inside(Vector2 point) const -> bool override;
+
+protected:
+	auto set_frame_name(const std::string &frame_name) {
+		frame_ = frame_name;
+	}
+
+	[[nodiscard]] auto frame_name() const -> std::string {
+		return frame_;
+	}
+	[[nodiscard]] auto sprite_sheet_name() const -> std::string {
+		return sprite_sheet_;
+	}
 
 private:
 	Color tint_ = WHITE;
