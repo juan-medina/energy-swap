@@ -47,6 +47,8 @@ public:
 		size_t index;
 	};
 
+	auto reset() -> void;
+
 private:
 	static constexpr auto hover_scale = 1.25F;
 	static constexpr auto selected_scale = 1.4F;

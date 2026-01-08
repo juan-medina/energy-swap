@@ -91,6 +91,12 @@ auto battery_display::set_selected(const bool selected) -> void {
 	adjust_scale();
 }
 
+auto battery_display::reset() -> void {
+	hover_ = false;
+	selected_ = false;
+	adjust_scale();
+}
+
 auto battery_display::readjust_segments() -> void {
 	const auto pos = get_position();
 	Vector2 segment_pos = pos;

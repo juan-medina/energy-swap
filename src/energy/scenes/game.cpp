@@ -185,6 +185,11 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> engine::result<> {
 	auto const total_batteries = current_puzzle_.size();
 	toggle_batteries(total_batteries);
 
+
+	for(const auto index: std::views::iota(0, max_batteries)) {
+		battery_displays_.at(index).reset();
+	}
+
 	for(auto i = static_cast<size_t>(0); i < total_batteries; ++i) {
 		batteries_.at(i) = current_puzzle_.at(i);
 	}
