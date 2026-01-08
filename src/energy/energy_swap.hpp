@@ -48,6 +48,8 @@ private:
 
 	static constexpr auto click_sound_path = "resources/sounds/click.wav";
 	static constexpr auto click_sound = "click";
+	static constexpr auto battery_click_sound_path = "resources/sounds/battery.wav";
+	static constexpr auto battery_click_sound = "battery";
 
 	static constexpr engine::size design_resolution{.width = 640, .height = 360};
 

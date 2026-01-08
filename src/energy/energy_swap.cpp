@@ -26,6 +26,10 @@ auto energy_swap::init() -> engine::result<> {
 		return engine::error{"failed to load button sound", *err};
 	}
 
+	if(const auto err = load_sound(battery_click_sound, battery_click_sound_path).ko(); err) {
+		return engine::error{"failed to load battery click sound", *err};
+	}
+
 	if(const auto err = load_levels().ko(); err) {
 		return engine::error{"failed to load levels", *err};
 	}
@@ -47,6 +51,15 @@ auto energy_swap::end() -> engine::result<> {
 	unsubscribe(go_to_game_);
 	unsubscribe(next_level_);
 	unsubscribe(game_back_);
+
+	if(const auto err = unload_sound(click_sound).ko(); err) {
+		return engine::error{"failed to unload click sound", *err};
+	}
+
+	if(const auto err = unload_sound(battery_click_sound).ko(); err) {
+		return engine::error{"failed to unload battery click sound", *err};
+	}
+
 	return app::end();
 }
 

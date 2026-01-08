@@ -53,6 +53,7 @@ private:
 	static constexpr auto sprite_sheet_name = "sprites";
 	static constexpr auto sprite_sheet_path = "resources/sprites/sprites.json";
 	static constexpr auto game_music = "resources/music/game.ogg";
+	static constexpr auto battery_click_sound = "battery";
 
 	auto toggle_batteries(size_t number) -> void;
 	static constexpr std::array<size_t, 12> battery_order{8, 4, 0, 1, 5, 9, 10, 6, 2, 3, 7, 11};

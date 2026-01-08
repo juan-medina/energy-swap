@@ -227,6 +227,11 @@ auto game::on_battery_click(const battery_display::click &click) -> engine::resu
 			return battery_display.is_selected();
 		});
 
+	// regardless if we have a selected battery or not, play the click sound
+	if(const auto err = get_app().play_sound(battery_click_sound).ko()) {
+		return engine::error("failed to play battery click sound", *err);
+	}
+
 	// if we have none
 	if(selected_it == battery_displays_.end()) {
 		// select the clicked battery if it's not closed or empty
