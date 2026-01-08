@@ -73,6 +73,9 @@ private:
 
 	int game_back_{0};
 	auto on_game_back() -> engine::result<>;
+
+	int reset_{0};
+	auto on_reset() -> engine::result<>;
 };
 
 } // namespace energy

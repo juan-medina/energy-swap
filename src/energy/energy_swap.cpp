@@ -42,6 +42,7 @@ auto energy_swap::init() -> engine::result<> {
 	go_to_game_ = on_event<menu::go_to_game>(this, &energy_swap::on_go_to_game);
 	next_level_ = on_event<game::next_level>(this, &energy_swap::on_next_level);
 	game_back_ = on_event<game::back>(this, &energy_swap::on_game_back);
+	reset_ = on_event<game::reset>(this, &energy_swap::on_reset);
 
 	return true;
 }
@@ -51,6 +52,7 @@ auto energy_swap::end() -> engine::result<> {
 	unsubscribe(go_to_game_);
 	unsubscribe(next_level_);
 	unsubscribe(game_back_);
+	unsubscribe(reset_);
 
 	if(const auto err = unload_sound(click_sound).ko(); err) {
 		return engine::error{"failed to unload click sound", *err};
@@ -129,6 +131,13 @@ auto energy_swap::on_game_back() -> engine::result<> {
 		return engine::error("fail to enable menu scene", *err);
 	}
 
+	return true;
+}
+
+auto energy_swap::on_reset() -> engine::result<> {
+	if(const auto err = re_enable_scene(game_scene_).ko(); err) {
+		return engine::error("fail to re-enable game scene", *err);
+	}
 	return true;
 }
 

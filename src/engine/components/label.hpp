@@ -34,10 +34,16 @@ public:
 
 	auto set_font_size(const float &size) -> void override;
 
+	auto set_centered(const bool centered) -> void {
+		centered_ = centered;
+	}
+
 private:
 	std::string text_{"label"};
 
 	auto calculate_size() -> void;
+
+	bool centered_{false};
 };
 
 } // namespace engine

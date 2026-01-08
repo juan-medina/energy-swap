@@ -38,7 +38,7 @@ auto label::draw() -> result<> {
 		return true;
 	}
 
-	const auto [x, y] = get_position();
+	auto [x, y] = get_position();
 	const auto [width, height] = get_size();
 
 	GuiSetFont(get_font());
@@ -47,6 +47,9 @@ auto label::draw() -> result<> {
 	GuiSetStyle(DEFAULT, TEXT_SIZE, static_cast<int>(get_font_size()));
 	GuiSetStyle(DEFAULT, TEXT_COLOR_NORMAL, ColorToInt(WHITE));
 
+	if(centered_) {
+		x -= width / 2;
+	}
 	GuiLabel({.x = x, .y = y, .width = width, .height = height}, text_.c_str());
 
 	GuiSetStyle(DEFAULT, TEXT_COLOR_NORMAL, default_text_color);

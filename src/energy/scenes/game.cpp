@@ -23,12 +23,20 @@ auto game::init(engine::app &app) -> engine::result<> {
 		return engine::error("failed to initialize title label", *err);
 	}
 
+	if(const auto err = status_.init(app).ko(); err) {
+		return engine::error("failed to initialize status label", *err);
+	}
+
 	if(const auto err = back_button_.init(app).ko(); err) {
 		return engine::error("failed to initialize back button", *err);
 	}
 
 	if(const auto err = next_button_.init(app).ko(); err) {
 		return engine::error("failed to initialize next button", *err);
+	}
+
+	if(const auto err = reset_button_.init(app).ko(); err) {
+		return engine::error("failed to initialize reset button", *err);
 	}
 
 	if(const auto err = app.load_sprite_sheet(sprite_sheet_name, sprite_sheet_path).ko(); err) {
@@ -58,6 +66,10 @@ auto game::init(engine::app &app) -> engine::result<> {
 	next_button_.set_position({.x = 0, .y = 0});
 	next_button_.set_size({.width = 45, .height = 25});
 
+	reset_button_.set_text("Reset");
+	reset_button_.set_position({.x = 0, .y = 0});
+	reset_button_.set_size({.width = 45, .height = 25});
+
 	button_click_ = app.bind_event<engine::button::click>(this, &game::on_button_click);
 
 	return true;
@@ -65,7 +77,11 @@ auto game::init(engine::app &app) -> engine::result<> {
 
 auto game::end() -> engine::result<> {
 	if(const auto err = title_.end().ko(); err) {
-		return engine::error("failed to end logo texture", *err);
+		return engine::error("failed to end title label", *err);
+	}
+
+	if(const auto err = status_.end().ko(); err) {
+		return engine::error("failed to end status label", *err);
 	}
 
 	if(const auto err = back_button_.end().ko(); err) {
@@ -74,6 +90,10 @@ auto game::end() -> engine::result<> {
 
 	if(const auto err = next_button_.end().ko(); err) {
 		return engine::error("failed to end next button", *err);
+	}
+
+	if(const auto err = reset_button_.end().ko(); err) {
+		return engine::error("failed to end reset button", *err);
 	}
 
 	if(const auto err = get_app().unload_sprite_sheet(sprite_sheet_name).ko(); err) {
@@ -105,12 +125,20 @@ auto game::draw() -> engine::result<> {
 		return engine::error("failed to draw title label", *err);
 	}
 
+	if(const auto err = status_.draw().ko(); err) {
+		return engine::error("failed to draw status label", *err);
+	}
+
 	if(const auto err = back_button_.draw().ko(); err) {
 		return engine::error("failed to draw back button", *err);
 	}
 
 	if(const auto err = next_button_.draw().ko(); err) {
 		return engine::error("failed to draw next button", *err);
+	}
+
+	if(const auto err = reset_button_.draw().ko(); err) {
+		return engine::error("failed to draw reset button", *err);
 	}
 
 	for(auto &sprite: battery_displays_) {
@@ -123,10 +151,14 @@ auto game::draw() -> engine::result<> {
 }
 
 auto game::layout(const engine::size screen_size) -> void {
-	const auto [label_width, label_height] = title_.get_size();
 	title_.set_position({
-		.x = (screen_size.width - label_width) / 2.0F,
+		.x = screen_size.width / 2.0F,
 		.y = 10.0F,
+	});
+
+	status_.set_position({
+		.x = screen_size.width / 2.0F,
+		.y = screen_size.height - 60.0F,
 	});
 
 	// distribute batteries in a grid of 2 rows that fills
@@ -164,8 +196,14 @@ auto game::layout(const engine::size screen_size) -> void {
 		.x = center_pos_x + button_h_gap,
 		.y = center_pos_y,
 	});
+	reset_button_.set_position({
+		.x = center_pos_x + button_h_gap,
+		.y = center_pos_y,
+	});
 
-	next_button_.set_visible(false);
+	const auto solved = current_puzzle_.is_solved();
+	next_button_.set_visible(solved);
+	reset_button_.set_visible(!solved);
 }
 
 auto game::toggle_batteries(const size_t number) -> void {
@@ -185,7 +223,6 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> engine::result<> {
 	auto const total_batteries = current_puzzle_.size();
 	toggle_batteries(total_batteries);
 
-
 	for(const auto index: std::views::iota(0, max_batteries)) {
 		battery_displays_.at(index).reset();
 	}
@@ -202,6 +239,10 @@ auto game::enable() -> engine::result<> {
 
 	title_.set_text(std::format("Level {}", app.get_current_level()));
 	title_.set_font_size(30);
+	title_.set_centered(true);
+
+	status_.set_text("");
+	status_.set_centered(true);
 
 	if(const auto err = scene::enable().ko(); err) {
 		return engine::error("failed to enable base scene", *err);
@@ -268,6 +309,8 @@ auto game::on_button_click(const engine::button::click &evt) -> engine::result<>
 		get_app().post_event(next_level{});
 	} else if(evt.id == back_button_.get_id()) {
 		get_app().post_event(back{});
+	} else if(evt.id == reset_button_.get_id()) {
+		get_app().post_event(reset{});
 	}
 
 	return true;
@@ -275,7 +318,11 @@ auto game::on_button_click(const engine::button::click &evt) -> engine::result<>
 
 auto game::check_end() -> void {
 	if(current_puzzle_.is_solved()) {
+		status_.set_text("You Win, continue to the next level ...");
 		next_button_.set_visible(true);
+		reset_button_.set_visible(false);
+	} else if(!current_puzzle_.is_solvable()) {
+		status_.set_text("No more moves available, try again ...");
 	}
 }
 

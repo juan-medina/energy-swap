@@ -25,7 +25,9 @@ public:
 
 	[[nodiscard]] static auto from_string(const std::string &str) -> engine::result<puzzle>;
 
-	auto is_solved() const -> bool;
+	[[nodiscard]] auto is_solved() const -> bool;
+
+	[[nodiscard]] auto is_solvable() const -> bool;
 
 private:
 	std::vector<battery> batteries_;

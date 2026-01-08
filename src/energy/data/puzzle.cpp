@@ -3,6 +3,8 @@
 
 #include "puzzle.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include <algorithm>
 #include <ranges>
 
@@ -45,6 +47,20 @@ auto puzzle::from_string(const std::string &str) -> engine::result<puzzle> {
 auto puzzle::is_solved() const -> bool {
 	return std::ranges::all_of(batteries_,
 							   [](const auto &battery) -> auto { return battery.closed() || battery.empty(); });
+}
+
+auto puzzle::is_solvable() const -> bool {
+	return std::ranges::any_of(batteries_, [this](const auto &from_bat) -> auto {
+		if(from_bat.closed() || from_bat.empty()) {
+			return false;
+		}
+		return std::ranges::any_of(batteries_, [&from_bat](const auto &to_bat) -> auto {
+			if(std::addressof(from_bat) == std::addressof(to_bat) || to_bat.closed() || to_bat.full()) {
+				return false;
+			}
+			return to_bat.can_get_from(from_bat);
+		});
+	});
 }
 
 } // namespace energy

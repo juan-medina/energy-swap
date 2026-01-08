@@ -41,9 +41,11 @@ public:
 
 	struct next_level {};
 	struct back {};
+	struct reset {};
 
 private:
 	engine::label title_;
+	engine::label status_;
 	static constexpr auto large_font_size = 20;
 
 	static constexpr auto max_batteries = 12;
@@ -65,6 +67,7 @@ private:
 
 	engine::button back_button_;
 	engine::button next_button_;
+	engine::button reset_button_;
 
 	int button_click_{0};
 	auto on_button_click(const engine::button::click &evt) -> engine::result<>;
