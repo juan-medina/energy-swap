@@ -27,7 +27,7 @@
 namespace engine {
 
 auto game_overlay::init(app &app) -> result<> {
-	if(const auto err = scene::init(app).ko(); err) {
+	if(const auto err = scene::init(app).unwrap(); err) {
 		return error("failed to initialize base component", *err);
 	}
 

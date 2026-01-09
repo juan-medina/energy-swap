@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #pragma once
+
 #include "../components/component.hpp"
 #include "../result.hpp"
 #include "scene.hpp"
@@ -14,17 +15,6 @@ struct size;
 
 class game_overlay: public scene {
 public:
-	game_overlay() = default;
-	~game_overlay() override = default;
-
-	// Non-copyable
-	game_overlay(const game_overlay &) = delete;
-	auto operator=(const game_overlay &) -> game_overlay & = delete;
-
-	// Non-movable
-	game_overlay(game_overlay &&) noexcept = delete;
-	auto operator=(game_overlay &&) noexcept -> game_overlay & = delete;
-
 	[[nodiscard]] auto init(app &app) -> result<> override;
 	[[nodiscard]] auto end() -> result<> override;
 
