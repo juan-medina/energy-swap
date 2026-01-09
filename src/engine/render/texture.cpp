@@ -55,11 +55,11 @@ auto texture::draw(const Rectangle origin,
 				   const Rectangle dest,
 				   const Color tint,
 				   const float rotation,
-				   const Vector2 rotation_center) const -> result<> {
+				   const Vector2 center) const -> result<> {
 	if(texture_.id == 0) {
 		return error("texture not initialized");
 	}
-	DrawTexturePro(texture_, origin, dest, rotation_center, rotation, tint);
+	DrawTexturePro(texture_, origin, dest, center, rotation, tint);
 	return true;
 }
 

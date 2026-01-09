@@ -17,9 +17,9 @@ public:
 	explicit texture() = default;
 	virtual ~texture() = default;
 
-	// Non-copyable
-	texture(const texture &) = delete;
-	auto operator=(const texture &) -> texture & = delete;
+	// Copyable
+	texture(const texture &) = default;
+	auto operator=(const texture &) -> texture & = default;
 
 	// Movable
 	texture(texture &&) noexcept = default;
@@ -27,7 +27,7 @@ public:
 
 	[[nodiscard]] auto draw(const Vector2 &pos) const -> result<>;
 
-	[[nodiscard]] auto draw(Rectangle origin, Rectangle dest, Color tint, float rotation, Vector2 rotation_center) const
+	[[nodiscard]] auto draw(Rectangle origin, Rectangle dest, Color tint, float rotation, Vector2 center) const
 		-> result<>;
 
 	[[nodiscard]] virtual auto init(const std::string &path) -> result<>;
