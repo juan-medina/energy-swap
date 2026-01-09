@@ -9,7 +9,11 @@
 
 #include <algorithm>
 #include <format>
+#include <functional>
 #include <memory>
+#include <optional>
+#include <ranges>
+#include <typeinfo>
 #include <utility>
 #include <vector>
 

@@ -52,14 +52,14 @@ auto game_overlay::end() -> result<> {
 }
 
 auto game_overlay::layout(const size screen_size) -> result<> {
-	auto [version, err] = get_component<version_display>(version_display_).ok();
-	if(err) {
-		return error("failed to get version display component", *err);
+	std::shared_ptr<version_display> version;
+	if(const auto err = get_component<version_display>(version_display_).unwrap(version); err) {
+		return error("failed to get version display component", err);
 	}
 
 	// position version display at bottom-right corner with margin
-	const auto [width, height] = (*version)->get_size();
-	(*version)->set_position({
+	const auto [width, height] = version->get_size();
+	version->set_position({
 		.x = screen_size.width - width - margin,
 		.y = screen_size.height - height - margin,
 	});

@@ -26,6 +26,15 @@ public:
 		causes_.insert(causes_.end(), other.causes_.begin(), other.causes_.end());
 	}
 
+	error(const std::string &message,
+		  const std::optional<error> &other,
+		  const std::source_location &location = std::source_location::current())
+		: causes_{cause{.message = message, .location = location}} {
+		if(other) {
+			causes_.insert(causes_.end(), other->causes_.begin(), other->causes_.end());
+		}
+	}
+
 	[[nodiscard]] auto get_message() const noexcept -> const std::string & {
 		return causes_.front().message;
 	}
@@ -77,12 +86,35 @@ public:
 		return std::holds_alternative<Value>(*this);
 	}
 
-	[[maybe_unused]] [[nodiscard]] auto get_error() const {
+	[[maybe_unused]] [[nodiscard]] auto get_error() const noexcept {
 		return std::get<Error>(*this);
 	}
 
-	[[maybe_unused]] [[nodiscard]] auto get_value() const {
+	[[maybe_unused]] [[nodiscard]] auto get_value() const noexcept {
 		return std::get<Value>(*this);
+	}
+
+	auto unwrap(Value &value) const noexcept -> std::optional<Error> {
+		if(has_error()) {
+			return std::get<Error>(*this);
+		}
+		value = std::get<Value>(*this);
+		return std::nullopt;
+	}
+
+	auto unwrap(const Value &value) const noexcept -> std::optional<Error> {
+		if(has_error()) {
+			return std::get<Error>(*this);
+		}
+		value = std::get<Value>(*this);
+		return std::nullopt;
+	}
+
+	auto unwrap() const noexcept -> std::optional<Error> {
+		if(has_error()) {
+			return std::get<Error>(*this);
+		}
+		return std::nullopt;
 	}
 
 	[[nodiscard]] auto ok() const noexcept -> std::tuple<std::optional<Value>, std::optional<Error>> {
