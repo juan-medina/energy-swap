@@ -23,9 +23,9 @@ public:
 	explicit sprite_sheet() = default;
 	virtual ~sprite_sheet() = default;
 
-	// Non-copyable
-	sprite_sheet(const sprite_sheet &) = delete;
-	auto operator=(const sprite_sheet &) -> sprite_sheet & = delete;
+	// Copyable
+	sprite_sheet(const sprite_sheet &) = default;
+	auto operator=(const sprite_sheet &) -> sprite_sheet & = default;
 
 	// Movable
 	sprite_sheet(sprite_sheet &&) noexcept = default;
@@ -34,12 +34,11 @@ public:
 	auto init(const std::string &path) -> result<>;
 	auto end() -> result<>;
 	[[nodiscard]] auto
-	draw(const std::string &frame_name, const Vector2 &pos, const float &scale, const Color &tint = WHITE) const
-		-> result<>;
+	draw(const std::string &name, const Vector2 &pos, const float &scale, const Color &tint = WHITE) const -> result<>;
 
-	[[nodiscard]] auto frame_size(const std::string &frame_name) const -> result<size>;
+	[[nodiscard]] auto frame_size(const std::string &name) const -> result<size>;
 
-	[[nodiscard]] auto frame_pivot(const std::string &frame_name) const -> result<Vector2>;
+	[[nodiscard]] auto frame_pivot(const std::string &name) const -> result<Vector2>;
 
 private:
 	struct frame {
@@ -52,6 +51,7 @@ private:
 
 	auto parse_frames(const jsoncons::json &parser) -> result<>;
 	auto parse_meta(const jsoncons::json &parser, const std::filesystem::path &base_path) -> result<>;
+	auto get_frame_data(const std::string &name) const -> result<frame>;
 };
 
 } // namespace engine

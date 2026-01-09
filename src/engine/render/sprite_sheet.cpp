@@ -43,11 +43,11 @@ auto sprite_sheet::init(const std::string &path) -> result<> {
 
 	const auto &parser = decoder.get_result();
 
-	if(auto const err = parse_frames(parser).ko(); err) {
+	if(auto const err = parse_frames(parser).unwrap(); err) {
 		return error("failed to parse sprite sheet frames", *err);
 	}
 
-	if(auto const err = parse_meta(parser, std::filesystem::path(path).parent_path()).ko(); err) {
+	if(auto const err = parse_meta(parser, std::filesystem::path(path).parent_path()).unwrap(); err) {
 		return error("failed to parse sprite sheet metadata", *err);
 	}
 
@@ -57,19 +57,19 @@ auto sprite_sheet::init(const std::string &path) -> result<> {
 }
 
 auto sprite_sheet::end() -> result<> {
-	if(const auto err = texture_.end().ko(); err) {
+	if(const auto err = texture_.end().unwrap(); err) {
 		return error("failed to end texture", *err);
 	}
 	return true;
 }
-auto sprite_sheet::draw(const std::string &frame_name, const Vector2 &pos, const float &scale, const Color &tint) const
+auto sprite_sheet::draw(const std::string &name, const Vector2 &pos, const float &scale, const Color &tint) const
 	-> result<> {
-	const auto frame_entry = frames_.find(frame_name);
-	if(frame_entry == frames_.end()) {
-		return error(std::format("frame not found in sprite sheet: {}", frame_name));
+	const auto it = frames_.find(name);
+	if(it == frames_.end()) {
+		return error(std::format("frame not found in sprite sheet: {}", name));
 	}
 
-	const auto &[origin, pivot] = frame_entry->second;
+	const auto &[origin, pivot] = it->second;
 	const Rectangle destination = {
 		.x = pos.x - (pivot.x * origin.width * scale),
 		.y = pos.y - (pivot.y * origin.height * scale),
@@ -84,22 +84,20 @@ auto sprite_sheet::draw(const std::string &frame_name, const Vector2 &pos, const
 	return true;
 }
 
-auto sprite_sheet::frame_size(const std::string &frame_name) const -> result<size> {
-	const auto frame_entry = frames_.find(frame_name);
-	if(frame_entry == frames_.end()) {
-		return error(std::format("frame not found in sprite sheet: {}", frame_name));
+auto sprite_sheet::frame_size(const std::string &name) const -> result<size> {
+	frame frame_data;
+	if(const auto err = get_frame_data(name).unwrap(frame_data); err) {
+		return error("failed to get frame data", *err);
 	}
-	const auto &[origin, pivot] = frame_entry->second;
-	return size{.width = origin.width, .height = origin.height};
+	return size{.width = frame_data.origin.width, .height = frame_data.origin.height};
 }
 
-auto sprite_sheet::frame_pivot(const std::string &frame_name) const -> result<Vector2> {
-	const auto frame_entry = frames_.find(frame_name);
-	if(frame_entry == frames_.end()) {
-		return error(std::format("frame not found in sprite sheet: {}", frame_name));
+auto sprite_sheet::frame_pivot(const std::string &name) const -> result<Vector2> {
+	frame frame_data;
+	if(const auto err = get_frame_data(name).unwrap(frame_data); err) {
+		return error("failed to get frame data", *err);
 	}
-	const auto &[origin, pivot] = frame_entry->second;
-	return pivot;
+	return frame_data.pivot;
 }
 
 auto sprite_sheet::parse_frames(const jsoncons::json &parser) -> result<> {
@@ -110,27 +108,27 @@ auto sprite_sheet::parse_frames(const jsoncons::json &parser) -> result<> {
 
 	// NOLINTNEXTLINE(*-pro-bounds-avoid-unchecked-container-access)
 	for(const auto &frames = parser["frames"]; const auto &frame_entry: frames.object_range()) {
-		const std::string &frame_name = frame_entry.key();
+		const std::string &name = frame_entry.key();
 		const auto &frame_object = frame_entry.value();
 
 		// NOLINTNEXTLINE(*-pro-bounds-avoid-unchecked-container-access)
 		if(!frame_object.contains("frame") && !frame_object["frame"].is_object()) {
 			return error(std::format(
 				R"(failed to parse sprite sheet JSON: ["frames"]["{}"]["frame"] field missing or not an object)",
-				frame_name));
+				name));
 		}
 
 		// NOLINTNEXTLINE(*-pro-bounds-avoid-unchecked-container-access)
 		const auto &frame_data = frame_object["frame"];
 
-		const auto origin_x = frame_data.get_value_or<float>("x", 0);
-		const auto origin_y = frame_data.get_value_or<float>("y", 0);
+		const auto x = frame_data.get_value_or<float>("x", 0);
+		const auto y = frame_data.get_value_or<float>("y", 0);
 		const auto width = frame_data.get_value_or<float>("w", 0);
 		const auto height = frame_data.get_value_or<float>("h", 0);
 
 		Rectangle const origin{
-			.x = origin_x,
-			.y = origin_y,
+			.x = x,
+			.y = y,
 			.width = width,
 			.height = height,
 		};
@@ -139,23 +137,23 @@ auto sprite_sheet::parse_frames(const jsoncons::json &parser) -> result<> {
 		if(!frame_object.contains("pivot") || !frame_object["pivot"].is_object()) {
 			return error(std::format(
 				R"(failed to parse sprite sheet JSON: ["frames"]["{}"]["pivot"] field missing or not an object)",
-				frame_name));
+				name));
 		}
 
 		// NOLINTNEXTLINE(*-pro-bounds-avoid-unchecked-container-access)
 		const auto &pivot_data = frame_object["pivot"];
 
-		const auto pivot_x = pivot_data.get_value_or<float>("x", 0);
-		const auto pivot_y = pivot_data.get_value_or<float>("y", 0);
-		const Vector2 pivot{.x = pivot_x, .y = pivot_y};
+		const auto px = pivot_data.get_value_or<float>("x", 0);
+		const auto py = pivot_data.get_value_or<float>("y", 0);
+		const Vector2 pivot{.x = px, .y = py};
 
-		frames_.emplace(frame_name,
+		frames_.emplace(name,
 						frame{
 							.origin = origin,
 							.pivot = pivot,
 						});
 
-		SPDLOG_DEBUG("adding frame: {}", frame_name);
+		SPDLOG_DEBUG("adding frame: {}", name);
 	}
 
 	return true;
@@ -180,6 +178,14 @@ auto sprite_sheet::parse_meta(const jsoncons::json &parser, const std::filesyste
 	}
 
 	return true;
+}
+
+auto sprite_sheet::get_frame_data(const std::string &name) const -> result<frame> {
+	const auto frame_entry = frames_.find(name);
+	if(frame_entry == frames_.end()) {
+		return error(std::format("frame not found in sprite sheet: {}", name));
+	}
+	return frame_entry->second;
 }
 
 } // namespace engine
