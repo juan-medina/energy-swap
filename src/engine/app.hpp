@@ -127,7 +127,7 @@ protected:
 	template<typename T>
 		requires std::is_base_of_v<scene, T>
 	auto register_scene(int layer = 0, const bool visible = true) -> int {
-		int scene_id = ++last_scene_id_;
+		int id = ++last_scene_id_;
 
 		std::string name;
 #if defined(__GNUG__) && !defined(__EMSCRIPTEN__) && !defined(__APPLE__)
@@ -139,12 +139,12 @@ protected:
 #else
 		name = typeid(T).name();
 #endif
-		SPDLOG_DEBUG("registering scene of type `{}` with id {} at layer {}", name, scene_id, layer);
-		const auto scene_info_ptr = std::make_shared<scene_info>(scene_info{
-			.id = scene_id, .name = name, .scene_ptr = std::make_unique<T>(), .layer = layer, .visible = visible});
+		SPDLOG_DEBUG("registering scene of type `{}` with id {} at layer {}", name, id, layer);
+		const auto scene_info_ptr = std::make_shared<scene_info>(
+			scene_info{.id = id, .name = name, .scene_ptr = std::make_unique<T>(), .layer = layer, .visible = visible});
 		scenes_.push_back(scene_info_ptr);
 		sort_scenes();
-		return scene_id;
+		return id;
 	}
 
 	template<typename T>
@@ -153,35 +153,33 @@ protected:
 		return register_scene<T>(0, visible);
 	}
 
-	auto unregister_scene(const int scene_id) -> result<> {
-		const auto find =
-			std::ranges::find_if(scenes_, [scene_id](const auto &scene) -> bool { return scene->id == scene_id; });
-		if(find != scenes_.end()) {
-			if((*find)->scene_ptr) {
-				if(const auto err = (*find)->scene_ptr->end().unwrap(); err) {
-					return error(std::format("error ending scene with id: {} name: {}", scene_id, (*find)->name), *err);
+	auto unregister_scene(const int id) -> result<> {
+		const auto it = std::ranges::find_if(scenes_, [id](const auto &scene) -> bool { return scene->id == id; });
+		if(it != scenes_.end()) {
+			if((*it)->scene_ptr) {
+				if(const auto err = (*it)->scene_ptr->end().unwrap(); err) {
+					return error(std::format("error ending scene with id: {} name: {}", id, (*it)->name), *err);
 				}
-				(*find)->scene_ptr.reset();
+				(*it)->scene_ptr.reset();
 			}
-			scenes_.erase(find);
+			scenes_.erase(it);
 			return true;
 		}
-		return error(std::format("scene with id {} not found", scene_id));
+		return error(std::format("scene with id {} not found", id));
 	}
 
 	auto sort_scenes() -> void {
-		std::ranges::sort(scenes_, [](const auto &scene_a, const auto &scene_b) -> bool {
-			return scene_a->layer < scene_b->layer;
-		});
+		std::ranges::sort(
+			scenes_, [](const auto &scene_a, const auto &scene_b) -> bool { return scene_a->layer < scene_b->layer; });
 	}
 
-	[[nodiscard]] auto enable_scene(int scene_id, bool enabled = true) -> result<>;
+	[[nodiscard]] auto enable_scene(int id, bool enabled = true) -> result<>;
 
-	[[nodiscard]] auto disable_scene(const int scene_id, const bool disabled = true) -> result<> {
-		return enable_scene(scene_id, !disabled);
+	[[nodiscard]] auto disable_scene(const int id, const bool disabled = true) -> result<> {
+		return enable_scene(id, !disabled);
 	}
 
-	[[nodiscard]] auto re_enable_scene(int scene_id) -> result<>;
+	[[nodiscard]] auto re_enable_scene(int id) -> result<>;
 
 	[[nodiscard]] auto
 	set_default_font(const std::string &path, int size = 0, int texture_filter = TEXTURE_FILTER_POINT) -> result<>;
@@ -224,13 +222,13 @@ private:
 
 	std::vector<std::shared_ptr<scene_info>> scenes_;
 
-	auto find_scene_info(const int scene_id) -> result<std::shared_ptr<scene_info>> {
+	auto find_scene_info(const int id) -> result<std::shared_ptr<scene_info>> {
 		for(auto &scene_info: scenes_) {
-			if(scene_info->id == scene_id) {
+			if(scene_info->id == id) {
 				return scene_info;
 			}
 		}
-		return error(std::format("scene with id {} not found", scene_id));
+		return error(std::format("scene with id {} not found", id));
 	}
 
 	auto set_default_font(const Font &font, int size, int texture_filter = TEXTURE_FILTER_POINT) -> void;

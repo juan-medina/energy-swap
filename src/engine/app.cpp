@@ -267,46 +267,45 @@ auto app::draw() const -> result<> {
 	return true;
 }
 
-auto app::enable_scene(const int scene_id, const bool enabled) -> result<> {
+auto app::enable_scene(const int id, const bool enabled) -> result<> {
 	std::shared_ptr<scene_info> info;
-	if(const auto err = find_scene_info(scene_id).unwrap(info); err) {
-		return error(std::format("scene with id {} not found", scene_id));
+	if(const auto err = find_scene_info(id).unwrap(info); err) {
+		return error(std::format("scene with id {} not found", id));
 	}
 	info->visible = enabled;
 	if(enabled) {
 		if(const auto enable_err = info->scene_ptr->enable().unwrap(); enable_err) {
-			return error(std::format("failed to enable scene with id: {} name: {}", scene_id, info->name), *enable_err);
+			return error(std::format("failed to enable scene with id: {} name: {}", id, info->name), *enable_err);
 		}
-		SPDLOG_DEBUG("enabled scene with id: {} name: {}", scene_id, info->name);
+		SPDLOG_DEBUG("enabled scene with id: {} name: {}", id, info->name);
 		// layout on enable
 		if(const auto err_layout = info->scene_ptr->layout(drawing_resolution_).unwrap(); err_layout) {
-			return error(std::format("failed to layout scene with id: {} name: {}", scene_id, info->name), *err_layout);
+			return error(std::format("failed to layout scene with id: {} name: {}", id, info->name), *err_layout);
 		}
 	} else {
 		if(const auto disable_err = info->scene_ptr->disable().unwrap(); disable_err) {
-			return error(std::format("failed to disable scene with id: {} name: {}", scene_id, info->name),
-						 *disable_err);
+			return error(std::format("failed to disable scene with id: {} name: {}", id, info->name), *disable_err);
 		}
-		SPDLOG_DEBUG("disabled scene with id: {} name: {}", scene_id, info->name);
+		SPDLOG_DEBUG("disabled scene with id: {} name: {}", id, info->name);
 	}
 	return true;
 }
 
-auto app::re_enable_scene(const int scene_id) -> result<> {
+auto app::re_enable_scene(const int id) -> result<> {
 	std::shared_ptr<scene_info> info;
-	if(const auto err = find_scene_info(scene_id).unwrap(info); err) {
-		return error(std::format("scene with id {} not found", scene_id));
+	if(const auto err = find_scene_info(id).unwrap(info); err) {
+		return error(std::format("scene with id {} not found", id));
 	}
 	if(!info->visible) {
-		return error(std::format("scene with id {} is not enabled", scene_id));
+		return error(std::format("scene with id {} is not enabled", id));
 	}
 	if(const auto enable_err = info->scene_ptr->enable().unwrap(); enable_err) {
-		return error(std::format("failed to re-enable scene with id: {} name: {}", scene_id, info->name), *enable_err);
+		return error(std::format("failed to re-enable scene with id: {} name: {}", id, info->name), *enable_err);
 	}
-	SPDLOG_DEBUG("re-enabled scene with id: {} name: {}", scene_id, info->name);
+	SPDLOG_DEBUG("re-enabled scene with id: {} name: {}", id, info->name);
 	// layout on enable
 	if(const auto layout_err = info->scene_ptr->layout(drawing_resolution_).unwrap(); layout_err) {
-		return error(std::format("failed to layout scene with id: {} name: {}", scene_id, info->name), *layout_err);
+		return error(std::format("failed to layout scene with id: {} name: {}", id, info->name), *layout_err);
 	}
 
 	return true;
@@ -357,13 +356,13 @@ auto app::load_sound(const std::string &name, const std::string &path) -> result
 }
 
 auto app::unload_sound(const std::string &name) -> result<> {
-	const auto find = sounds_.find(name);
-	if(find == sounds_.end()) {
+	const auto it = sounds_.find(name);
+	if(it == sounds_.end()) {
 		return error(std::format("can't unload sound with name {}, is not loaded", name));
 	}
 
-	UnloadSound(find->second);
-	sounds_.erase(find);
+	UnloadSound(it->second);
+	sounds_.erase(it);
 	SPDLOG_DEBUG("unloaded sound {}", name);
 	return true;
 }
@@ -412,11 +411,11 @@ auto app::stop_music() -> result<> {
 }
 
 auto app::play_sound(const std::string &name, const float volume /*= 1.0F*/) -> result<> {
-	const auto find = sounds_.find(name);
-	if(find == sounds_.end()) {
+	const auto it = sounds_.find(name);
+	if(it == sounds_.end()) {
 		return error(std::format("can't play sound with name {}, is not loaded", name));
 	}
-	const auto &sound = find->second;
+	const auto &sound = it->second;
 	SetSoundPitch(sound, volume);
 	PlaySound(sound);
 
@@ -436,14 +435,14 @@ auto app::load_sprite_sheet(const std::string &name, const std::string &path) ->
 }
 
 auto app::unload_sprite_sheet(const std::string &name) -> result<> {
-	const auto find = sprite_sheets_.find(name);
-	if(find == sprite_sheets_.end()) {
+	const auto it = sprite_sheets_.find(name);
+	if(it == sprite_sheets_.end()) {
 		return error(std::format("can't unload sprite sheet with name {}, is not loaded", name));
 	}
-	if(const auto err = find->second.end().unwrap(); err) {
+	if(const auto err = it->second.end().unwrap(); err) {
 		return error(std::format("failed to unload sprite sheet with name: {}", name), *err);
 	}
-	sprite_sheets_.erase(find);
+	sprite_sheets_.erase(it);
 	SPDLOG_DEBUG("unloaded sprite sheet {}", name);
 	return true;
 }
@@ -453,11 +452,11 @@ auto app::draw_sprite(const std::string &sprite_sheet,
 					  const Vector2 &position,
 					  const float &scale,
 					  const Color &tint) -> result<> {
-	const auto find = sprite_sheets_.find(sprite_sheet);
-	if(find == sprite_sheets_.end()) {
+	const auto it = sprite_sheets_.find(sprite_sheet);
+	if(it == sprite_sheets_.end()) {
 		return error(std::format("can't draw sprite, sprite sheet: {}, is not loaded", sprite_sheet));
 	}
-	const auto &sheet = find->second;
+	const auto &sheet = it->second;
 	if(const auto err = sheet.draw(frame, position, scale, tint).unwrap(); err) {
 		return error(std::format("failed to draw frame {} from sprite sheet {}", frame, sprite_sheet), *err);
 	}
@@ -465,21 +464,21 @@ auto app::draw_sprite(const std::string &sprite_sheet,
 }
 
 auto app::get_sprite_size(const std::string &sprite_sheet, const std::string &frame) const -> result<size> {
-	const auto find = sprite_sheets_.find(sprite_sheet);
-	if(find == sprite_sheets_.end()) {
+	const auto it = sprite_sheets_.find(sprite_sheet);
+	if(it == sprite_sheets_.end()) {
 		return error(std::format("can't get sprite size, sprite sheet: {}, is not loaded", sprite_sheet));
 	}
-	const auto &sheet = find->second;
+	const auto &sheet = it->second;
 
 	return sheet.frame_size(frame);
 }
 
 auto app::get_sprite_pivot(const std::string &sprite_sheet, const std::string &frame) const -> result<Vector2> {
-	const auto find = sprite_sheets_.find(sprite_sheet);
-	if(find == sprite_sheets_.end()) {
+	const auto it = sprite_sheets_.find(sprite_sheet);
+	if(it == sprite_sheets_.end()) {
 		return error(std::format("can't get sprite pivot, sprite sheet: {}, is not loaded", sprite_sheet));
 	}
-	const auto &sheet = find->second;
+	const auto &sheet = it->second;
 
 	return sheet.frame_pivot(frame);
 }

@@ -18,26 +18,17 @@ namespace engine {
 
 class event_bus {
 public:
-	event_bus() = default;
-	~event_bus() = default;
-
-	// Non-copyable / non-movable
-	event_bus(const event_bus &) = delete;
-	auto operator=(const event_bus &) -> event_bus & = delete;
-	event_bus(event_bus &&) noexcept = delete;
-	auto operator=(event_bus &&) noexcept -> event_bus & = delete;
-
 	template<typename Event>
 	auto subscribe(std::function<result<>(const Event &)> handler) -> int {
 		const auto key = std::type_index(typeid(Event));
-		const int token_id = ++last_token_;
+		const int id = ++last_token_;
 
-		auto wrapper = [wrapp_handler = std::move(handler)](const void *evt_ptr) -> auto {
-			return wrapp_handler(*static_cast<const Event *>(evt_ptr));
+		auto wrapper = [wrap_handler = std::move(handler)](const void *evt_ptr) -> auto {
+			return wrap_handler(*static_cast<const Event *>(evt_ptr));
 		};
 
-		subscribers_[key].emplace_back(subscriber{.id = token_id, .func = std::move(wrapper)});
-		return token_id;
+		subscribers_[key].emplace_back(subscriber{.id = id, .func = std::move(wrapper)});
+		return id;
 	}
 
 	auto unsubscribe(const int token) -> void {
@@ -56,7 +47,7 @@ public:
 	auto post(const Event &event) -> void {
 		// Clangd has trouble with std::static_pointer_cast in this context
 		// however it does not error on compilation, nor on runtime
-		// so we just do a empty statement just for the editor
+		// so we just do an empty statement just for the editor
 #ifdef CLANGD_ACTIVE
 		(void)event; // avoid unused variable warning
 #else
@@ -76,7 +67,7 @@ public:
 
 		while(!local_queue.empty()) {
 			const auto &[type, payload] = local_queue.front();
-			if(const auto err = dispatch_erased(type, payload.get()).ko(); err) {
+			if(const auto err = dispatch_erased(type, payload.get()).unwrap(); err) {
 				return error("dispatch erased failed", *err);
 			}
 			local_queue.pop();
@@ -102,17 +93,17 @@ private:
 	[[nodiscard]] auto dispatch_erased(const std::type_index &type, const void *payload) -> result<> {
 		std::vector<std::function<result<>(const void *)>> handlers;
 		{
-			const auto find = subscribers_.find(type);
-			if(find == subscribers_.end()) {
+			const auto it = subscribers_.find(type);
+			if(it == subscribers_.end()) {
 				return true;
 			}
-			handlers.reserve(find->second.size());
-			for(const auto &[event_id, func]: find->second) {
+			handlers.reserve(it->second.size());
+			for(const auto &[event_id, func]: it->second) {
 				handlers.push_back(func);
 			}
 		}
 		for(const auto &func: handlers) {
-			if(const auto err = func(payload).ko(); err) {
+			if(const auto err = func(payload).unwrap(); err) {
 				return error("event handler function failed", *err);
 			}
 		}
