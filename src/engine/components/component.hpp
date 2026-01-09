@@ -23,7 +23,7 @@ struct size {
 
 class component {
 public:
-	component() = default;
+	component(): id_(next_id++) {}
 	virtual ~component() = default;
 
 	// Non-copyable

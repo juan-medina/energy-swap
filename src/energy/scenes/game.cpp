@@ -7,18 +7,21 @@
 #include "../../engine/components/button.hpp"
 #include "../../engine/components/component.hpp"
 #include "../../engine/components/label.hpp"
-#include "../../engine/components/sprite_anim.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes//scene.hpp"
 #include "../components/battery_display.hpp"
+#include "../components/spark.hpp"
 #include "../data/battery.hpp"
 #include "../data/puzzle.hpp"
 #include "../energy_swap.hpp"
+
+#include <raylib.h>
 
 #include <array>
 #include <cstddef>
 #include <format>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <ranges>
 #include <spdlog/spdlog.h>
@@ -85,13 +88,19 @@ auto game::init(engine::app &app) -> engine::result<> {
 
 	button_click_ = app.bind_event<engine::button::click>(this, &game::on_button_click);
 
-	if(const auto err = spark_.init(app, "sprites", "spark_{}.png", 6, 5.0F).unwrap(); err) {
-		return engine::error("failed to initialize spark animation", *err);
-	}
+	// init all sparks
+	for(auto &id: sparks_) {
+		if(auto err = register_component<spark>().unwrap(id); err) {
+			return engine::error("failed to register spark animation", *err);
+		}
 
-	spark_.set_position({.x = 150, .y = 50});
-	spark_.set_scale(2.0F);
-	spark_.play();
+		std::shared_ptr<spark> spark_ptr;
+		if(auto err = get_component<spark>(id).unwrap(spark_ptr); err) {
+			return engine::error("failed to get spark animation", *err);
+		}
+		spark_ptr->set_scale(2.0F);
+		spark_ptr->set_visible(false);
+	}
 	return true;
 }
 
@@ -128,10 +137,6 @@ auto game::end() -> engine::result<> {
 
 	get_app().unsubscribe(button_click_);
 
-	if(const auto err = spark_.end().unwrap(); err) {
-		return engine::error("failed to end spark animation", *err);
-	}
-
 	return scene::end();
 }
 
@@ -142,11 +147,7 @@ auto game::update(const float delta) -> engine::result<> {
 		}
 	}
 
-	if(const auto err = spark_.update(delta).unwrap(); err) {
-		return engine::error("failed to update spark animation", *err);
-	}
-
-	return true;
+	return scene::update(delta);
 }
 
 auto game::draw() -> engine::result<> {
@@ -176,11 +177,7 @@ auto game::draw() -> engine::result<> {
 		}
 	}
 
-	if(const auto err = spark_.draw().unwrap(); err) {
-		return engine::error("failed to draw spark animation", *err);
-	}
-
-	return true;
+	return scene::draw();
 }
 
 auto game::layout(const engine::size screen_size) -> engine::result<> {
@@ -241,14 +238,6 @@ auto game::layout(const engine::size screen_size) -> engine::result<> {
 	return true;
 }
 
-auto game::toggle_batteries(const size_t number) -> void {
-	auto index = static_cast<size_t>(0);
-	for(const auto battery_num: battery_order) {
-		battery_displays_.at(index).set_visible(battery_num < number);
-		++index;
-	}
-}
-
 auto game::setup_puzzle(const std::string &puzzle_str) -> engine::result<> {
 	if(const auto error = puzzle::from_string(puzzle_str).unwrap(current_puzzle_); error) {
 		return engine::error("failed to parse puzzle from string: {}", *error);
@@ -297,6 +286,14 @@ auto game::enable() -> engine::result<> {
 	return true;
 }
 
+auto game::toggle_batteries(const size_t number) -> void {
+	auto index = static_cast<size_t>(0);
+	for(const auto battery_num: battery_order) {
+		battery_displays_.at(index).set_visible(battery_num < number);
+		++index;
+	}
+}
+
 auto game::on_battery_click(const battery_display::click &click) -> engine::result<> {
 	const auto clicked_index = battery_order.at(click.index);
 
@@ -328,6 +325,13 @@ auto game::on_battery_click(const battery_display::click &click) -> engine::resu
 	auto &from_battery = batteries_.at(selected_index);
 
 	if(auto &to_battery = batteries_.at(clicked_index); to_battery.can_get_from(from_battery)) {
+		// sparks
+		shoot_sparks(selected_it->get_position(),
+					 battery_displays_.at(click.index).get_position(),
+					 selected_it->get_top_color(),
+					 5);
+
+		// transfer energy
 		to_battery.transfer_energy_from(from_battery);
 		// update puzzle state
 		current_puzzle_.at(selected_index) = from_battery;
@@ -357,6 +361,43 @@ auto game::check_end() -> void {
 		reset_button_.set_visible(false);
 	} else if(!current_puzzle_.is_solvable()) {
 		status_.set_text("No more moves available, try again ...");
+	}
+}
+
+auto game::find_free_spark() -> std::shared_ptr<spark> {
+	for(const auto &id: sparks_) {
+		std::shared_ptr<spark> spark_ptr;
+		if(const auto err = get_component<spark>(id).unwrap(spark_ptr); err) {
+			continue;
+		}
+		if(!spark_ptr->is_visible()) {
+			return spark_ptr;
+		}
+	}
+	return nullptr;
+}
+
+auto game::shoot_sparks(const Vector2 from, const Vector2 to, const Color color, const size_t count) -> void {
+	for(size_t i = 0; i < count; ++i) {
+		// from and to will be slightly random in each spark animation
+		auto new_from = Vector2{
+			.x = from.x + static_cast<float>(GetRandomValue(-10, 10)),
+			.y = from.y + static_cast<float>(GetRandomValue(-10, 10)),
+		};
+		auto new_to = Vector2{
+			.x = to.x + static_cast<float>(GetRandomValue(-10, 10)),
+			.y = to.y + static_cast<float>(GetRandomValue(-10, 10)),
+		};
+
+		if(const auto spark = find_free_spark(); spark != nullptr) {
+			spark->set_tint(color);
+			spark->set_position(new_from);
+			spark->set_destination(new_to);
+			spark->set_visible(true);
+			spark->play();
+		} else {
+			SPDLOG_WARN("no free spark found to play animation");
+		}
 	}
 }
 

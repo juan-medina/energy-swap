@@ -2,6 +2,7 @@
 
 #include "../result.hpp"
 
+#include <cassert>
 #include <cstddef>
 
 namespace engine {
@@ -9,7 +10,6 @@ namespace engine {
 size_t component::next_id = 0;
 
 auto component::init(app &app) -> result<> {
-	id_ = ++next_id;
 	app_ = app;
 	return true;
 }

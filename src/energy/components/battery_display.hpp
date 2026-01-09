@@ -59,6 +59,16 @@ public:
 
 	auto reset() -> void;
 
+	auto get_top_color() -> Color {
+		Color result = {.r = 0, .g = 0, .b = 0, .a = 0};
+		if(battery_.has_value()) {
+			const auto color_index = battery_->get().at(battery_->get().size() - 1);
+			result = energy_colors.at(color_index);
+		}
+
+		return result;
+	}
+
 private:
 	static constexpr auto hover_scale = 1.25F;
 	static constexpr auto selected_scale = 1.4F;

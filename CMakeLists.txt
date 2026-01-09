@@ -61,6 +61,7 @@ target_compile_definitions(${APP_NAME} PRIVATE
 # Add raylib
 add_subdirectory(external/raylib)
 target_link_libraries(${APP_NAME} PRIVATE raylib)
+target_include_directories(${APP_NAME} SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/raylib/src)
 
 # Add raygui
 target_include_directories(${APP_NAME} SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/raygui/src)

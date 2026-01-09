@@ -37,13 +37,18 @@ public:
 	auto play() -> void;
 	auto stop() -> void;
 
+	auto set_auto_loop(const bool auto_loop) {
+		auto_loop_ = auto_loop;
+	}
+
 private:
 	bool running_{false};
 	std::string frame_pattern_;
-	int frames_ = 1;
-	int current_frame_ = 1;
-	float fps_ = 1.0F;
-	float time_accum_ = 0.0F;
+	int frames_{1};
+	int current_frame_{1};
+	float fps_{1.0F};
+	float time_accum_{0.0F};
+	bool auto_loop_{true};
 
 	void update_frame_name();
 };

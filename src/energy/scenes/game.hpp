@@ -7,15 +7,19 @@
 #include "../../engine/components/button.hpp"
 #include "../../engine/components/component.hpp"
 #include "../../engine/components/label.hpp"
-#include "../../engine/components/sprite_anim.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
 #include "../components/battery_display.hpp"
+#include "../components/spark.hpp"
 #include "../data/battery.hpp"
 #include "../data/puzzle.hpp"
 
+#include <raylib.h>
+#include <raymath.h>
+
 #include <array>
 #include <cstddef>
+#include <memory>
 #include <string>
 
 namespace engine {
@@ -85,7 +89,12 @@ private:
 
 	auto check_end() -> void;
 
-	engine::sprite_anim spark_;
+	static auto constexpr max_sparks = 25;
+	std::array<size_t, max_sparks> sparks_;
+
+	auto find_free_spark() -> std::shared_ptr<spark>;
+
+	auto shoot_sparks(Vector2 from, Vector2 to, Color color, size_t count) -> void;
 };
 
 } // namespace energy

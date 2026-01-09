@@ -54,6 +54,10 @@ auto sprite_anim::update(const float delta) -> result<> {
 		time_accum_ -= frame_time;
 		current_frame_++;
 		if(current_frame_ > frames_) {
+			if(!auto_loop_) {
+				stop();
+				set_visible(false);
+			}
 			current_frame_ = 1;
 		}
 		update_frame_name();
