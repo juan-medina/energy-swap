@@ -13,14 +13,14 @@
 namespace engine {
 
 auto sprite::init(app &app) -> result<> {
-	if(const auto err = component::init(app).ko(); err) {
+	if(const auto err = component::init(app).unwrap(); err) {
 		return error("failed to initialize base component", *err);
 	}
 	return error("sprite component requires sprite sheet and frame to be initialize");
 }
 
 auto sprite::init(app &app, const std::string &sprite_sheet, const std::string &frame) -> result<> {
-	if(const auto err = component::init(app).ko(); err) {
+	if(const auto err = component::init(app).unwrap(); err) {
 		return error("failed to initialize base UI component", *err);
 	}
 
@@ -56,7 +56,7 @@ auto sprite::draw() -> result<> {
 		return true;
 	}
 
-	if(const auto err = get_app().draw_sprite(sprite_sheet_, frame_, get_position(), scale_, tint_).ko(); err) {
+	if(const auto err = get_app().draw_sprite(sprite_sheet_, frame_, get_position(), scale_, tint_).unwrap(); err) {
 		return error("failed to draw sprite", *err);
 	}
 	return component::draw();

@@ -20,17 +20,15 @@ public:
 	scroll_text() = default;
 	~scroll_text() override = default;
 
-	// Non-copyable
-	scroll_text(const scroll_text &) = delete;
-	auto operator=(const scroll_text &) -> scroll_text & = delete;
+	// Copyable
+	scroll_text(const scroll_text &) = default;
+	auto operator=(const scroll_text &) -> scroll_text & = default;
 
-	// Non-movable
-	scroll_text(scroll_text &&) noexcept = delete;
-	auto operator=(scroll_text &&) noexcept -> scroll_text & = delete;
+	// Movable
+	scroll_text(scroll_text &&) noexcept = default;
+	auto operator=(scroll_text &&) noexcept -> scroll_text & = default;
 
 	[[nodiscard]] auto init(app &app) -> result<> override;
-	[[nodiscard]] auto end() -> result<> override;
-
 	[[nodiscard]] auto update(float delta) -> result<> override;
 	[[nodiscard]] auto draw() -> result<> override;
 

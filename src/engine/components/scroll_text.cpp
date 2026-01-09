@@ -19,20 +19,15 @@ namespace engine {
 class app;
 
 auto scroll_text::init(app &app) -> result<> {
-	if(const auto err = ui_component::init(app).ko(); err) {
+	if(const auto err = ui_component::init(app).unwrap(); err) {
 		return error("failed to initialize base UI component", *err);
 	}
 	return true;
 }
 
-auto scroll_text::end() -> result<> {
-	// Ensure base releases stored app reference and any base cleanup runs.
-	return ui_component::end();
-}
-
 auto scroll_text::update(const float delta) -> result<> {
 	// Let base UI component run its update behavior first.
-	if(const auto err = ui_component::update(delta).ko(); err) {
+	if(const auto err = ui_component::update(delta).unwrap(); err) {
 		return error("failed to update base UI component", *err);
 	}
 
@@ -41,7 +36,7 @@ auto scroll_text::update(const float delta) -> result<> {
 
 auto scroll_text::draw() -> result<> {
 	// Allow base to perform any draw-side work first.
-	if(const auto err = ui_component::draw().ko(); err) {
+	if(const auto err = ui_component::draw().unwrap(); err) {
 		return error("failed to draw base UI component", *err);
 	}
 

@@ -20,13 +20,13 @@ public:
 	version_display() = default;
 	~version_display() override = default;
 
-	// Non-copyable
-	version_display(const version_display &) = delete;
-	auto operator=(const version_display &) -> version_display & = delete;
+	// Copyable
+	version_display(const version_display &) = default;
+	auto operator=(const version_display &) -> version_display & = default;
 
-	// Non-movable
-	version_display(version_display &&) noexcept = delete;
-	auto operator=(version_display &&) noexcept -> version_display & = delete;
+	// Movable
+	version_display(version_display &&) noexcept = default;
+	auto operator=(version_display &&) noexcept -> version_display & = default;
 
 	[[nodiscard]] auto init(app &app) -> result<> override;
 	[[nodiscard]] auto end() -> result<> override;

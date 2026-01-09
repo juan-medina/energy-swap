@@ -18,10 +18,13 @@ public:
 	sprite_anim();
 	~sprite_anim() override;
 
-	sprite_anim(const sprite_anim &) = delete;
-	auto operator=(const sprite_anim &) -> sprite_anim & = delete;
-	sprite_anim(sprite_anim &&) noexcept = delete;
-	auto operator=(sprite_anim &&) noexcept -> sprite_anim & = delete;
+	// Copyable
+	sprite_anim(const sprite_anim &) = default;
+	auto operator=(const sprite_anim &) -> sprite_anim & = default;
+
+	// Movable
+	sprite_anim(sprite_anim &&) noexcept = default;
+	auto operator=(sprite_anim &&) noexcept -> sprite_anim & = default;
 
 	[[nodiscard]] auto init(app &app) -> result<> override;
 	[[nodiscard]] auto init(app &app, const std::string &sprite_sheet, const std::string &frame) -> result<> override;

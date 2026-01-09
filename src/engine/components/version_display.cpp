@@ -16,7 +16,7 @@
 
 namespace engine {
 auto version_display::init(app &app) -> result<> {
-	if(const auto err = ui_component::init(app).ko(); err) {
+	if(const auto err = ui_component::init(app).unwrap(); err) {
 		return error("failed to initialize base UI component", *err);
 	}
 
@@ -56,7 +56,7 @@ auto version_display::end() -> result<> {
 }
 
 auto version_display::update(const float delta) -> result<> {
-	if(const auto err = ui_component::update(delta).ko(); err) {
+	if(const auto err = ui_component::update(delta).unwrap(); err) {
 		return error("failed to update base UI component", *err);
 	}
 
@@ -71,7 +71,7 @@ auto version_display::update(const float delta) -> result<> {
 		hover_ = true;
 		SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
 		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-			if(const auto err = play_click_sound().ko(); err) {
+			if(const auto err = play_click_sound().unwrap(); err) {
 				return error("failed to play click sound", *err);
 			}
 			get_app().post_event(click{});
@@ -81,7 +81,7 @@ auto version_display::update(const float delta) -> result<> {
 }
 
 auto version_display::draw() -> result<> {
-	if(const auto err = ui_component::draw().ko(); err) {
+	if(const auto err = ui_component::draw().unwrap(); err) {
 		return error("failed to draw base UI component", *err);
 	}
 

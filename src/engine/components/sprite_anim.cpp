@@ -17,14 +17,14 @@ sprite_anim::sprite_anim() = default;
 sprite_anim::~sprite_anim() = default;
 
 auto sprite_anim::init(app &app) -> result<> {
-	if(const auto err = sprite::init(app).ko(); err) {
+	if(const auto err = sprite::init(app).unwrap(); err) {
 		return error("failed to initialize base component", *err);
 	}
 	return error("sprite anim component requires additional parameters to be initialized");
 }
 
 auto sprite_anim::init(app &app, const std::string &sprite_sheet, const std::string &frame) -> result<> {
-	if(const auto err = sprite::init(app, sprite_sheet, frame).ko(); err) {
+	if(const auto err = sprite::init(app, sprite_sheet, frame).unwrap(); err) {
 		return error("failed to initialize base component", *err);
 	}
 	return error("sprite anim component requires additional parameters to be initialized");
@@ -57,7 +57,7 @@ auto sprite_anim::update(const float delta) -> result<> {
 			current_frame_ = 1;
 		}
 		update_frame_name();
-		if(const auto err = sprite::init(get_app(), sprite_sheet_name(), frame_name()).ko(); err) {
+		if(const auto err = sprite::init(get_app(), sprite_sheet_name(), frame_name()).unwrap(); err) {
 			return error("failed to update frame", *err);
 		}
 	}
@@ -68,7 +68,7 @@ auto sprite_anim::reset() -> result<> {
 	current_frame_ = 1;
 	time_accum_ = 0.0F;
 	update_frame_name();
-	if(const auto error = sprite::init(get_app(), sprite_sheet_name(), frame_name()).ko(); error) {
+	if(const auto error = sprite::init(get_app(), sprite_sheet_name(), frame_name()).unwrap(); error) {
 		return engine::error("failed to reset sprite animation", *error);
 	}
 	return true;

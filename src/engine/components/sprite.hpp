@@ -18,13 +18,13 @@ public:
 	sprite() = default;
 	~sprite() override = default;
 
-	// Non-copyable
-	sprite(const sprite &) = delete;
-	auto operator=(const sprite &) -> sprite & = delete;
+	// Copyable
+	sprite(const sprite &) = default;
+	auto operator=(const sprite &) -> sprite & = default;
 
-	// Non-movable
-	sprite(sprite &&) noexcept = delete;
-	auto operator=(sprite &&) noexcept -> sprite & = delete;
+	// Movable
+	sprite(sprite &&) noexcept = default;
+	auto operator=(sprite &&) noexcept -> sprite & = default;
 
 	[[nodiscard]] auto init(app &app) -> result<> override;
 	[[nodiscard]] virtual auto init(app &app, const std::string &sprite_sheet, const std::string &frame) -> result<>;

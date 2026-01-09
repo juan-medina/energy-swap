@@ -17,13 +17,13 @@ public:
 	button();
 	~button() override = default;
 
-	// Non-copyable
-	button(const button &) = delete;
-	auto operator=(const button &) -> button & = delete;
+	// Copyable
+	button(const button &) = default;
+	auto operator=(const button &) -> button & = default;
 
-	// Non-movable
-	button(button &&) noexcept = delete;
-	auto operator=(button &&) noexcept -> button & = delete;
+	// Movable
+	button(button &&) noexcept = default;
+	auto operator=(button &&) noexcept -> button & = default;
 
 	[[nodiscard]] auto init(app &app) -> result<> override;
 	[[nodiscard]] auto end() -> result<> override;

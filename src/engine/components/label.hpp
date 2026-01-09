@@ -17,13 +17,13 @@ public:
 	label() = default;
 	~label() override = default;
 
-	// Non-copyable
-	label(const label &) = delete;
-	auto operator=(const label &) -> label & = delete;
+	// Copyable
+	label(const label &) = default;
+	auto operator=(const label &) -> label & = default;
 
-	// Non-movable
-	label(label &&) noexcept = delete;
-	auto operator=(label &&) noexcept -> label & = delete;
+	// Movable
+	label(label &&) noexcept = default;
+	auto operator=(label &&) noexcept -> label & = default;
 
 	[[nodiscard]] auto init(app &app) -> result<> override;
 	[[nodiscard]] auto end() -> result<> override;

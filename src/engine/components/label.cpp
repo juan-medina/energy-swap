@@ -16,7 +16,7 @@ namespace engine {
 class app;
 
 auto label::init(app &app) -> result<> {
-	if(const auto err = ui_component::init(app).ko(); err) {
+	if(const auto err = ui_component::init(app).unwrap(); err) {
 		return error("failed to initialize base UI component", *err);
 	}
 
@@ -28,7 +28,7 @@ auto label::end() -> result<> {
 }
 
 auto label::update(const float delta) -> result<> {
-	if(const auto err = ui_component::update(delta).ko(); err) {
+	if(const auto err = ui_component::update(delta).unwrap(); err) {
 		return error("failed to update base UI component", *err);
 	}
 
@@ -36,7 +36,7 @@ auto label::update(const float delta) -> result<> {
 }
 
 auto label::draw() -> result<> {
-	if(const auto err = ui_component::draw().ko(); err) {
+	if(const auto err = ui_component::draw().unwrap(); err) {
 		return error("failed to draw base UI component", *err);
 	}
 
