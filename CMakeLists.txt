@@ -82,8 +82,11 @@ if (EMSCRIPTEN)
     # Produce an .html file as the "executable"
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
+    set(CUSTOM_SHELL ${CMAKE_SOURCE_DIR}/src/web/template.html)
+
     # Reasonable defaults; tweak later if needed
     target_link_options(${APP_NAME} PRIVATE
+            "--shell-file=${CUSTOM_SHELL}"
             "--preload-file=${CMAKE_SOURCE_DIR}/resources@resources"
             "-sUSE_GLFW=3"
             "-sASYNCIFY"
