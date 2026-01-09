@@ -18,19 +18,15 @@ public:
 	ui_component() = default;
 	~ui_component() override = default;
 
-	// Non-copyable
-	ui_component(const ui_component &) = delete;
-	auto operator=(const ui_component &) -> ui_component & = delete;
+	// Copyable
+	ui_component(const ui_component &) = default;
+	auto operator=(const ui_component &) -> ui_component & = default;
 
 	// Non-movable
-	ui_component(ui_component &&) noexcept = delete;
-	auto operator=(ui_component &&) noexcept -> ui_component & = delete;
+	ui_component(ui_component &&) noexcept = default;
+	auto operator=(ui_component &&) noexcept -> ui_component & = default;
 
 	[[nodiscard]] auto init(app &app) -> result<> override;
-	[[nodiscard]] auto end() -> result<> override;
-
-	[[nodiscard]] auto update(float delta) -> result<> override;
-	[[nodiscard]] auto draw() -> result<> override;
 
 	auto set_font(const Font &font) -> void {
 		font_ = font;

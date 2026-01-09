@@ -26,12 +26,12 @@ public:
 	virtual ~component() = default;
 
 	// Non-copyable
-	component(const component &) = delete;
-	auto operator=(const component &) -> component & = delete;
+	component(const component &) = default;
+	auto operator=(const component &) -> component & = default;
 
 	// Non-movable
-	component(component &&) noexcept = delete;
-	auto operator=(component &&) noexcept -> component & = delete;
+	component(component &&) noexcept = default;
+	auto operator=(component &&) noexcept -> component & = default;
 
 	[[nodiscard]] virtual auto init(app &app) -> result<> {
 		app_ = app;
