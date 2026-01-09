@@ -10,7 +10,7 @@ namespace engine {
 
 auto scene::end() -> result<> {
 	for(auto &child: children_) {
-		if(const auto err = child.comp->end().ko(); err) {
+		if(const auto err = child.comp->end().unwrap(); err) {
 			return error(std::format("error ending component with id: {}", child.id), *err);
 		}
 	}
@@ -18,7 +18,7 @@ auto scene::end() -> result<> {
 }
 auto scene::update(const float delta) -> result<> {
 	for(auto &child: children_) {
-		if(const auto err = child.comp->update(delta).ko(); err) {
+		if(const auto err = child.comp->update(delta).unwrap(); err) {
 			return error(std::format("error updating component with id: {}", child.id), *err);
 		}
 	}
@@ -28,7 +28,7 @@ auto scene::update(const float delta) -> result<> {
 auto scene::draw() -> result<> {
 	std::ranges::sort(children_, [](const child &a, const child &b) -> bool { return a.layer < b.layer; });
 	for(auto &child: children_) {
-		if(const auto err = child.comp->draw().ko(); err) {
+		if(const auto err = child.comp->draw().unwrap(); err) {
 			return error(std::format("error drawing component with id: {}", child.id), *err);
 		}
 	}

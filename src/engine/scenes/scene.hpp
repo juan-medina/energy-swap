@@ -23,17 +23,6 @@ class app;
 
 class scene: public component {
 public:
-	scene() = default;
-	~scene() override = default;
-
-	// Non-copyable
-	scene(const scene &) = delete;
-	auto operator=(const scene &) -> scene & = delete;
-
-	// Non-movable
-	scene(scene &&) noexcept = delete;
-	auto operator=(scene &&) noexcept -> scene & = delete;
-
 	[[nodiscard]] auto init(app &app) -> result<> override {
 		return component::init(app);
 	}
@@ -60,7 +49,7 @@ public:
 		requires std::is_base_of_v<component, T>
 	[[nodiscard]] auto register_component(Args &&...args) -> result<int> {
 		auto comp = std::make_shared<T>();
-		if(const auto err = comp->init(get_app(), std::forward<Args>(args)...).ko(); err) {
+		if(const auto err = comp->init(get_app(), std::forward<Args>(args)...).unwrap(); err) {
 			return error(std::format("error initializing component of type: {}", typeid(T).name()), *err);
 		}
 		children_.emplace_back(child{.id = ++last_child_id_, .comp = std::move(comp), .layer = 0});
@@ -73,7 +62,7 @@ public:
 		if(it == children_.end()) {
 			return error(std::format("no component found with id: {}", id));
 		}
-		if(const auto err = it->comp->end().ko(); err) {
+		if(const auto err = it->comp->end().unwrap(); err) {
 			return error(std::format("error ending component with id: {}", id), *err);
 		}
 		children_.erase(it);
