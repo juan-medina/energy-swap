@@ -7,6 +7,7 @@
 #include "../result.hpp"
 #include "ui_component.hpp"
 
+#include <stddef.h>
 #include <string>
 
 namespace engine {
@@ -14,7 +15,7 @@ class app;
 
 class button: public ui_component {
 public:
-	button();
+	button() = default;
 	~button() override = default;
 
 	// Copyable
@@ -39,19 +40,12 @@ public:
 		return text_;
 	}
 
-	[[nodiscard]] auto get_id() const -> int {
-		return id_;
-	}
-
 	struct click {
-		int id{};
+		size_t id{};
 	};
 
 private:
-	static int next_id;
-
 	std::string text_{"Button"};
-	int id_{0};
 };
 
 } // namespace engine

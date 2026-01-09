@@ -13,9 +13,6 @@
 #include <raygui.h>
 
 namespace engine {
-int button::next_id = 0;
-
-button::button(): id_(++next_id) {}
 
 auto button::init(app &app) -> result<> {
 	if(const auto err = ui_component::init(app).unwrap(); err) {
@@ -56,7 +53,7 @@ auto button::draw() -> result<> {
 		if(const auto err = play_click_sound().unwrap(); err) {
 			return error("failed to play click sound", *err);
 		}
-		get_app().post_event(click{.id = id_});
+		get_app().post_event(click{.id = get_id()});
 	}
 
 	return true;

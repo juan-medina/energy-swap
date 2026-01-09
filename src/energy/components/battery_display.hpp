@@ -10,9 +10,9 @@
 #include "raylib.h"
 
 #include <array>
+#include <cstddef>
 #include <functional>
 #include <optional>
-#include <stddef.h>
 
 namespace engine {
 class app;
@@ -39,12 +39,12 @@ public:
 
 	auto set_scale(float scale) -> void override;
 
-	auto set_id(const size_t &idx) -> void {
-		idx_ = idx;
+	auto set_index(const size_t &idx) -> void {
+		index_ = idx;
 	}
 
-	[[nodiscard]] auto get_id() const -> size_t {
-		return idx_;
+	[[nodiscard]] auto get_index() const -> size_t {
+		return index_;
 	}
 
 	[[nodiscard]] auto is_selected() const -> bool {
@@ -86,7 +86,7 @@ private:
 
 	bool hover_ = false;
 	bool selected_ = false;
-	size_t idx_ = 0;
+	size_t index_ = 0;
 };
 
 } // namespace energy

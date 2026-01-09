@@ -68,7 +68,7 @@ auto battery_display::update(const float delta) -> engine::result<> {
 		if(point_inside(GetMousePosition())) {
 			hover_ = true;
 			if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-				get_app().post_event(click{idx_});
+				get_app().post_event(click{index_});
 			}
 		}
 	}

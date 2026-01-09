@@ -8,6 +8,7 @@
 #include <raylib.h>
 
 #include <cassert>
+#include <cstddef>
 #include <functional>
 #include <optional>
 
@@ -33,14 +34,8 @@ public:
 	component(component &&) noexcept = default;
 	auto operator=(component &&) noexcept -> component & = default;
 
-	[[nodiscard]] virtual auto init(app &app) -> result<> {
-		app_ = app;
-		return true;
-	}
-	[[nodiscard]] virtual auto end() -> result<> {
-		app_.reset();
-		return true;
-	}
+	[[nodiscard]] virtual auto init(app &app) -> result<>;
+	[[nodiscard]] virtual auto end() -> result<>;
 
 	[[nodiscard]] virtual auto update(float /*delta*/) -> result<> {
 		return true;
@@ -82,6 +77,10 @@ public:
 		return visible_;
 	}
 
+	[[nodiscard]] auto get_id() const -> size_t {
+		return id_;
+	}
+
 protected:
 	[[nodiscard]] auto get_app() -> app & {
 		assert(app_.has_value() && "app is not set");
@@ -98,5 +97,7 @@ private:
 	Vector2 pos_{};
 	size size_{};
 	bool visible_ = true;
+	size_t id_{0};
+	static size_t next_id;
 };
 } // namespace engine

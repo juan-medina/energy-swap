@@ -66,7 +66,7 @@ auto game::init(engine::app &app) -> engine::result<> {
 	for(const auto index: std::views::iota(0, max_batteries)) {
 		const auto ordered = battery_order.at(index);
 		battery_displays_.at(index).set_battery(batteries_.at(ordered));
-		battery_displays_.at(index).set_id(index);
+		battery_displays_.at(index).set_index(index);
 	}
 
 	battery_click_ = app.bind_event<battery_display::click>(this, &game::on_battery_click);
@@ -324,7 +324,7 @@ auto game::on_battery_click(const battery_display::click &click) -> engine::resu
 	// deselect it
 	selected_it->set_selected(false);
 
-	const auto selected_index = battery_order.at(selected_it->get_id());
+	const auto selected_index = battery_order.at(selected_it->get_index());
 	auto &from_battery = batteries_.at(selected_index);
 
 	if(auto &to_battery = batteries_.at(clicked_index); to_battery.can_get_from(from_battery)) {

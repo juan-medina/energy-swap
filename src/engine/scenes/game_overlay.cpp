@@ -9,6 +9,7 @@
 #include "../result.hpp"
 #include "scene.hpp"
 
+#include <format>
 #include <functional>
 #include <memory>
 #include <optional>

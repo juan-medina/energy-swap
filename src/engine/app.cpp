@@ -21,7 +21,6 @@
 #include <jsoncons/source.hpp>
 #include <memory>
 #include <raygui.h>
-#include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
 #include <sstream>
 #include <system_error>
