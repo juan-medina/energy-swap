@@ -94,6 +94,13 @@ if (EMSCRIPTEN)
             "--bind"
             "-sEXPORTED_RUNTIME_METHODS=['HEAPF32','HEAP32','HEAPU8']"
     )
+
+    # Rename output to index.html
+    set_target_properties(${APP_NAME} PROPERTIES OUTPUT_NAME "index")
+
+    # Set favicon
+    configure_file(${CMAKE_SOURCE_DIR}/resources/icon/icon.ico favicon.ico COPYONLY)
+
 endif ()
 
 # Windows specific
