@@ -16,12 +16,12 @@
 namespace energy {
 
 auto battery_display::init(engine::app &app) -> engine::result<> {
-	if(const auto err = sprite::init(app, sprite_sheet_name, battery_frame).ko(); err) {
+	if(const auto err = sprite::init(app, sprite_sheet_name, battery_frame).unwrap(); err) {
 		return engine::error("failed to initialize battery display sprite: {}", *err);
 	}
 
 	for(auto &segment: segments_) {
-		if(const auto err = segment.init(app, sprite_sheet_name, full_segment_frame).ko(); err) {
+		if(const auto err = segment.init(app, sprite_sheet_name, full_segment_frame).unwrap(); err) {
 			return engine::error("failed to initialize battery segment sprite: {}", *err);
 		}
 	}
@@ -35,12 +35,12 @@ auto battery_display::draw() -> engine::result<> {
 	}
 	assert(battery_.has_value() && "Battery reference not set for battery display");
 
-	if(const auto err = sprite::draw().ko(); err) {
+	if(const auto err = sprite::draw().unwrap(); err) {
 		return engine::error("failed to draw battery display sprite: {}", *err);
 	}
 
 	for(auto &segment: segments_) {
-		if(const auto err = segment.draw().ko(); err) {
+		if(const auto err = segment.draw().unwrap(); err) {
 			return engine::error("failed to initialize battery segment sprite", *err);
 		}
 	}

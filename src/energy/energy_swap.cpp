@@ -18,25 +18,25 @@
 namespace energy {
 
 auto energy_swap::init() -> engine::result<> {
-	if(const auto err = app::init().ko(); err) {
+	if(const auto err = app::init().unwrap(); err) {
 		return engine::error{"failed to initialize base app", *err};
 	}
 
 	set_clear_color(clear_color);
 
-	if(const auto err = set_default_font(font_path).ko(); err) {
+	if(const auto err = set_default_font(font_path).unwrap(); err) {
 		return engine::error{"failed to set default font", *err};
 	}
 
-	if(const auto err = load_sound(click_sound, click_sound_path).ko(); err) {
+	if(const auto err = load_sound(click_sound, click_sound_path).unwrap(); err) {
 		return engine::error{"failed to load button sound", *err};
 	}
 
-	if(const auto err = load_sound(battery_click_sound, battery_click_sound_path).ko(); err) {
+	if(const auto err = load_sound(battery_click_sound, battery_click_sound_path).unwrap(); err) {
 		return engine::error{"failed to load battery click sound", *err};
 	}
 
-	if(const auto err = load_levels().ko(); err) {
+	if(const auto err = load_levels().unwrap(); err) {
 		return engine::error{"failed to load levels", *err};
 	}
 
@@ -60,11 +60,11 @@ auto energy_swap::end() -> engine::result<> {
 	unsubscribe(game_back_);
 	unsubscribe(reset_);
 
-	if(const auto err = unload_sound(click_sound).ko(); err) {
+	if(const auto err = unload_sound(click_sound).unwrap(); err) {
 		return engine::error{"failed to unload click sound", *err};
 	}
 
-	if(const auto err = unload_sound(battery_click_sound).ko(); err) {
+	if(const auto err = unload_sound(battery_click_sound).unwrap(); err) {
 		return engine::error{"failed to unload battery click sound", *err};
 	}
 
@@ -72,12 +72,12 @@ auto energy_swap::end() -> engine::result<> {
 }
 
 auto energy_swap::on_license_accepted() -> engine::result<> {
-	auto err = disable_scene(license_scene_).ko();
+	auto err = disable_scene(license_scene_).unwrap();
 	if(err) {
 		return engine::error("fail to disable license scene", *err);
 	}
 
-	if(err = enable_scene(menu_scene_).ko(); err) {
+	if(err = enable_scene(menu_scene_).unwrap(); err) {
 		return engine::error("fail to enable menu scene", *err);
 	}
 
@@ -86,12 +86,12 @@ auto energy_swap::on_license_accepted() -> engine::result<> {
 
 auto energy_swap::on_go_to_game() -> engine::result<> {
 	current_level_ = 1;
-	auto err = disable_scene(menu_scene_).ko();
+	auto err = disable_scene(menu_scene_).unwrap();
 	if(err) {
 		return engine::error("fail to disable menu scene", *err);
 	}
 
-	if(err = enable_scene(game_scene_).ko(); err) {
+	if(err = enable_scene(game_scene_).unwrap(); err) {
 		return engine::error("fail to enable game scene", *err);
 	}
 
@@ -121,19 +121,19 @@ auto energy_swap::load_levels() -> engine::result<> {
 
 auto energy_swap::on_next_level() -> engine::result<> {
 	current_level_++;
-	if(const auto err = re_enable_scene(game_scene_).ko(); err) {
+	if(const auto err = re_enable_scene(game_scene_).unwrap(); err) {
 		return engine::error("fail to re-enable game scene", *err);
 	}
 	return true;
 }
 
 auto energy_swap::on_game_back() -> engine::result<> {
-	auto err = disable_scene(game_scene_).ko();
+	auto err = disable_scene(game_scene_).unwrap();
 	if(err) {
 		return engine::error("fail to disable game scene", *err);
 	}
 
-	if(err = enable_scene(menu_scene_).ko(); err) {
+	if(err = enable_scene(menu_scene_).unwrap(); err) {
 		return engine::error("fail to enable menu scene", *err);
 	}
 
@@ -141,7 +141,7 @@ auto energy_swap::on_game_back() -> engine::result<> {
 }
 
 auto energy_swap::on_reset() -> engine::result<> {
-	if(const auto err = re_enable_scene(game_scene_).ko(); err) {
+	if(const auto err = re_enable_scene(game_scene_).unwrap(); err) {
 		return engine::error("fail to re-enable game scene", *err);
 	}
 	return true;

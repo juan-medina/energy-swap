@@ -21,13 +21,13 @@
 namespace energy {
 
 auto license::init(engine::app &app) -> engine::result<> {
-	if(const auto err = scene::init(app).ko(); err) {
+	if(const auto err = scene::init(app).unwrap(); err) {
 		return engine::error("failed to initialize base component", *err);
 	}
 
 	SPDLOG_INFO("license scene initialized");
 
-	if(const auto err = scroll_text_.init(app).ko(); err) {
+	if(const auto err = scroll_text_.init(app).unwrap(); err) {
 		return engine::error("failed to initialize scroll text component", *err);
 	}
 
@@ -42,7 +42,7 @@ auto license::init(engine::app &app) -> engine::result<> {
 	scroll_text_.set_size({.width = 500, .height = 400});
 	scroll_text_.set_title("License");
 
-	if(const auto err = accept_button_.init(app).ko(); err) {
+	if(const auto err = accept_button_.init(app).unwrap(); err) {
 		return engine::error("failed to initialize accept button component", *err);
 	}
 
@@ -61,22 +61,22 @@ auto license::end() -> engine::result<> {
 }
 
 auto license::update(const float delta) -> engine::result<> {
-	if(const auto err = scroll_text_.update(delta).ko(); err) {
+	if(const auto err = scroll_text_.update(delta).unwrap(); err) {
 		return engine::error("failed to update scroll text component", *err);
 	}
 
-	if(const auto err = accept_button_.update(delta).ko(); err) {
+	if(const auto err = accept_button_.update(delta).unwrap(); err) {
 		return engine::error("failed to update accept button", *err);
 	}
 	return true;
 }
 
 auto license::draw() -> engine::result<> {
-	if(const auto err = scroll_text_.draw().ko(); err) {
+	if(const auto err = scroll_text_.draw().unwrap(); err) {
 		return engine::error("failed to draw scroll text component", *err);
 	}
 
-	if(const auto err = accept_button_.draw().ko(); err) {
+	if(const auto err = accept_button_.draw().unwrap(); err) {
 		return engine::error("failed to draw accept button", *err);
 	}
 	return true;

@@ -22,13 +22,13 @@ public:
 	menu() = default;
 	~menu() override = default;
 
-	// Non-copyable
-	menu(const menu &) = delete;
-	auto operator=(const menu &) -> menu & = delete;
+	// Copyable
+	menu(const menu &) = default;
+	auto operator=(const menu &) -> menu & = default;
 
-	// Non-movable
-	menu(menu &&) noexcept = delete;
-	auto operator=(menu &&) noexcept -> menu & = delete;
+	// Movable
+	menu(menu &&) noexcept = default;
+	auto operator=(menu &&) noexcept -> menu & = default;
 
 	[[nodiscard]] auto init(engine::app &app) -> engine::result<> override;
 	[[nodiscard]] auto end() -> engine::result<> override;

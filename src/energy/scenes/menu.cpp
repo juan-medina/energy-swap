@@ -17,13 +17,13 @@
 namespace energy {
 
 auto menu::init(engine::app &app) -> engine::result<> {
-	if(const auto err = scene::init(app).ko(); err) {
+	if(const auto err = scene::init(app).unwrap(); err) {
 		return engine::error("failed to initialize base component", *err);
 	}
 
 	SPDLOG_INFO("menu scene initialized");
 
-	if(const auto err = play_button_.init(app).ko(); err) {
+	if(const auto err = play_button_.init(app).unwrap(); err) {
 		return engine::error("failed to initialize play button component", *err);
 	}
 
@@ -34,7 +34,7 @@ auto menu::init(engine::app &app) -> engine::result<> {
 
 	button_click_ = app.bind_event<engine::button::click>(this, &menu::on_button_click);
 
-	if(const auto err = title_.init(app).ko(); err) {
+	if(const auto err = title_.init(app).unwrap(); err) {
 		return engine::error("failed to initialize title label", *err);
 	}
 
@@ -45,11 +45,11 @@ auto menu::init(engine::app &app) -> engine::result<> {
 }
 
 auto menu::end() -> engine::result<> {
-	if(const auto err = play_button_.end().ko(); err) {
+	if(const auto err = play_button_.end().unwrap(); err) {
 		return engine::error("failed to end play button component", *err);
 	}
 
-	if(const auto err = title_.end().ko(); err) {
+	if(const auto err = title_.end().unwrap(); err) {
 		return engine::error("failed to end logo texture", *err);
 	}
 
@@ -58,18 +58,18 @@ auto menu::end() -> engine::result<> {
 }
 
 auto menu::update(const float delta) -> engine::result<> {
-	if(const auto err = play_button_.update(delta).ko(); err) {
+	if(const auto err = play_button_.update(delta).unwrap(); err) {
 		return engine::error("failed to update play button component", *err);
 	}
 	return true;
 }
 
 auto menu::draw() -> engine::result<> {
-	if(const auto err = play_button_.draw().ko(); err) {
+	if(const auto err = play_button_.draw().unwrap(); err) {
 		return engine::error("failed to draw play button component", *err);
 	}
 
-	if(const auto err = title_.draw().ko(); err) {
+	if(const auto err = title_.draw().unwrap(); err) {
 		return engine::error("failed to draw logo texture", *err);
 	}
 
@@ -92,11 +92,11 @@ auto menu::layout(const engine::size screen_size) -> engine::result<> {
 }
 
 auto menu::enable() -> engine::result<> {
-	if(const auto err = scene::enable().ko(); err) {
+	if(const auto err = scene::enable().unwrap(); err) {
 		return engine::error("failed to enable base scene", *err);
 	}
 
-	if(const auto err = get_app().play_music("resources/music/menu.ogg", 0.5F).ko(); err) {
+	if(const auto err = get_app().play_music("resources/music/menu.ogg", 0.5F).unwrap(); err) {
 		return engine::error(menu_music_path, *err);
 	}
 

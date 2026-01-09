@@ -21,13 +21,13 @@ public:
 	license() = default;
 	~license() override = default;
 
-	// Non-copyable
-	license(const license &) = delete;
-	auto operator=(const license &) -> license & = delete;
+	// Copyable
+	license(const license &) = default;
+	auto operator=(const license &) -> license & = default;
 
-	// Non-movable
-	license(license &&) noexcept = delete;
-	auto operator=(license &&) noexcept -> license & = delete;
+	// Movable
+	license(license &&) noexcept = default;
+	auto operator=(license &&) noexcept -> license & = default;
 
 	[[nodiscard]] auto init(engine::app &app) -> engine::result<> override;
 	[[nodiscard]] auto end() -> engine::result<> override;

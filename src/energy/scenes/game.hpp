@@ -30,13 +30,13 @@ public:
 	game() = default;
 	~game() override = default;
 
-	// Non-copyable
-	game(const game &) = delete;
-	auto operator=(const game &) -> game & = delete;
+	// Copyable
+	game(const game &) = default;
+	auto operator=(const game &) -> game & = default;
 
-	// Non-movable
-	game(game &&) noexcept = delete;
-	auto operator=(game &&) noexcept -> game & = delete;
+	// Movable
+	game(game &&) noexcept = default;
+	auto operator=(game &&) noexcept -> game & = default;
 
 	[[nodiscard]] auto init(engine::app &app) -> engine::result<> override;
 	[[nodiscard]] auto end() -> engine::result<> override;

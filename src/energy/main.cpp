@@ -18,7 +18,7 @@
 [[nodiscard]] auto main(int /*argc*/, char * /*argv*/[]) -> int {
 	try {
 		energy::energy_swap app;
-		if(const auto error = app.run().ko(); error) {
+		if(const auto error = app.run().unwrap(); error) {
 			SPDLOG_ERROR("{}", error->to_string());
 #ifndef __EMSCRIPTEN__
 			boxer::show(error->get_message().c_str(), "Error!", boxer::Style::Error);
