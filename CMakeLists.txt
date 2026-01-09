@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Juan Medina
 # SPDX-License-Identifier: MIT
 
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.13)
 
 set(APP_NAME "energy-swap")
 
