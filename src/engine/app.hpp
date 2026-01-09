@@ -67,7 +67,7 @@ public:
 		return default_font_;
 	}
 
-	[[nodiscard]] auto get_default_font_size() const -> const int & {
+	[[nodiscard]] auto get_default_font_size() const -> int {
 		return default_font_size_;
 	}
 
