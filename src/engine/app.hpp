@@ -140,8 +140,9 @@ protected:
 		name = typeid(T).name();
 #endif
 		SPDLOG_DEBUG("registering scene of type `{}` with id {} at layer {}", name, scene_id, layer);
-		scenes_.push_back(scene_info{
+		const auto scene_info_ptr = std::make_shared<scene_info>(scene_info{
 			.id = scene_id, .name = name, .scene_ptr = std::make_unique<T>(), .layer = layer, .visible = visible});
+		scenes_.push_back(scene_info_ptr);
 		sort_scenes();
 		return scene_id;
 	}
@@ -154,13 +155,13 @@ protected:
 
 	auto unregister_scene(const int scene_id) -> result<> {
 		const auto find =
-			std::ranges::find_if(scenes_, [scene_id](const scene_info &scene) -> bool { return scene.id == scene_id; });
+			std::ranges::find_if(scenes_, [scene_id](const auto &scene) -> bool { return scene->id == scene_id; });
 		if(find != scenes_.end()) {
-			if(find->scene_ptr) {
-				if(const auto err = find->scene_ptr->end().ko(); err) {
-					return error(std::format("error ending scene with id: {} name: {}", scene_id, find->name), *err);
+			if((*find)->scene_ptr) {
+				if(const auto err = (*find)->scene_ptr->end().unwrap(); err) {
+					return error(std::format("error ending scene with id: {} name: {}", scene_id, (*find)->name), *err);
 				}
-				find->scene_ptr.reset();
+				(*find)->scene_ptr.reset();
 			}
 			scenes_.erase(find);
 			return true;
@@ -169,8 +170,8 @@ protected:
 	}
 
 	auto sort_scenes() -> void {
-		std::ranges::sort(scenes_, [](const scene_info &scene_a, const scene_info &scene_b) -> bool {
-			return scene_a.layer < scene_b.layer;
+		std::ranges::sort(scenes_, [](const auto &scene_a, const auto &scene_b) -> bool {
+			return scene_a->layer < scene_b->layer;
 		});
 	}
 
@@ -221,12 +222,12 @@ private:
 		bool visible{};
 	};
 
-	std::vector<scene_info> scenes_;
+	std::vector<std::shared_ptr<scene_info>> scenes_;
 
-	auto find_scene_info(const int scene_id) -> result<std::reference_wrapper<scene_info>> {
+	auto find_scene_info(const int scene_id) -> result<std::shared_ptr<scene_info>> {
 		for(auto &scene_info: scenes_) {
-			if(scene_info.id == scene_id) {
-				return std::ref(scene_info);
+			if(scene_info->id == scene_id) {
+				return scene_info;
 			}
 		}
 		return error(std::format("scene with id {} not found", scene_id));

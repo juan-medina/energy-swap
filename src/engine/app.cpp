@@ -19,11 +19,13 @@
 #include <jsoncons/json_decoder.hpp>
 #include <jsoncons/json_reader.hpp>
 #include <jsoncons/source.hpp>
+#include <memory>
 #include <raygui.h>
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
 #include <sstream>
 #include <system_error>
+#include <utility>
 #include <vector>
 
 namespace engine {
@@ -32,20 +34,17 @@ static const auto empty_format = "%v";
 static const auto color_line_format = "[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v %@";
 
 auto app::init() -> result<> {
-	auto [version, err] = parse_version(version_file_path).ok();
-	if(err) {
+	if(const auto err = parse_version(version_file_path).unwrap(version_); err) {
 		return error("error parsing the version", *err);
 	}
 
-	version_ = *version;
-
 	SPDLOG_DEBUG("parsed version: {}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
 
-	if(err = setup_log().ko(); err) {
+	if(const auto err = setup_log().unwrap(); err) {
 		return error("error initializing the application", *err);
 	}
 
-	if(err = init_sound().ko(); err) {
+	if(const auto err = init_sound().unwrap(); err) {
 		return error("audio device could not be initialized", *err);
 	}
 
@@ -69,10 +68,10 @@ auto app::init_scenes() -> result<> {
 	// init scenes
 	SPDLOG_INFO("init scenes");
 	for(auto &info: scenes_) {
-		if(const auto err = info.scene_ptr->init(*this).ko(); err) {
-			return error(std::format("failed to initialize scene with id: {} name: {}", info.id, info.name), *err);
+		if(const auto err = info->scene_ptr->init(*this).unwrap(); err) {
+			return error(std::format("failed to initialize scene with id: {} name: {}", info->id, info->name), *err);
 		}
-		SPDLOG_DEBUG("initialized scene with id: {} name: {}", info.id, info.name);
+		SPDLOG_DEBUG("initialized scene with id: {} name: {}", info->id, info->name);
 	}
 	return true;
 }
@@ -81,12 +80,12 @@ auto app::end() -> result<> {
 	// end scenes
 	SPDLOG_INFO("ending scenes");
 	for(auto &info: scenes_) {
-		if(info.scene_ptr) {
-			if(const auto err = info.scene_ptr->end().ko(); err) {
-				return error(std::format("error ending scene with id: {} name: {}", info.id, info.name), *err);
+		if(info->scene_ptr) {
+			if(const auto err = info->scene_ptr->end().unwrap(); err) {
+				return error(std::format("error ending scene with id: {} name: {}", info->id, info->name), *err);
 			}
-			SPDLOG_DEBUG("end scene with id: {} name: {}", info.id, info.name);
-			info.scene_ptr.reset();
+			SPDLOG_DEBUG("end scene with id: {} name: {}", info->id, info->name);
+			info->scene_ptr.reset();
 		}
 	}
 	scenes_.clear();
@@ -96,13 +95,13 @@ auto app::end() -> result<> {
 		UnloadFont(default_font_);
 	}
 
-	if(const auto err = end_sound().ko(); err) {
+	if(const auto err = end_sound().unwrap(); err) {
 		return error("audio device could not be ended", *err);
 	}
 
 	SPDLOG_INFO("ending sprite sheets");
 	for(auto &[name, sheet]: sprite_sheets_) {
-		if(const auto err = sheet.end().ko(); err) {
+		if(const auto err = sheet.end().unwrap(); err) {
 			return error(std::format("failed to end sprite sheet with name: {}", name), *err);
 		}
 		SPDLOG_DEBUG("ended sprite sheet with name: {}", name);
@@ -113,25 +112,25 @@ auto app::end() -> result<> {
 }
 
 auto app::run() -> result<> {
-	if(const auto err = init().ko(); err) {
+	if(const auto err = init().unwrap(); err) {
 		return error("error init the application", *err);
 	}
 
-	if(const auto err = init_scenes().ko(); err) {
+	if(const auto err = init_scenes().unwrap(); err) {
 		return error("error init scenes", *err);
 	}
 
 	while(!WindowShouldClose()) {
 		SetMouseScale(1 / scale_factor_, 1 / scale_factor_);
-		if(const auto err = update().ko(); err) {
+		if(const auto err = update().unwrap(); err) {
 			return error("error updating the application", *err);
 		}
-		if(const auto err = draw().ko(); err) {
+		if(const auto err = draw().unwrap(); err) {
 			return error("error drawing the application", *err);
 		}
 	}
 
-	if(const auto err = end().ko(); err) {
+	if(const auto err = end().unwrap(); err) {
 		return error("error ending the application", *err);
 	}
 
@@ -143,23 +142,23 @@ auto app::update() -> result<> {
 	if(size const screen_size = {.width = static_cast<float>(GetScreenWidth()),
 								 .height = static_cast<float>(GetScreenHeight())};
 	   screen_size_.width != screen_size.width || screen_size_.height != screen_size.height) {
-		if(const auto err = screen_size_changed(screen_size).ko(); err) {
+		if(const auto err = screen_size_changed(screen_size).unwrap(); err) {
 			return error("failed to handle screen size change", *err);
 		}
 	}
 
 	// update scenes
 	for(auto &info: scenes_) {
-		if(!info.visible) {
+		if(!info->visible) {
 			continue;
 		}
-		if(const auto err = info.scene_ptr->update(GetFrameTime()).ko(); err) {
-			return error(std::format("failed to update scene with id: {} name: {}", info.id, info.name), *err);
+		if(const auto err = info->scene_ptr->update(GetFrameTime()).unwrap(); err) {
+			return error(std::format("failed to update scene with id: {} name: {}", info->id, info->name), *err);
 		}
 	}
 
 	// dispatch events
-	if(const auto err = event_bus_.dispatch().ko(); err) {
+	if(const auto err = event_bus_.dispatch().unwrap(); err) {
 		return error("error dispatching events", *err);
 	}
 
@@ -244,11 +243,11 @@ auto app::draw() const -> result<> {
 
 	// draw scenes
 	for(const auto &info: scenes_) {
-		if(!info.visible) {
+		if(!info->visible) {
 			continue;
 		}
-		if(const auto err = info.scene_ptr->draw().ko(); err) {
-			return error(std::format("failed to draw scene with id: {} name:", info.id, info.name), *err);
+		if(const auto err = info->scene_ptr->draw().unwrap(); err) {
+			return error(std::format("failed to draw scene with id: {} name:", info->id, info->name), *err);
 		}
 	}
 
@@ -269,52 +268,47 @@ auto app::draw() const -> result<> {
 }
 
 auto app::enable_scene(const int scene_id, const bool enabled) -> result<> {
-	if(auto [scene_info_res, err] = find_scene_info(scene_id).ok(); !err) {
-		scene_info_res->get().visible = enabled;
-		if(enabled) {
-			if(const auto enable_err = scene_info_res->get().scene_ptr->enable().ko(); enable_err) {
-				return error(
-					std::format("failed to enable scene with id: {} name: {}", scene_id, scene_info_res->get().name),
-					*enable_err);
-			}
-			SPDLOG_DEBUG("enabled scene with id: {} name: {}", scene_id, scene_info_res->get().name);
-			// layout on enable
-			if(const auto err_layout = scene_info_res->get().scene_ptr->layout(drawing_resolution_).ko(); err_layout) {
-				return error(
-					std::format("failed to layout scene with id: {} name: {}", scene_id, scene_info_res->get().name),
-					*err_layout);
-			}
-		} else {
-			if(const auto disable_err = scene_info_res->get().scene_ptr->disable().ko(); disable_err) {
-				return error(
-					std::format("failed to disable scene with id: {} name: {}", scene_id, scene_info_res->get().name),
-					*disable_err);
-			}
-			SPDLOG_DEBUG("disabled scene with id: {} name: {}", scene_id, scene_info_res->get().name);
-		}
-		return true;
+	std::shared_ptr<scene_info> info;
+	if(const auto err = find_scene_info(scene_id).unwrap(info); err) {
+		return error(std::format("scene with id {} not found", scene_id));
 	}
-	return error(std::format("scene with id {} not found", scene_id));
+	info->visible = enabled;
+	if(enabled) {
+		if(const auto enable_err = info->scene_ptr->enable().unwrap(); enable_err) {
+			return error(std::format("failed to enable scene with id: {} name: {}", scene_id, info->name), *enable_err);
+		}
+		SPDLOG_DEBUG("enabled scene with id: {} name: {}", scene_id, info->name);
+		// layout on enable
+		if(const auto err_layout = info->scene_ptr->layout(drawing_resolution_).unwrap(); err_layout) {
+			return error(std::format("failed to layout scene with id: {} name: {}", scene_id, info->name), *err_layout);
+		}
+	} else {
+		if(const auto disable_err = info->scene_ptr->disable().unwrap(); disable_err) {
+			return error(std::format("failed to disable scene with id: {} name: {}", scene_id, info->name),
+						 *disable_err);
+		}
+		SPDLOG_DEBUG("disabled scene with id: {} name: {}", scene_id, info->name);
+	}
+	return true;
 }
 
 auto app::re_enable_scene(const int scene_id) -> result<> {
-	if(auto [scene_info_res, err] = find_scene_info(scene_id).ok(); !err) {
-		if(!scene_info_res->get().visible) {
-			return error(std::format("scene with id {} is not enabled", scene_id));
-		}
-		if(const auto enable_err = scene_info_res->get().scene_ptr->enable().ko(); enable_err) {
-			return error(
-				std::format("failed to re-enable scene with id: {} name: {}", scene_id, scene_info_res->get().name),
-				*enable_err);
-		}
-		SPDLOG_DEBUG("re-enabled scene with id: {} name: {}", scene_id, scene_info_res->get().name);
-		// layout on enable
-		if(const auto layout_err = scene_info_res->get().scene_ptr->layout(drawing_resolution_).ko(); layout_err) {
-			return error(
-				std::format("failed to layout scene with id: {} name: {}", scene_id, scene_info_res->get().name),
-				*layout_err);
-		}
+	std::shared_ptr<scene_info> info;
+	if(const auto err = find_scene_info(scene_id).unwrap(info); err) {
+		return error(std::format("scene with id {} not found", scene_id));
 	}
+	if(!info->visible) {
+		return error(std::format("scene with id {} is not enabled", scene_id));
+	}
+	if(const auto enable_err = info->scene_ptr->enable().unwrap(); enable_err) {
+		return error(std::format("failed to re-enable scene with id: {} name: {}", scene_id, info->name), *enable_err);
+	}
+	SPDLOG_DEBUG("re-enabled scene with id: {} name: {}", scene_id, info->name);
+	// layout on enable
+	if(const auto layout_err = info->scene_ptr->layout(drawing_resolution_).unwrap(); layout_err) {
+		return error(std::format("failed to layout scene with id: {} name: {}", scene_id, info->name), *layout_err);
+	}
+
 	return true;
 }
 
@@ -385,7 +379,7 @@ auto app::play_music(const std::string &path, const float volume /* - 1.0F*/) ->
 	}
 
 	if(music_playing_) {
-		if(const auto err = stop_music().ko(); err) {
+		if(const auto err = stop_music().unwrap(); err) {
 			return error("failed to stop previous music", *err);
 		}
 	}
@@ -433,7 +427,7 @@ auto app::load_sprite_sheet(const std::string &name, const std::string &path) ->
 		return error(std::format("sprite sheet with name {} is already loaded", name));
 	}
 	sprite_sheet sheet;
-	if(const auto err = sheet.init(path).ko(); err) {
+	if(const auto err = sheet.init(path).unwrap(); err) {
 		return error(std::format("failed to load sprite sheet from path: {}", path), *err);
 	}
 	sprite_sheets_.emplace(name, std::move(sheet));
@@ -446,7 +440,7 @@ auto app::unload_sprite_sheet(const std::string &name) -> result<> {
 	if(find == sprite_sheets_.end()) {
 		return error(std::format("can't unload sprite sheet with name {}, is not loaded", name));
 	}
-	if(const auto err = find->second.end().ko(); err) {
+	if(const auto err = find->second.end().unwrap(); err) {
 		return error(std::format("failed to unload sprite sheet with name: {}", name), *err);
 	}
 	sprite_sheets_.erase(find);
@@ -464,7 +458,7 @@ auto app::draw_sprite(const std::string &sprite_sheet,
 		return error(std::format("can't draw sprite, sprite sheet: {}, is not loaded", sprite_sheet));
 	}
 	const auto &sheet = find->second;
-	if(const auto err = sheet.draw(frame, position, scale, tint).ko(); err) {
+	if(const auto err = sheet.draw(frame, position, scale, tint).unwrap(); err) {
 		return error(std::format("failed to draw frame {} from sprite sheet {}", frame, sprite_sheet), *err);
 	}
 	return true;
@@ -523,7 +517,7 @@ auto app::end_sound() -> result<> {
 	sounds_.clear();
 
 	if(music_playing_) {
-		if(const auto err = stop_music().ko(); err) {
+		if(const auto err = stop_music().unwrap(); err) {
 			return error("failed to stop music during app end", *err);
 		}
 	}
@@ -574,8 +568,8 @@ auto app::screen_size_changed(const size screen_size) -> result<> {
 
 	// screen size changed, tell scenes to layout
 	for(const auto &scene_info: scenes_) {
-		if(const auto err = scene_info.scene_ptr->layout(drawing_resolution_).ko(); err) {
-			return error(std::format("failed to layout scene with id: {} name: {}", scene_info.id, scene_info.name),
+		if(const auto err = scene_info->scene_ptr->layout(drawing_resolution_).unwrap(); err) {
+			return error(std::format("failed to layout scene with id: {} name: {}", scene_info->id, scene_info->name),
 						 *err);
 		}
 	}
