@@ -55,6 +55,14 @@ auto app::init() -> result<> {
 	InitWindow(1920, 1080, title_.c_str());
 	SetTargetFPS(60);
 
+#ifdef PLATFORM_DESKTOP
+	const auto icon = LoadImage("resources/icon/icon.png");
+	if(icon.width == 0 || icon.height == 0) {
+		return error("failed to load window icon");
+	}
+	SetWindowIcon(icon);
+	UnloadImage(icon);
+#endif
 	default_font_ = GetFontDefault();
 
 	// register default scenes

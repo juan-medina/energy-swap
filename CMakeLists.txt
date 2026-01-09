@@ -94,7 +94,6 @@ if (EMSCRIPTEN)
             "--bind"
             "-sEXPORTED_RUNTIME_METHODS=['HEAPF32','HEAP32','HEAPU8']"
     )
-
 endif ()
 
 # Windows specific
@@ -106,6 +105,12 @@ if (WIN32)
             NOUSER
             NOGDI
     )
+
+    set(APP_ICON_RESOURCE "${CMAKE_SOURCE_DIR}/src/res/energy-swap.rc")
+    target_sources(${APP_NAME} PRIVATE ${APP_ICON_RESOURCE})
+
+    configure_file(${CMAKE_SOURCE_DIR}/resources/icon/icon.ico icon.ico COPYONLY)
+
 endif ()
 
 # At top-level, before you need Python
@@ -122,19 +127,14 @@ add_custom_command(
         COMMENT "Version bumped"
 )
 
-# Post-build: copy resources (not for Emscripten)
+# Only copy resources if they changed (native only)
 if (NOT EMSCRIPTEN)
-
-    # Only copy resources if they changed (native only)
-    if (NOT EMSCRIPTEN)
-        add_custom_command(
-                TARGET ${APP_NAME} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E echo "Syncing resources if needed..."
-                COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-                ${CMAKE_SOURCE_DIR}/resources
-                $<TARGET_FILE_DIR:${APP_NAME}>/resources
-                COMMENT "Copying resources only if changed"
-        )
-    endif ()
-
+    add_custom_command(
+            TARGET ${APP_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E echo "Syncing resources if needed..."
+            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+            ${CMAKE_SOURCE_DIR}/resources
+            $<TARGET_FILE_DIR:${APP_NAME}>/resources
+            COMMENT "Copying resources only if changed"
+    )
 endif ()
