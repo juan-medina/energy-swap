@@ -139,9 +139,9 @@ if (NOT EMSCRIPTEN)
     add_custom_command(
             TARGET ${APP_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E echo "Syncing resources if needed..."
-            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/resources
             $<TARGET_FILE_DIR:${APP_NAME}>/resources
-            COMMENT "Copying resources only if changed"
+            COMMENT "Copying resources"
     )
 endif ()
