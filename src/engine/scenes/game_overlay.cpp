@@ -7,17 +7,18 @@
 #include "../components/component.hpp"
 #include "../components/version_display.hpp"
 #include "../result.hpp"
+#include "scene.hpp"
 
 #include <functional>
+#include <memory>
 #include <optional>
-#include <vector>
 
 #ifdef _WIN32
-#	include <windows.h>
 #	include <shellapi.h>
-
+#	include <cstdint>
 #elif defined(__APPLE__) || defined(__linux__)
 #	include <unistd.h>
+#	include <vector>
 #elif defined(__EMSCRIPTEN__)
 #	include <emscripten/emscripten.h>
 #	include <emscripten/val.h>
@@ -30,9 +31,11 @@ auto game_overlay::init(app &app) -> result<> {
 		return error("failed to initialize base component", *err);
 	}
 
-	if(const auto err = version_display_.init(app).ko(); err) {
-		return error("failed to initialize version display", *err);
+	const auto [id, err] = register_component<version_display>().ok();
+	if(err) {
+		return error("failed to register version display component", *err);
 	}
+	version_display_ = *id;
 
 	using click = version_display::click;
 	click_ = get_app().subscribe<click>([](const click &) -> result<> {
@@ -45,34 +48,23 @@ auto game_overlay::init(app &app) -> result<> {
 
 auto game_overlay::end() -> result<> {
 	get_app().unsubscribe(click_);
-
-	if(const auto err = version_display_.end().ko(); err) {
-		return error("failed to end version display", *err);
-	}
 	return scene::end();
 }
 
-auto game_overlay::update(const float delta) -> result<> {
-	if(const auto err = version_display_.update(delta).ko(); err) {
-		return error("failed to update version display", *err);
+auto game_overlay::layout(const size screen_size) -> result<> {
+	auto [version, err] = get_component<version_display>(version_display_).ok();
+	if(err) {
+		return error("failed to get version display component", *err);
 	}
-	return true;
-}
 
-auto game_overlay::draw() -> result<> {
-	if(const auto err = version_display_.draw().ko(); err) {
-		return error("failed to draw version display", *err);
-	}
-	return true;
-}
-
-auto game_overlay::layout(const size screen_size) -> void {
 	// position version display at bottom-right corner with margin
-	const auto [width, height] = version_display_.get_size();
-	version_display_.set_position({
+	const auto [width, height] = (*version)->get_size();
+	(*version)->set_position({
 		.x = screen_size.width - width - margin,
 		.y = screen_size.height - height - margin,
 	});
+
+	return true;
 }
 
 auto game_overlay::open_url(const std::string &url) -> result<> {

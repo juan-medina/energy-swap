@@ -183,7 +183,7 @@ auto game::draw() -> engine::result<> {
 	return true;
 }
 
-auto game::layout(const engine::size screen_size) -> void {
+auto game::layout(const engine::size screen_size) -> engine::result<> {
 	title_.set_position({
 		.x = screen_size.width / 2.0F,
 		.y = 10.0F,
@@ -237,6 +237,8 @@ auto game::layout(const engine::size screen_size) -> void {
 	const auto solved = current_puzzle_.is_solved();
 	next_button_.set_visible(solved);
 	reset_button_.set_visible(!solved);
+
+	return true;
 }
 
 auto game::toggle_batteries(const size_t number) -> void {

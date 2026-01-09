@@ -13,6 +13,7 @@ misc-*,
 performance-*,
 readability-*,
 -readability-magic-numbers,
+-*-identifier-length,
 '
 
 CheckOptions:

@@ -82,7 +82,7 @@ auto license::draw() -> engine::result<> {
 	return true;
 }
 
-auto license::layout(const engine::size screen_size) -> void {
+auto license::layout(const engine::size screen_size) -> engine::result<> {
 	const auto min_width = screen_size.width * 2.5F / 3.0F;
 	scroll_text_.set_size({.width = std::min(min_width, 1200.0F), .height = screen_size.height * 3.5F / 5.0F});
 
@@ -93,6 +93,8 @@ auto license::layout(const engine::size screen_size) -> void {
 	float const button_x = (screen_size.width - width) / 2.0F;
 	float const button_y = scroll_text_.get_position().y + scroll_text_.get_size().height + 10;
 	accept_button_.set_position({.x = button_x, .y = button_y});
+
+	return true;
 }
 
 auto license::on_button_click(const engine::button::click &evt) -> engine::result<> {

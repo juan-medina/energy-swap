@@ -279,7 +279,11 @@ auto app::enable_scene(const int scene_id, const bool enabled) -> result<> {
 			}
 			SPDLOG_DEBUG("enabled scene with id: {} name: {}", scene_id, scene_info_res->get().name);
 			// layout on enable
-			scene_info_res->get().scene_ptr->layout(drawing_resolution_);
+			if(const auto err_layout = scene_info_res->get().scene_ptr->layout(drawing_resolution_).ko(); err_layout) {
+				return error(
+					std::format("failed to layout scene with id: {} name: {}", scene_id, scene_info_res->get().name),
+					*err_layout);
+			}
 		} else {
 			if(const auto disable_err = scene_info_res->get().scene_ptr->disable().ko(); disable_err) {
 				return error(
@@ -305,7 +309,11 @@ auto app::re_enable_scene(const int scene_id) -> result<> {
 		}
 		SPDLOG_DEBUG("re-enabled scene with id: {} name: {}", scene_id, scene_info_res->get().name);
 		// layout on enable
-		scene_info_res->get().scene_ptr->layout(drawing_resolution_);
+		if(const auto layout_err = scene_info_res->get().scene_ptr->layout(drawing_resolution_).ko(); layout_err) {
+			return error(
+				std::format("failed to layout scene with id: {} name: {}", scene_id, scene_info_res->get().name),
+				*layout_err);
+		}
 	}
 	return true;
 }
@@ -566,7 +574,10 @@ auto app::screen_size_changed(const size screen_size) -> result<> {
 
 	// screen size changed, tell scenes to layout
 	for(const auto &scene_info: scenes_) {
-		scene_info.scene_ptr->layout(drawing_resolution_);
+		if(const auto err = scene_info.scene_ptr->layout(drawing_resolution_).ko(); err) {
+			return error(std::format("failed to layout scene with id: {} name: {}", scene_info.id, scene_info.name),
+						 *err);
+		}
 	}
 
 	return true;

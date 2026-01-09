@@ -44,7 +44,7 @@ public:
 	[[nodiscard]] auto update(float delta) -> engine::result<> override;
 	[[nodiscard]] auto draw() -> engine::result<> override;
 
-	auto layout(engine::size screen_size) -> void override;
+	auto layout(engine::size screen_size) -> engine::result<> override;
 
 	[[nodiscard]] auto setup_puzzle(const std::string &puzzle_str) -> engine::result<>;
 

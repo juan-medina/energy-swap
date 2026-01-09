@@ -3,7 +3,6 @@
 
 #pragma once
 #include "../components/component.hpp"
-#include "../components/version_display.hpp"
 #include "../result.hpp"
 #include "scene.hpp"
 
@@ -29,13 +28,10 @@ public:
 	[[nodiscard]] auto init(app &app) -> result<> override;
 	[[nodiscard]] auto end() -> result<> override;
 
-	[[nodiscard]] auto update(float delta) -> result<> override;
-	[[nodiscard]] auto draw() -> result<> override;
-
-	auto layout(size screen_size) -> void override;
+	auto layout(size screen_size) -> result<> override;
 
 private:
-	version_display version_display_;
+	int version_display_ = 0;
 	static constexpr auto margin = 10.0F;
 	int click_{0};
 	static auto open_url(const std::string &url) -> result<>;

@@ -76,7 +76,7 @@ auto menu::draw() -> engine::result<> {
 	return true;
 }
 
-auto menu::layout(const engine::size screen_size) -> void {
+auto menu::layout(const engine::size screen_size) -> engine::result<> {
 	const auto [label_width, label_height] = title_.get_size();
 	title_.set_position({
 		.x = (screen_size.width - label_width) / 2.0F,
@@ -88,6 +88,7 @@ auto menu::layout(const engine::size screen_size) -> void {
 		.x = (screen_size.width - button_width) / 2.0F,
 		.y = (screen_size.height - button_height) / 2.0F,
 	});
+	return true;
 }
 
 auto menu::enable() -> engine::result<> {
