@@ -27,12 +27,9 @@ auto sprite::init(app &app, const std::string &sprite_sheet, const std::string &
 	sprite_sheet_ = sprite_sheet;
 	frame_ = frame;
 
-	auto [size, err] = app.get_sprite_size(sprite_sheet_, frame_).ok();
-	if(err) {
+	if(const auto err = app.get_sprite_size(sprite_sheet_, frame_).unwrap(original_size_); err) {
 		return error("failed to get sprite size", *err);
 	}
-
-	original_size_ = *size;
 	set_size(original_size_);
 
 	const auto result = app.get_sprite_pivot(sprite_sheet_, frame_);

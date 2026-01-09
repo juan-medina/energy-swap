@@ -31,11 +31,9 @@ auto game_overlay::init(app &app) -> result<> {
 		return error("failed to initialize base component", *err);
 	}
 
-	const auto [id, err] = register_component<version_display>().ok();
-	if(err) {
+	if(const auto err = register_component<version_display>().unwrap(version_display_); err) {
 		return error("failed to register version display component", *err);
 	}
-	version_display_ = *id;
 
 	using click = version_display::click;
 	click_ = get_app().subscribe<click>([](const click &) -> result<> {

@@ -77,7 +77,7 @@ auto sprite_sheet::draw(const std::string &name, const Vector2 &pos, const float
 		.height = origin.height * scale,
 	};
 
-	if(const auto err = texture_.draw(origin, destination, tint, 0.0F, Vector2{.x = 0.0F, .y = 0.0F}).ko(); err) {
+	if(const auto err = texture_.draw(origin, destination, tint, 0.0F, Vector2{.x = 0.0F, .y = 0.0F}).unwrap(); err) {
 		return error("failed to draw sprite sheet frame", *err);
 	}
 
@@ -173,7 +173,7 @@ auto sprite_sheet::parse_meta(const jsoncons::json &parser, const std::filesyste
 
 	const auto image_path = base_path / image;
 
-	if(const auto err = texture_.init(image_path.string()).ko(); err) {
+	if(const auto err = texture_.init(image_path.string()).unwrap(); err) {
 		return error("failed to initialize texture for sprite sheet", *err);
 	}
 

@@ -250,11 +250,10 @@ auto game::toggle_batteries(const size_t number) -> void {
 }
 
 auto game::setup_puzzle(const std::string &puzzle_str) -> engine::result<> {
-	auto [puzzle, error] = puzzle::from_string(puzzle_str).ok();
-	if(error) {
+	if(const auto error = puzzle::from_string(puzzle_str).unwrap(current_puzzle_); error) {
 		return engine::error("failed to parse puzzle from string: {}", *error);
 	}
-	current_puzzle_ = *puzzle;
+
 	auto const total_batteries = current_puzzle_.size();
 	toggle_batteries(total_batteries);
 

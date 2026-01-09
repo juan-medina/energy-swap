@@ -8,7 +8,6 @@
 #include <optional>
 #include <source_location>
 #include <string>
-#include <tuple>
 #include <variant>
 #include <vector>
 
@@ -113,20 +112,6 @@ public:
 	auto unwrap() const noexcept -> std::optional<Error> {
 		if(has_error()) {
 			return std::get<Error>(*this);
-		}
-		return std::nullopt;
-	}
-
-	[[nodiscard]] auto ok() const noexcept -> std::tuple<std::optional<Value>, std::optional<Error>> {
-		if(has_error()) {
-			return {std::nullopt, *std::get_if<Error>(this)};
-		}
-		return {*std::get_if<Value>(this), std::nullopt};
-	}
-
-	[[nodiscard]] auto ko() const noexcept -> std::optional<Error> {
-		if(has_error()) {
-			return *std::get_if<Error>(this);
 		}
 		return std::nullopt;
 	}

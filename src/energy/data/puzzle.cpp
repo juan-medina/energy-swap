@@ -38,12 +38,11 @@ auto puzzle::from_string(const std::string &str) -> engine::result<puzzle> {
 
 	for(size_t i = 0; i < batteries_str.size(); i += 4) {
 		const auto battery_str = batteries_str.substr(i, 4);
-		const auto [battery, error] = battery::from_string(battery_str).ok();
-		if(error) {
+		battery parsed;
+		if(const auto error = battery::from_string(battery_str).unwrap(parsed); error) {
 			return engine::error("failed to parse battery in puzzle from string", *error);
 		}
-
-		result.batteries_.push_back(*battery);
+		result.batteries_.push_back(parsed);
 	}
 
 	return result;
