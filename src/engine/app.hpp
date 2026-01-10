@@ -257,6 +257,10 @@ private:
 	std::string banner_ = "Engine Application v{}";
 
 	std::unordered_map<std::string, sprite_sheet> sprite_sheets_;
+
+	auto on_version_click() -> result<>;
+	int version_click_{0};
+	auto open_url(const std::string &url) -> result<>;
 };
 
 } // namespace engine

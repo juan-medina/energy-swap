@@ -21,11 +21,12 @@ public:
 
 	auto layout(size screen_size) -> result<> override;
 
+	struct version_click {};
+
 private:
 	size_t version_display_ = 0;
 	static constexpr auto margin = 10.0F;
 	int click_{0};
-	static auto open_url(const std::string &url) -> result<>;
 };
 
 } // namespace engine

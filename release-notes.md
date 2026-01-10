@@ -6,6 +6,6 @@
 
 ### Improvements
 
-- **This is a test releasee**: This is a test description for improvements.
+- **Version Click**: When clicking on the game version the github release page is opened.
 
 ### Known Issues

@@ -27,6 +27,17 @@
 #include <utility>
 #include <vector>
 
+#ifdef _WIN32
+#	include <shellapi.h>
+#	include <cstdint>
+#elif defined(__APPLE__) || defined(__linux__)
+#	include <unistd.h>
+#	include <vector>
+#elif defined(__EMSCRIPTEN__)
+#	include <emscripten/emscripten.h>
+#	include <emscripten/val.h>
+#endif
+
 namespace engine {
 
 static const auto empty_format = "%v";
@@ -46,6 +57,8 @@ auto app::init() -> result<> {
 	if(const auto err = init_sound().unwrap(); err) {
 		return error("audio device could not be initialized", *err);
 	}
+
+	version_click_ = on_event<game_overlay::version_click>(this, &app::on_version_click);
 
 	SPDLOG_INFO("init application");
 
@@ -84,6 +97,8 @@ auto app::init_scenes() -> result<> {
 }
 
 auto app::end() -> result<> {
+	unsubscribe(version_click_);
+
 	// end scenes
 	SPDLOG_INFO("ending scenes");
 	for(auto &info: scenes_) {
@@ -583,6 +598,10 @@ auto app::screen_size_changed(const size screen_size) -> result<> {
 	return true;
 }
 
+auto app::on_version_click() -> result<> {
+	return open_url("https://github.com/juan-medina/energy-swap/releases");
+}
+
 auto app::parse_version(const std::string &path) -> result<version> {
 	std::ifstream const file(path);
 	if(!file.is_open()) {
@@ -613,6 +632,52 @@ auto app::parse_version(const std::string &path) -> result<version> {
 				   .minor = object.get_value_or<int>("minor", 0),
 				   .patch = object.get_value_or<int>("patch", 0),
 				   .build = object.get_value_or<int>("build", 0)};
+}
+
+auto app::open_url(const std::string &url) -> result<> {
+#ifdef _WIN32
+	if(auto *result = ShellExecuteA(nullptr, "open", url.c_str(), nullptr, nullptr, 1);
+	   reinterpret_cast<intptr_t>(result) <= 32) { // NOLINT(*-pro-type-reinterpret-cast)
+		return error("failed to open URL using shell execute");
+	}
+	return true;
+#elif defined(__APPLE__) || defined(__linux__)
+#	ifdef __APPLE__
+	const std::string open_command = "open";
+#	else
+	const std::string open_command = "xdg-open";
+#	endif
+	const auto pid = fork();
+	if(pid == 0) {
+		std::vector cmd(open_command.begin(), open_command.end());
+		cmd.push_back('\0');
+		std::vector arg(url.begin(), url.end());
+		arg.push_back('\0');
+		const std::vector<char *> argv{cmd.data(), arg.data(), nullptr};
+		execvp(cmd.data(), argv.data());
+		_exit(1);
+	}
+	if(pid > 0) {
+		return true;
+	}
+	return error("failed to fork process to open URL");
+#elif defined(__EMSCRIPTEN__)
+	using emscripten::val;
+
+	const auto document = val::global("document");
+	auto anchor = document.call<val>("createElement", val("a"));
+	anchor.set("href", url);
+	anchor.set("target", "_blank");
+	anchor.set("rel", "noopener noreferrer");
+	const auto body_list = document.call<val>("getElementsByTagName", val("body"));
+	const auto body = body_list.call<val>("item", val(0));
+
+	body.call<void>("appendChild", anchor);
+	anchor.call<void>("click");
+	body.call<void>("removeChild", anchor);
+
+	return true;
+#endif
 }
 
 } // namespace engine
