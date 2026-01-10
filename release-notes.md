@@ -6,6 +6,6 @@
 
 ### Improvements
 
-- **Version Click**: When clicking on the game version the github release page is opened.
+- **Windows Release**: First public release of the Windows version of the software.
 
 ### Known Issues

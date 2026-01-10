@@ -22,9 +22,81 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 file(GLOB_RECURSE APP_HEADER_FILES "src/*.hpp")
 file(GLOB_RECURSE APP_SOURCE_FILES "src/*.cpp")
 
+# Detect Emscripten
+set(EMSCRIPTEN FALSE)
+if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    set(EMSCRIPTEN TRUE)
+endif ()
 
-# Create executable
-add_executable(${APP_NAME} ${APP_HEADER_FILES} ${APP_SOURCE_FILES})
+# Python (needed for version bump / rc generation)
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
+set(VERSION_JSON ${CMAKE_SOURCE_DIR}/resources/version/version.json)
+set(VERSION_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/version.py)
+
+# --- Version bump (all platforms, BEFORE compilation) ---
+# This runs at build time, not configure time.
+add_custom_target(version_bump
+        COMMAND ${CMAKE_COMMAND} -E echo "Incrementing build number..."
+        COMMAND ${Python3_EXECUTABLE} ${VERSION_SCRIPT} ${VERSION_JSON}
+        BYPRODUCTS ${VERSION_JSON}
+        COMMENT "Version bumped"
+        VERBATIM
+)
+
+# --- Windows resource generation (ONLY Windows) ---
+if (WIN32)
+    enable_language(RC)
+
+    # fix raylib issues on Windows
+    # (definitions are applied later after target creation)
+
+    set(APP_ICON_ICO ${CMAKE_SOURCE_DIR}/src/res/icon.ico)
+    set(APP_RC_OUT ${CMAKE_BINARY_DIR}/energy-swap.rc)
+
+    # Generate .rc from version.json AFTER bump, BEFORE compile/link
+    add_custom_command(
+            OUTPUT ${APP_RC_OUT}
+            COMMAND ${CMAKE_COMMAND} -E echo "Generating Windows version resource (.rc)..."
+            COMMAND ${Python3_EXECUTABLE} ${VERSION_SCRIPT}
+            --emit-rc
+            ${VERSION_JSON}
+            ${APP_RC_OUT}
+            ${APP_ICON_ICO}
+            DEPENDS version_bump ${VERSION_JSON} ${VERSION_SCRIPT} ${APP_ICON_ICO}
+            VERBATIM
+    )
+endif ()
+
+# --- Create executable (include generated .rc on Windows) ---
+if (WIN32)
+    add_executable(${APP_NAME}
+            ${APP_HEADER_FILES}
+            ${APP_SOURCE_FILES}
+            ${APP_RC_OUT}
+    )
+else ()
+    add_executable(${APP_NAME}
+            ${APP_HEADER_FILES}
+            ${APP_SOURCE_FILES}
+    )
+endif ()
+
+# Ensure bump happens before building the executable (all platforms)
+add_dependencies(${APP_NAME} version_bump)
+
+# If Windows, make sure .rc is treated as RC and is visible in IDE
+if (WIN32)
+    set_source_files_properties(${APP_RC_OUT} PROPERTIES LANGUAGE RC)
+    source_group("Resources" FILES ${APP_RC_OUT})
+
+    target_compile_definitions(${APP_NAME} PRIVATE
+            WIN32_LEAN_AND_MEAN
+            NOMINMAX
+            NOUSER
+            NOGDI
+    )
+endif ()
 
 # Compiler warnings (target-specific)
 if (MSVC)
@@ -42,18 +114,10 @@ else ()
     )
 endif ()
 
-# Detect Emscripten
-set(EMSCRIPTEN FALSE)
-if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    set(EMSCRIPTEN TRUE)
-endif ()
-
-
 # Add spdlog
 add_subdirectory(external/spdlog)
 target_link_libraries(${APP_NAME} PRIVATE spdlog::spdlog_header_only)
 
-# Set spdlog to trace level, we can filter later in runtime
 target_compile_definitions(${APP_NAME} PRIVATE
         SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
 )
@@ -69,22 +133,18 @@ target_include_directories(${APP_NAME} SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR
 # Add jsoncons
 target_include_directories(${APP_NAME} SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/jsoncons/include)
 
-
 # No supported on Emscripten
 if (NOT EMSCRIPTEN)
-    # Add Boxer
     add_subdirectory(external/boxer)
     target_link_libraries(${APP_NAME} PRIVATE Boxer)
 endif ()
 
 # Emscripten specific
 if (EMSCRIPTEN)
-    # Produce an .html file as the "executable"
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
     set(CUSTOM_SHELL ${CMAKE_SOURCE_DIR}/src/web/template.html)
 
-    # Reasonable defaults; tweak later if needed
     target_link_options(${APP_NAME} PRIVATE
             "--shell-file=${CUSTOM_SHELL}"
             "--preload-file=${CMAKE_SOURCE_DIR}/resources@resources"
@@ -95,44 +155,10 @@ if (EMSCRIPTEN)
             "-sEXPORTED_RUNTIME_METHODS=['HEAPF32','HEAP32','HEAPU8']"
     )
 
-    # Rename output to index.html
     set_target_properties(${APP_NAME} PROPERTIES OUTPUT_NAME "index")
 
-    # Set favicon
-    configure_file(${CMAKE_SOURCE_DIR}/resources/icon/icon.ico favicon.ico COPYONLY)
-
+    configure_file(${CMAKE_SOURCE_DIR}/src/res/icon.ico favicon.ico COPYONLY)
 endif ()
-
-# Windows specific
-if (WIN32)
-    # fix raylib issues on Windows
-    target_compile_definitions(${APP_NAME} PRIVATE
-            WIN32_LEAN_AND_MEAN
-            NOMINMAX
-            NOUSER
-            NOGDI
-    )
-
-    set(APP_ICON_RESOURCE "${CMAKE_SOURCE_DIR}/src/res/energy-swap.rc")
-    target_sources(${APP_NAME} PRIVATE ${APP_ICON_RESOURCE})
-
-    configure_file(${CMAKE_SOURCE_DIR}/resources/icon/icon.ico icon.ico COPYONLY)
-
-endif ()
-
-# At top-level, before you need Python
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
-
-set(VERSION_JSON ${CMAKE_SOURCE_DIR}/resources/version/version.json)
-set(VERSION_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/version.py)
-
-# Always bump version when the target is built
-add_custom_command(
-        TARGET ${APP_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Incrementing build number..."
-        COMMAND ${Python3_EXECUTABLE} ${VERSION_SCRIPT} ${VERSION_JSON}
-        COMMENT "Version bumped"
-)
 
 # Only copy resources if they changed (native only)
 if (NOT EMSCRIPTEN)
@@ -143,5 +169,6 @@ if (NOT EMSCRIPTEN)
             ${CMAKE_SOURCE_DIR}/resources
             $<TARGET_FILE_DIR:${APP_NAME}>/resources
             COMMENT "Copying resources only if changed"
+            VERBATIM
     )
 endif ()

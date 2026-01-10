@@ -1,0 +1,66 @@
+﻿# .github/workflows/windows-release.yml
+name: Build Windows release asset
+
+on:
+    release:
+        types: [published]
+
+permissions:
+    contents: write
+
+jobs:
+    build-windows-and-attach:
+        runs-on: windows-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+                  lfs: true
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: 3.x
+
+            - name: Configure (MSVC)
+              shell: pwsh
+              run: |
+                  cmake -S . -B build-windows -G "Visual Studio 17 2022" -A x64
+
+            - name: Build (Release)
+              shell: pwsh
+              run: |
+                  cmake --build build-windows --config Release
+
+            - name: Package (exe + resources)
+              shell: pwsh
+              run: |
+                  $tag = "${{ github.ref_name }}"
+                  $app = "energy-swap"
+                  $outDir = Join-Path $PWD "dist"
+                  $pkgDir = Join-Path $outDir "$app-windows-x64-$tag"
+                  $zipPath = Join-Path $outDir "$app-windows-x64-$tag.zip"
+
+                  New-Item -ItemType Directory -Force -Path $pkgDir | Out-Null
+
+                  $exe = Join-Path $PWD "build-windows\Release\$app.exe"
+                  if (-Not (Test-Path $exe)) { throw "Executable not found: $exe" }
+                  Copy-Item -Force $exe $pkgDir
+
+                  $resources = Join-Path $PWD "build-windows\Release\resources"
+                  if (-Not (Test-Path $resources)) {
+                    throw "Missing packaged resources folder at: $resources (CMake POST_BUILD copy may not have run)"
+                  }
+                  Copy-Item -Recurse -Force $resources (Join-Path $pkgDir "resources")
+
+                  if (Test-Path $zipPath) { Remove-Item -Force $zipPath }
+                  Compress-Archive -Path (Join-Path $pkgDir "*") -DestinationPath $zipPath -Force
+
+                  "ZIP_PATH=$zipPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+            - name: Attach zip to GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  files: ${{ env.ZIP_PATH }}
