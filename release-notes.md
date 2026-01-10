@@ -4,8 +4,8 @@
 
 ### Bug Fixes
 
-### Improvements
+- **No console on Windows**: Make the application to not open the consoel when running on windows.
 
-- **Windows Release**: First public release of the Windows version of the software.
+### Improvements
 
 ### Known Issues

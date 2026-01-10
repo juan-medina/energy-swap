@@ -190,13 +190,6 @@ auto app::update() -> result<> {
 }
 
 auto app::setup_log() -> result<> {
-	spdlog::set_pattern(empty_format);
-	const auto version_str = std::format("{}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
-	SPDLOG_INFO(std::vformat(banner_, std::make_format_args(version_str)));
-
-	spdlog::set_pattern(color_line_format);
-	SetTraceLogCallback(log_callback);
-
 #ifdef NDEBUG
 	spdlog::set_level(spdlog::level::err);
 	SetTraceLogLevel(LOG_ERROR);
@@ -204,6 +197,12 @@ auto app::setup_log() -> result<> {
 	spdlog::set_level(spdlog::level::debug);
 	SetTraceLogLevel(LOG_DEBUG);
 #endif
+	spdlog::set_pattern(empty_format);
+	const auto version_str = std::format("{}.{}.{}.{}", version_.major, version_.minor, version_.patch, version_.build);
+	SPDLOG_INFO(std::vformat(banner_, std::make_format_args(version_str)));
+
+	spdlog::set_pattern(color_line_format);
+	SetTraceLogCallback(log_callback);
 
 	SPDLOG_DEBUG("Application: \"{}\", Team: \"{}\", Title: \"{}\"", name_, team_, title_);
 	return true;
