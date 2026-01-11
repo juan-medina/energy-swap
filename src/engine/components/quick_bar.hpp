@@ -4,7 +4,7 @@
 #pragma once
 
 #include "../result.hpp"
-#include "component.hpp"
+#include "ui_component.hpp"
 #include "sprite.hpp"
 
 #include <raylib.h>
@@ -12,12 +12,11 @@
 #include <cstddef>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace engine {
 
-class quick_bar: public component {
+class quick_bar: public ui_component {
 public:
 	quick_bar() = default;
 	~quick_bar() override = default;
@@ -30,13 +29,20 @@ public:
 	quick_bar(quick_bar &&) noexcept = default;
 	auto operator=(quick_bar &&) noexcept -> quick_bar & = default;
 
-	[[nodiscard]] auto init(app &app, const std::string &sprite_sheet, float gap = 0.0F) -> result<>;
+	[[nodiscard]] auto init(app &app) -> result<> override;
+	[[nodiscard]] auto init(app &app,
+							const std::string &sprite_sheet,
+							Color normal_color = LIGHTGRAY,
+							Color hover_color = WHITE,
+							float gap = 0.0F) -> result<>;
 	auto set_position(const Vector2 &pos) -> void override;
 	[[nodiscard]] auto end() -> result<> override;
 	[[nodiscard]] auto update(float delta) -> result<> override;
 	[[nodiscard]] auto draw() -> result<> override;
 
-	[[nodiscard]] auto add_sprite(const std::string &frame_name) -> result<size_t>;
+	[[nodiscard]] auto add_button(const std::string &frame_name) -> result<size_t>;
+
+	[[nodiscard]] auto set_button_frame_name(size_t button, const std::string &frame_name) const -> result<>;
 
 private:
 	auto recalculate() -> void;
@@ -45,6 +51,9 @@ private:
 	float gap_{0.0F};
 	std::string sprite_sheet_;
 	std::vector<std::shared_ptr<sprite>> sprites_;
+
+	Color normal_color_{LIGHTGRAY};
+	Color hover_color_{WHITE};
 };
 
 } // namespace engine

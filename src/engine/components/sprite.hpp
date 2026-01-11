@@ -33,6 +33,10 @@ public:
 	[[nodiscard]] auto update(float delta) -> result<> override;
 	[[nodiscard]] auto draw() -> result<> override;
 
+	[[nodiscard]] auto get_pivot() const -> Vector2 {
+		return pivot_;
+	}
+
 	auto set_tint(const Color &tint) -> void {
 		tint_ = tint;
 	}
@@ -45,10 +49,11 @@ public:
 
 	[[nodiscard]] auto point_inside(Vector2 point) const -> bool override;
 
-protected:
 	auto set_frame_name(const std::string &frame_name) {
 		frame_ = frame_name;
 	}
+
+protected:
 
 	[[nodiscard]] auto frame_name() const -> std::string {
 		return frame_;

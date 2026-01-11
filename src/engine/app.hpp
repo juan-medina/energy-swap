@@ -113,12 +113,17 @@ public:
 	[[nodiscard]] auto play_music(const std::string &path, float volume = 1.0F) -> result<>;
 	[[nodiscard]] auto stop_music() -> result<>;
 
+	static auto close() -> void;
+	auto toggle_fullscreen() -> bool;
+
 protected:
 	[[nodiscard]] virtual auto init() -> result<>;
 	[[nodiscard]] virtual auto init_scenes() -> result<>;
 	[[nodiscard]] virtual auto end() -> result<>;
 	[[nodiscard]] virtual auto update() -> result<>;
 	[[nodiscard]] virtual auto draw() const -> result<>;
+
+	bool full_screen_{false};
 
 	auto set_clear_color(const Color &color) -> void {
 		clear_color_ = color;
@@ -260,7 +265,7 @@ private:
 
 	auto on_version_click() -> result<>;
 	int version_click_{0};
-	auto open_url(const std::string &url) -> result<>;
+	static auto open_url(const std::string &url) -> result<>;
 };
 
 } // namespace engine

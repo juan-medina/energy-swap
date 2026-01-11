@@ -24,212 +24,20 @@
         "y": 0.5
       }
     },
-    "spark_6.png": {
-      "frame": {
-        "x": 48,
-        "y": 4,
-        "w": 16,
-        "h": 32
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 16,
-        "h": 32
-      },
-      "sourceSize": {
-        "w": 16,
-        "h": 32
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "spark_5.png": {
-      "frame": {
-        "x": 48,
-        "y": 44,
-        "w": 16,
-        "h": 32
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 16,
-        "h": 32
-      },
-      "sourceSize": {
-        "w": 16,
-        "h": 32
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "spark_4.png": {
+    "cross.png": {
       "frame": {
         "x": 4,
         "y": 71,
-        "w": 16,
-        "h": 32
-      },
-      "rotated": true,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 16,
-        "h": 32
-      },
-      "sourceSize": {
-        "w": 16,
-        "h": 32
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "spark_3.png": {
-      "frame": {
-        "x": 72,
-        "y": 4,
-        "w": 16,
-        "h": 32
+        "w": 13,
+        "h": 13
       },
       "rotated": false,
-      "trimmed": false,
+      "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 16,
-        "h": 32
-      },
-      "sourceSize": {
-        "w": 16,
-        "h": 32
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "spark_2.png": {
-      "frame": {
-        "x": 72,
-        "y": 44,
-        "w": 16,
-        "h": 32
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 16,
-        "h": 32
-      },
-      "sourceSize": {
-        "w": 16,
-        "h": 32
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "spark_1.png": {
-      "frame": {
         "x": 4,
-        "y": 95,
-        "w": 16,
-        "h": 32
-      },
-      "rotated": true,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 16,
-        "h": 32
-      },
-      "sourceSize": {
-        "w": 16,
-        "h": 32
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "full.png": {
-      "frame": {
-        "x": 44,
-        "y": 84,
-        "w": 24,
-        "h": 12
-      },
-      "rotated": true,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 24,
-        "h": 12
-      },
-      "sourceSize": {
-        "w": 24,
-        "h": 12
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "cross.png": {
-      "frame": {
-        "x": 64,
-        "y": 84,
-        "w": 20,
-        "h": 20
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 20,
-        "h": 20
-      },
-      "sourceSize": {
-        "w": 20,
-        "h": 20
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "smaller.png": {
-      "frame": {
-        "x": 96,
         "y": 4,
-        "w": 20,
-        "h": 20
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 20,
-        "h": 20
+        "w": 13,
+        "h": 13
       },
       "sourceSize": {
         "w": 20,
@@ -242,22 +50,214 @@
     },
     "larger.png": {
       "frame": {
-        "x": 96,
-        "y": 32,
+        "x": 4,
+        "y": 92,
+        "w": 13,
+        "h": 13
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 4,
+        "y": 4,
+        "w": 13,
+        "h": 13
+      },
+      "sourceSize": {
         "w": 20,
         "h": 20
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "smaller.png": {
+      "frame": {
+        "x": 4,
+        "y": 113,
+        "w": 13,
+        "h": 13
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 4,
+        "y": 4,
+        "w": 13,
+        "h": 13
+      },
+      "sourceSize": {
+        "w": 20,
+        "h": 20
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "full.png": {
+      "frame": {
+        "x": 4,
+        "y": 134,
+        "w": 24,
+        "h": 12
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 20,
-        "h": 20
+        "w": 24,
+        "h": 12
       },
       "sourceSize": {
-        "w": 20,
-        "h": 20
+        "w": 24,
+        "h": 12
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "spark_3.png": {
+      "frame": {
+        "x": 25,
+        "y": 71,
+        "w": 7,
+        "h": 7
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 4,
+        "y": 4,
+        "w": 7,
+        "h": 7
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "spark_4.png": {
+      "frame": {
+        "x": 25,
+        "y": 86,
+        "w": 9,
+        "h": 6
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 3,
+        "y": 6,
+        "w": 9,
+        "h": 6
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "spark_5.png": {
+      "frame": {
+        "x": 40,
+        "y": 71,
+        "w": 9,
+        "h": 6
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 3,
+        "y": 7,
+        "w": 9,
+        "h": 6
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "spark_6.png": {
+      "frame": {
+        "x": 25,
+        "y": 100,
+        "w": 10,
+        "h": 5
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 3,
+        "y": 10,
+        "w": 10,
+        "h": 5
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "spark_2.png": {
+      "frame": {
+        "x": 42,
+        "y": 85,
+        "w": 4,
+        "h": 5
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 5,
+        "y": 5,
+        "w": 4,
+        "h": 5
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "spark_1.png": {
+      "frame": {
+        "x": 25,
+        "y": 113,
+        "w": 2,
+        "h": 2
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 7,
+        "y": 7,
+        "w": 2,
+        "h": 2
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 32
       },
       "pivot": {
         "x": 0.5,
@@ -271,8 +271,8 @@
     "image": "sprites.png",
     "format": "RGBA8888",
     "size": {
-      "w": 128,
-      "h": 128
+      "w": 64,
+      "h": 256
     },
     "scale": 1
   }

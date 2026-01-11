@@ -1,10 +1,9 @@
 ﻿## Release Notes
 
 ### New Features
+- **Hud Bar**: Adding a hud bar with toggle fullscreen button and exit the game button.
 
 ### Bug Fixes
-
-- **No console on Windows**: Make the application to not open the consoel when running on windows.
 
 ### Improvements
 

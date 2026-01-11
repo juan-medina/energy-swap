@@ -431,6 +431,29 @@ auto app::stop_music() -> result<> {
 	return true;
 }
 
+void app::close() {
+	CloseWindow();
+}
+
+auto app::toggle_fullscreen() -> bool {
+	full_screen_ = !full_screen_;
+#ifdef __EMSCRIPTEN__
+	ToggleFullscreen();
+	full_screen_ = IsWindowFullscreen();
+#elif defined(__linux__)
+	if(IsWindowMaximized()) {
+		RestoreWindow();
+	} else {
+		MaximizeWindow();
+	}
+	full_screen_ = IsWindowMaximized();
+#else
+	ToggleBorderlessWindowed();
+#endif
+
+	return full_screen_;
+}
+
 auto app::play_sound(const std::string &name, const float volume /*= 1.0F*/) -> result<> {
 	const auto it = sounds_.find(name);
 	if(it == sounds_.end()) {
