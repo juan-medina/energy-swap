@@ -7,6 +7,7 @@
 #include "../engine/result.hpp"
 #include "raylib.h"
 #include "scenes/game.hpp"
+#include "scenes/hud.hpp"
 #include "scenes/license.hpp"
 #include "scenes/menu.hpp"
 
@@ -43,6 +44,7 @@ auto energy_swap::init() -> engine::result<> {
 	license_scene_ = register_scene<license>();
 	menu_scene_ = register_scene<menu>(false);
 	game_scene_ = register_scene<game>(false);
+	hud_scene_ = register_scene<hud>(5000, true);
 
 	license_accepted_ = on_event<license::accepted>(this, &energy_swap::on_license_accepted);
 	go_to_game_ = on_event<menu::go_to_game>(this, &energy_swap::on_go_to_game);

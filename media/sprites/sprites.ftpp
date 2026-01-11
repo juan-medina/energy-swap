@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "version": "0.6.7"
+  },
+  "savePath": "",
+  "images": [
+    {
+      "name": "battery.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/battery.png",
+      "folder": ""
+    },
+    {
+      "name": "cross.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/icons/cross.png",
+      "folder": ""
+    },
+    {
+      "name": "full.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/full.png",
+      "folder": ""
+    },
+    {
+      "name": "larger.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/icons/larger.png",
+      "folder": ""
+    },
+    {
+      "name": "smaller.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/icons/smaller.png",
+      "folder": ""
+    },
+    {
+      "name": "spark_1.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/spark_1.png",
+      "folder": ""
+    },
+    {
+      "name": "spark_2.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/spark_2.png",
+      "folder": ""
+    },
+    {
+      "name": "spark_3.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/spark_3.png",
+      "folder": ""
+    },
+    {
+      "name": "spark_4.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/spark_4.png",
+      "folder": ""
+    },
+    {
+      "name": "spark_5.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/spark_5.png",
+      "folder": ""
+    },
+    {
+      "name": "spark_6.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/spark_6.png",
+      "folder": ""
+    }
+  ],
+  "folders": [],
+  "packOptions": {
+    "textureName": "sprites",
+    "textureFormat": "png",
+    "removeFileExtension": false,
+    "prependFolderName": true,
+    "base64Export": false,
+    "tinify": false,
+    "tinifyKey": "",
+    "scale": 1,
+    "filter": "none",
+    "exporter": "JSON (hash)",
+    "fileName": "pack-result",
+    "savePath": "",
+    "width": 1024,
+    "height": 1024,
+    "fixedSize": false,
+    "powerOfTwo": true,
+    "padding": 2,
+    "extrude": 2,
+    "allowRotation": true,
+    "allowTrim": false,
+    "trimMode": "trim",
+    "alphaThreshold": "0",
+    "detectIdentical": true,
+    "packer": "OptimalPacker",
+    "packerMethod": "Automatic"
+  }
+}
