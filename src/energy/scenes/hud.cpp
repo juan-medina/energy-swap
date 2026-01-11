@@ -72,7 +72,7 @@ auto hud::end() -> engine::result<> {
 
 auto hud::on_button_click(const engine::button::click &evt) -> engine::result<> {
 	if(evt.id == close_button_) {
-		engine::app::close();
+		get_app().close();
 	} else if(evt.id == toggle_fullscreen_button_) {
 		auto const full_screen = get_app().toggle_fullscreen();
 		std::shared_ptr<engine::quick_bar> quick_bar;

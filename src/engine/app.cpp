@@ -141,7 +141,8 @@ auto app::run() -> result<> {
 		return error("error init scenes", *err);
 	}
 
-	while(!WindowShouldClose()) {
+	while(!should_exit_) {
+		should_exit_ = should_exit_ || WindowShouldClose();
 		SetMouseScale(1 / scale_factor_, 1 / scale_factor_);
 		if(const auto err = update().unwrap(); err) {
 			return error("error updating the application", *err);
@@ -431,7 +432,7 @@ auto app::stop_music() -> result<> {
 }
 
 void app::close() {
-	CloseWindow();
+	should_exit_ = true;
 }
 
 auto app::toggle_fullscreen() -> bool {
