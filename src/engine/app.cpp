@@ -32,7 +32,6 @@
 #	include <cstdint>
 #elif defined(__APPLE__) || defined(__linux__)
 #	include <unistd.h>
-#	include <vector>
 #elif defined(__EMSCRIPTEN__)
 #	include <emscripten/emscripten.h>
 #	include <emscripten/val.h>

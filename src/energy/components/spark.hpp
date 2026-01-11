@@ -7,6 +7,13 @@
 #include "../../engine/result.hpp"
 
 #include <raylib.h>
+
+#include <memory>
+
+namespace engine {
+class app;
+} // namespace engine
+
 namespace energy {
 
 class spark: public engine::sprite_anim {

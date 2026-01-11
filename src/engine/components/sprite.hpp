@@ -54,7 +54,6 @@ public:
 	}
 
 protected:
-
 	[[nodiscard]] auto frame_name() const -> std::string {
 		return frame_;
 	}

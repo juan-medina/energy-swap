@@ -10,7 +10,9 @@
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
 
+#include <format>
 #include <memory>
+#include <optional>
 
 namespace energy {
 

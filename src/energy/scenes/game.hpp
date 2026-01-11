@@ -15,11 +15,11 @@
 #include "../data/puzzle.hpp"
 
 #include <raylib.h>
-#include <raymath.h>
 
 #include <array>
 #include <cstddef>
 #include <memory>
+#include <raymath.h>
 #include <string>
 
 namespace engine {

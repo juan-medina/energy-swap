@@ -4,8 +4,8 @@
 #pragma once
 
 #include "../result.hpp"
-#include "ui_component.hpp"
 #include "sprite.hpp"
+#include "ui_component.hpp"
 
 #include <raylib.h>
 
@@ -15,6 +15,8 @@
 #include <vector>
 
 namespace engine {
+class app;
+class sprite;
 
 class quick_bar: public ui_component {
 public:

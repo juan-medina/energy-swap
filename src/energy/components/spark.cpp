@@ -6,8 +6,6 @@
 #include "../../engine/components/sprite_anim.hpp"
 #include "../../engine/result.hpp"
 
-#include <raylib.h>
-
 #include <raymath.h>
 
 namespace energy {

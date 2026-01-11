@@ -4,14 +4,19 @@
 #pragma once
 
 #include "../../engine/app.hpp"
+#include "../../engine/components/button.hpp"
 #include "../../engine/components/component.hpp"
 #include "../../engine/result.hpp"
 #include "../../engine/scenes/scene.hpp"
-#include "../../engine/components/button.hpp"
 
 #include <raylib.h>
 
 #include <cstddef>
+
+namespace engine {
+class app;
+struct size;
+} // namespace engine
 
 namespace energy {
 

@@ -6,6 +6,7 @@
 #include "../app.hpp"
 #include "../result.hpp"
 #include "button.hpp"
+#include "component.hpp"
 #include "sprite.hpp"
 #include "ui_component.hpp"
 
@@ -14,9 +15,10 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
-#include <memory>
-#include <string>
 #include <format>
+#include <memory>
+#include <optional>
+#include <string>
 
 namespace engine {
 

@@ -2,7 +2,6 @@
 
 #include "../result.hpp"
 
-#include <cassert>
 #include <cstddef>
 
 namespace engine {
