@@ -3,12 +3,15 @@
 
 #pragma once
 
+#include "../app.hpp"
+#include "../components/button.hpp"
 #include "../components/component.hpp"
 #include "../result.hpp"
 #include "scene.hpp"
 
+#include <raylib.h>
+
 #include <cstddef>
-#include <string>
 
 namespace engine {
 class app;
@@ -25,8 +28,23 @@ public:
 
 private:
 	size_t version_display_ = 0;
+	size_t quick_bar_ = 0;
+
 	static constexpr auto margin = 10.0F;
-	int click_{0};
+	static constexpr auto sprite_sheet = "sprites";
+	static constexpr auto normal = Color{.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0x3C};
+	static constexpr auto hover = Color{.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0x7F};
+	static constexpr auto gap = 5.0F;
+
+	size_t close_button_ = 0;
+	size_t toggle_fullscreen_button_ = 0;
+
+	int button_click_{0};
+
+	static constexpr auto fullscreen_frame = "larger.png";
+	static constexpr auto windowed_frame = "smaller.png";
+
+	auto on_button_click(const button::click &evt) -> result<>;
 };
 
 } // namespace engine

@@ -5,6 +5,7 @@
 
 #include "../app.hpp"
 #include "../result.hpp"
+#include "button.hpp"
 #include "ui_component.hpp"
 
 #include <raylib.h>
@@ -74,7 +75,7 @@ auto version_display::update(const float delta) -> result<> {
 			if(const auto err = play_click_sound().unwrap(); err) {
 				return error("failed to play click sound", *err);
 			}
-			get_app().post_event(click{});
+			get_app().post_event(button::click{get_id()});
 		}
 	}
 	return true;

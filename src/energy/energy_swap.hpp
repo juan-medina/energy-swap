@@ -84,8 +84,6 @@ private:
 
 	int reset_{0};
 	auto on_reset() -> engine::result<>;
-
-	int hud_scene_{-1};
 };
 
 } // namespace energy

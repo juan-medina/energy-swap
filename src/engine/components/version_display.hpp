@@ -36,8 +36,6 @@ public:
 
 	auto set_font_size(const float &size) -> void override;
 
-	struct click {};
-
 private:
 	struct part {
 		std::string text;
