@@ -3,6 +3,9 @@
 
 #include "energy_swap.hpp"
 
+#include <pxe/app.hpp>
+#include <pxe/result.hpp>
+
 #include "scenes/game.hpp"
 #include "scenes/license.hpp"
 #include "scenes/menu.hpp"
@@ -12,8 +15,6 @@
 #include <format>
 #include <fstream>
 #include <optional>
-#include <pxe/app.hpp>
-#include <pxe/result.hpp>
 #include <sstream>
 #include <string>
 

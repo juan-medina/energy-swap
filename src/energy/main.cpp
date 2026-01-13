@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
-#include "energy_swap.hpp"
-
 #include <pxe/result.hpp>
+
+#include "energy_swap.hpp"
 
 #ifndef __EMSCRIPTEN__
 #	include <boxer/boxer.h>

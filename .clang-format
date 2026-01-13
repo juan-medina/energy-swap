@@ -9,29 +9,33 @@ SortIncludes: CaseInsensitive
 IncludeBlocks: Regroup
 
 IncludeCategories:
-  # Project headers: "file.h", "something.hpp"
-  - Regex: '"[^"]+\.(h|hpp)"'
-    Priority: 1
+    # PXE headers: <pxe/...> or "pxe/..."
+    -   Regex: '(^<pxe/.*>|^"pxe/.*")'
+        Priority: 1
 
-  # raylib, we need it before windows.h
-  - Regex: '<raylib\.h>'
-    Priority: 2
+    # Project headers: "file.h", "something.hpp"
+    -   Regex: '"[^"]+\.(h|hpp)"'
+        Priority: 2
 
-  # Windows header, must be before other system headers
-  - Regex: '<windows\.h>'
-    Priority: 3
+    # raylib, we need it before windows.h
+    -   Regex: '<raylib\.h>'
+        Priority: 3
 
-  # System + system headers: <spdlog/...>, <vector>, <string>
-  - Regex: '<.*>'
-    Priority: 4
+    # Windows header, must be before other system headers
+    -   Regex: '<windows\.h>'
+        Priority: 4
 
-  # Relative includes: ../something
-  - Regex: '\.\./.*'
-    Priority: 5
+    # System + system headers: <spdlog/...>, <vector>, <string>
+    -   Regex: '<.*>'
+        Priority: 5
 
-  # Fallback
-  - Regex: '.*'
-    Priority: 6
+    # Relative includes: ../something
+    -   Regex: '\.\./.*'
+        Priority: 6
+
+    # Fallback
+    -   Regex: '.*'
+        Priority: 7
 
 AccessModifierOffset: -4
 AlignEscapedNewlines: DontAlign

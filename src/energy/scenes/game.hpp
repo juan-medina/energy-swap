@@ -3,6 +3,13 @@
 
 #pragma once
 
+#include <pxe/app.hpp>
+#include <pxe/components/button.hpp>
+#include <pxe/components/component.hpp>
+#include <pxe/components/label.hpp>
+#include <pxe/result.hpp>
+#include <pxe/scenes/scene.hpp>
+
 #include "../components/battery_display.hpp"
 #include "../components/spark.hpp"
 #include "../data/battery.hpp"
@@ -13,14 +20,13 @@
 #include <array>
 #include <cstddef>
 #include <memory>
-#include <pxe/app.hpp>
-#include <pxe/components/button.hpp>
-#include <pxe/components/component.hpp>
-#include <pxe/components/label.hpp>
-#include <pxe/result.hpp>
-#include <pxe/scenes/scene.hpp>
 #include <raymath.h>
 #include <string>
+
+namespace pxe {
+class app;
+struct size;
+} // namespace pxe
 
 namespace engine {
 class app;

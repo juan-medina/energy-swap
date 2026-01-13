@@ -4,6 +4,7 @@
 #include "puzzle.hpp"
 
 #include <pxe/result.hpp>
+
 #include "battery.hpp"
 
 #include <algorithm>

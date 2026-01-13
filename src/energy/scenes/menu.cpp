@@ -3,14 +3,15 @@
 
 #include "menu.hpp"
 
-#include <memory>
-#include <optional>
 #include <pxe/app.hpp>
 #include <pxe/components/button.hpp>
 #include <pxe/components/component.hpp>
 #include <pxe/components/label.hpp>
 #include <pxe/result.hpp>
 #include <pxe/scenes/scene.hpp>
+
+#include <memory>
+#include <optional>
 #include <spdlog/spdlog.h>
 
 namespace energy {

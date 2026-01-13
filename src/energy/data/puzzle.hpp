@@ -4,6 +4,7 @@
 #pragma once
 
 #include <pxe/result.hpp>
+
 #include "battery.hpp"
 
 #include <cstddef>

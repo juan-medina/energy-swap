@@ -3,15 +3,16 @@
 
 #include "battery_display.hpp"
 
+#include <pxe/app.hpp>
+#include <pxe/components/sprite.hpp>
+#include <pxe/result.hpp>
+
 #include "../data/battery.hpp"
 
 #include <raylib.h>
 
 #include <assert.h>
 #include <memory>
-#include <pxe/app.hpp>
-#include <pxe/components/sprite.hpp>
-#include <pxe/result.hpp>
 
 namespace energy {
 

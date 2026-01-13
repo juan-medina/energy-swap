@@ -3,17 +3,18 @@
 
 #include "license.hpp"
 
-#include <raylib.h>
-
-#include <algorithm>
-#include <format>
-#include <optional>
 #include <pxe/app.hpp>
 #include <pxe/components/button.hpp>
 #include <pxe/components/component.hpp>
 #include <pxe/components/scroll_text.hpp>
 #include <pxe/result.hpp>
 #include <pxe/scenes/scene.hpp>
+
+#include <raylib.h>
+
+#include <algorithm>
+#include <format>
+#include <optional>
 #include <spdlog/spdlog.h>
 #include <string>
 

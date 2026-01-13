@@ -3,11 +3,12 @@
 
 #pragma once
 
-#include <raylib.h>
-
 #include <pxe/app.hpp>
 #include <pxe/components/component.hpp>
 #include <pxe/result.hpp>
+
+#include <raylib.h>
+
 #include <stddef.h>
 #include <string>
 #include <vector>

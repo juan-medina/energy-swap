@@ -3,11 +3,19 @@
 
 #include "game.hpp"
 
+#include <pxe/app.hpp>
+#include <pxe/components/button.hpp>
+#include <pxe/components/component.hpp>
+#include <pxe/components/label.hpp>
+#include <pxe/result.hpp>
+#include <pxe/scenes/scene.hpp>
+
 #include "../components/battery_display.hpp"
 #include "../components/spark.hpp"
 #include "../data/battery.hpp"
 #include "../data/puzzle.hpp"
 #include "../energy_swap.hpp"
+#include "spdlog/fmt/bundled/base.h"
 
 #include <raylib.h>
 
@@ -17,12 +25,6 @@
 #include <functional>
 #include <memory>
 #include <optional>
-#include <pxe/app.hpp>
-#include <pxe/components/button.hpp>
-#include <pxe/components/component.hpp>
-#include <pxe/components/label.hpp>
-#include <pxe/result.hpp>
-#include <pxe/scenes/scene.hpp>
 #include <ranges>
 #include <spdlog/spdlog.h>
 

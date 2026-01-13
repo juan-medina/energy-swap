@@ -9,6 +9,11 @@
 #include <pxe/result.hpp>
 #include <pxe/scenes/scene.hpp>
 
+namespace pxe {
+class app;
+struct size;
+} // namespace pxe
+
 namespace engine {
 class app;
 struct size;

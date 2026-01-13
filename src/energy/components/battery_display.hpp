@@ -3,16 +3,22 @@
 
 #pragma once
 
+#include <pxe/app.hpp>
+#include <pxe/components/sprite.hpp>
+#include <pxe/result.hpp>
+
 #include "../data/battery.hpp"
-#include "raylib.h"
+
+#include <raylib.h>
 
 #include <array>
 #include <cstddef>
 #include <functional>
 #include <optional>
-#include <pxe/app.hpp>
-#include <pxe/components/sprite.hpp>
-#include <pxe/result.hpp>
+
+namespace pxe {
+class app;
+} // namespace pxe
 
 namespace engine {
 class app;

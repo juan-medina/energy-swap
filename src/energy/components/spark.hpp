@@ -10,6 +10,10 @@
 
 #include <memory>
 
+namespace pxe {
+class app;
+} // namespace pxe
+
 namespace engine {
 class app;
 } // namespace engine
