@@ -3,7 +3,7 @@
 
 #include "battery.hpp"
 
-#include "../../engine/result.hpp"
+#include <pxe/result.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -86,7 +86,7 @@ auto battery::string() const -> std::string {
 	return std::format("{:0<{}}", result, max_energy);
 }
 
-auto battery::from_string(const std::string &str) -> engine::result<battery> {
+auto battery::from_string(const std::string &str) -> pxe::result<battery> {
 	battery new_battery;
 	auto total = 0;
 	for(const char character: str) {
@@ -95,12 +95,12 @@ auto battery::from_string(const std::string &str) -> engine::result<battery> {
 		}
 		const int energy_type = std::stoi(std::string(1, character), nullptr, 16);
 		if(energy_type > max_energy_types) {
-			return engine::error(std::format("invalid energy type in battery string: {}", character));
+			return pxe::error(std::format("invalid energy type in battery string: {}", character));
 		}
 		new_battery.add(energy_type);
 		++total;
 		if(total > max_energy) {
-			return engine::error(std::format("battery string has more energies than allowed: {} str: {}", total, str));
+			return pxe::error(std::format("battery string has more energies than allowed: {} str: {}", total, str));
 		}
 	}
 	return new_battery;

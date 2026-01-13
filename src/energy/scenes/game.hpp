@@ -3,12 +3,6 @@
 
 #pragma once
 
-#include "../../engine/app.hpp"
-#include "../../engine/components/button.hpp"
-#include "../../engine/components/component.hpp"
-#include "../../engine/components/label.hpp"
-#include "../../engine/result.hpp"
-#include "../../engine/scenes/scene.hpp"
 #include "../components/battery_display.hpp"
 #include "../components/spark.hpp"
 #include "../data/battery.hpp"
@@ -19,6 +13,12 @@
 #include <array>
 #include <cstddef>
 #include <memory>
+#include <pxe/app.hpp>
+#include <pxe/components/button.hpp>
+#include <pxe/components/component.hpp>
+#include <pxe/components/label.hpp>
+#include <pxe/result.hpp>
+#include <pxe/scenes/scene.hpp>
 #include <raymath.h>
 #include <string>
 
@@ -29,7 +29,7 @@ struct size;
 
 namespace energy {
 
-class game: public engine::scene {
+class game: public pxe::scene {
 public:
 	game() = default;
 	~game() override = default;
@@ -42,25 +42,25 @@ public:
 	game(game &&) noexcept = default;
 	auto operator=(game &&) noexcept -> game & = default;
 
-	[[nodiscard]] auto init(engine::app &app) -> engine::result<> override;
-	[[nodiscard]] auto end() -> engine::result<> override;
+	[[nodiscard]] auto init(pxe::app &app) -> pxe::result<> override;
+	[[nodiscard]] auto end() -> pxe::result<> override;
 
-	[[nodiscard]] auto update(float delta) -> engine::result<> override;
-	[[nodiscard]] auto draw() -> engine::result<> override;
+	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
+	[[nodiscard]] auto draw() -> pxe::result<> override;
 
-	auto layout(engine::size screen_size) -> engine::result<> override;
+	auto layout(pxe::size screen_size) -> pxe::result<> override;
 
-	[[nodiscard]] auto setup_puzzle(const std::string &puzzle_str) -> engine::result<>;
+	[[nodiscard]] auto setup_puzzle(const std::string &puzzle_str) -> pxe::result<>;
 
-	[[nodiscard]] auto enable() -> engine::result<> override;
+	[[nodiscard]] auto enable() -> pxe::result<> override;
 
 	struct next_level {};
 	struct back {};
 	struct reset {};
 
 private:
-	engine::label title_;
-	engine::label status_;
+	pxe::label title_;
+	pxe::label status_;
 	static constexpr auto large_font_size = 20;
 
 	static constexpr auto max_batteries = 12;
@@ -78,14 +78,14 @@ private:
 	puzzle current_puzzle_;
 
 	int battery_click_{0};
-	auto on_battery_click(const battery_display::click &click) -> engine::result<>;
+	auto on_battery_click(const battery_display::click &click) -> pxe::result<>;
 
-	engine::button back_button_;
-	engine::button next_button_;
-	engine::button reset_button_;
+	pxe::button back_button_;
+	pxe::button next_button_;
+	pxe::button reset_button_;
 
 	int button_click_{0};
-	auto on_button_click(const engine::button::click &evt) -> engine::result<>;
+	auto on_button_click(const pxe::button::click &evt) -> pxe::result<>;
 
 	auto check_end() -> void;
 

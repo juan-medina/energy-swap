@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../../engine/result.hpp"
+#include <pxe/result.hpp>
 #include "battery.hpp"
 
 #include <cstddef>
@@ -25,7 +25,7 @@ public:
 		return batteries_.at(index);
 	}
 
-	[[nodiscard]] static auto from_string(const std::string &str) -> engine::result<puzzle>;
+	[[nodiscard]] static auto from_string(const std::string &str) -> pxe::result<puzzle>;
 
 	[[nodiscard]] auto is_solved() const -> bool;
 

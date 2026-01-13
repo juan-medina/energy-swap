@@ -3,45 +3,45 @@
 
 #include "battery_display.hpp"
 
-#include "../../engine/app.hpp"
-#include "../../engine/components/sprite.hpp"
-#include "../../engine/result.hpp"
 #include "../data/battery.hpp"
 
 #include <raylib.h>
 
 #include <assert.h>
 #include <memory>
+#include <pxe/app.hpp>
+#include <pxe/components/sprite.hpp>
+#include <pxe/result.hpp>
 
 namespace energy {
 
-auto battery_display::init(engine::app &app) -> engine::result<> {
+auto battery_display::init(pxe::app &app) -> pxe::result<> {
 	if(const auto err = sprite::init(app, sprite_sheet_name, battery_frame).unwrap(); err) {
-		return engine::error("failed to initialize battery display sprite: {}", *err);
+		return pxe::error("failed to initialize battery display sprite: {}", *err);
 	}
 
 	for(auto &segment: segments_) {
 		if(const auto err = segment.init(app, sprite_sheet_name, full_segment_frame).unwrap(); err) {
-			return engine::error("failed to initialize battery segment sprite: {}", *err);
+			return pxe::error("failed to initialize battery segment sprite: {}", *err);
 		}
 	}
 
 	return true;
 }
 
-auto battery_display::draw() -> engine::result<> {
+auto battery_display::draw() -> pxe::result<> {
 	if(!is_visible()) {
 		return true;
 	}
 	assert(battery_.has_value() && "Battery reference not set for battery display");
 
 	if(const auto err = sprite::draw().unwrap(); err) {
-		return engine::error("failed to draw battery display sprite: {}", *err);
+		return pxe::error("failed to draw battery display sprite: {}", *err);
 	}
 
 	for(auto &segment: segments_) {
 		if(const auto err = segment.draw().unwrap(); err) {
-			return engine::error("failed to initialize battery segment sprite", *err);
+			return pxe::error("failed to initialize battery segment sprite", *err);
 		}
 	}
 
@@ -53,7 +53,7 @@ void battery_display::set_position(const Vector2 &pos) {
 	readjust_segments();
 }
 
-auto battery_display::update(const float delta) -> engine::result<> {
+auto battery_display::update(const float delta) -> pxe::result<> {
 	if(!is_visible()) {
 		return true;
 	}

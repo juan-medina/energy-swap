@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "../../engine/components/sprite_anim.hpp"
-#include "../../engine/result.hpp"
+#include <pxe/components/sprite_anim.hpp>
+#include <pxe/result.hpp>
 
 #include <raylib.h>
 
@@ -16,13 +16,13 @@ class app;
 
 namespace energy {
 
-class spark: public engine::sprite_anim {
+class spark: public pxe::sprite_anim {
 public:
-	[[nodiscard]] auto init(engine::app &app) -> engine::result<> override {
+	[[nodiscard]] auto init(pxe::app &app) -> pxe::result<> override {
 		return sprite_anim::init(app, sprite_sheet, frame_pattern, total_frames, fps);
 	}
 
-	[[nodiscard]] auto update(float delta) -> engine::result<> override;
+	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
 
 	auto set_destination(const Vector2 &dest) -> void {
 		destination_ = dest;

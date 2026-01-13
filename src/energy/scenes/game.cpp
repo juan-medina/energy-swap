@@ -3,12 +3,6 @@
 
 #include "game.hpp"
 
-#include "../../engine/app.hpp"
-#include "../../engine/components/button.hpp"
-#include "../../engine/components/component.hpp"
-#include "../../engine/components/label.hpp"
-#include "../../engine/result.hpp"
-#include "../../engine/scenes//scene.hpp"
 #include "../components/battery_display.hpp"
 #include "../components/spark.hpp"
 #include "../data/battery.hpp"
@@ -23,45 +17,51 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <pxe/app.hpp>
+#include <pxe/components/button.hpp>
+#include <pxe/components/component.hpp>
+#include <pxe/components/label.hpp>
+#include <pxe/result.hpp>
+#include <pxe/scenes/scene.hpp>
 #include <ranges>
 #include <spdlog/spdlog.h>
 
 namespace energy {
 
-auto game::init(engine::app &app) -> engine::result<> {
+auto game::init(pxe::app &app) -> pxe::result<> {
 	if(const auto err = scene::init(app).unwrap(); err) {
-		return engine::error("failed to initialize base component", *err);
+		return pxe::error("failed to initialize base component", *err);
 	}
 
 	SPDLOG_INFO("game scene initialized");
 
 	if(const auto err = title_.init(app).unwrap(); err) {
-		return engine::error("failed to initialize title label", *err);
+		return pxe::error("failed to initialize title label", *err);
 	}
 
 	if(const auto err = status_.init(app).unwrap(); err) {
-		return engine::error("failed to initialize status label", *err);
+		return pxe::error("failed to initialize status label", *err);
 	}
 
 	if(const auto err = back_button_.init(app).unwrap(); err) {
-		return engine::error("failed to initialize back button", *err);
+		return pxe::error("failed to initialize back button", *err);
 	}
 
 	if(const auto err = next_button_.init(app).unwrap(); err) {
-		return engine::error("failed to initialize next button", *err);
+		return pxe::error("failed to initialize next button", *err);
 	}
 
 	if(const auto err = reset_button_.init(app).unwrap(); err) {
-		return engine::error("failed to initialize reset button", *err);
+		return pxe::error("failed to initialize reset button", *err);
 	}
 
 	if(const auto err = app.load_sprite_sheet(sprite_sheet_name, sprite_sheet_path).unwrap(); err) {
-		return engine::error("failed to initialize sprite sheet", *err);
+		return pxe::error("failed to initialize sprite sheet", *err);
 	}
 
 	for(auto &battery_display: battery_displays_) {
 		if(const auto err = battery_display.init(app).unwrap(); err) {
-			return engine::error("failed to initialize battery sprite", *err);
+			return pxe::error("failed to initialize battery sprite", *err);
 		}
 		battery_display.set_visible(false);
 	}
@@ -86,17 +86,17 @@ auto game::init(engine::app &app) -> engine::result<> {
 	reset_button_.set_position({.x = 0, .y = 0});
 	reset_button_.set_size({.width = 45, .height = 25});
 
-	button_click_ = app.bind_event<engine::button::click>(this, &game::on_button_click);
+	button_click_ = app.bind_event<pxe::button::click>(this, &game::on_button_click);
 
 	// init all sparks
 	for(auto &id: sparks_) {
 		if(auto err = register_component<spark>().unwrap(id); err) {
-			return engine::error("failed to register spark animation", *err);
+			return pxe::error("failed to register spark animation", *err);
 		}
 
 		std::shared_ptr<spark> spark_ptr;
 		if(auto err = get_component<spark>(id).unwrap(spark_ptr); err) {
-			return engine::error("failed to get spark animation", *err);
+			return pxe::error("failed to get spark animation", *err);
 		}
 		spark_ptr->set_scale(2.0F);
 		spark_ptr->set_visible(false);
@@ -104,34 +104,34 @@ auto game::init(engine::app &app) -> engine::result<> {
 	return true;
 }
 
-auto game::end() -> engine::result<> {
+auto game::end() -> pxe::result<> {
 	if(const auto err = title_.end().unwrap(); err) {
-		return engine::error("failed to end title label", *err);
+		return pxe::error("failed to end title label", *err);
 	}
 
 	if(const auto err = status_.end().unwrap(); err) {
-		return engine::error("failed to end status label", *err);
+		return pxe::error("failed to end status label", *err);
 	}
 
 	if(const auto err = back_button_.end().unwrap(); err) {
-		return engine::error("failed to end back button", *err);
+		return pxe::error("failed to end back button", *err);
 	}
 
 	if(const auto err = next_button_.end().unwrap(); err) {
-		return engine::error("failed to end next button", *err);
+		return pxe::error("failed to end next button", *err);
 	}
 
 	if(const auto err = reset_button_.end().unwrap(); err) {
-		return engine::error("failed to end reset button", *err);
+		return pxe::error("failed to end reset button", *err);
 	}
 
 	if(const auto err = get_app().unload_sprite_sheet(sprite_sheet_name).unwrap(); err) {
-		return engine::error("failed to end sprite sheet", *err);
+		return pxe::error("failed to end sprite sheet", *err);
 	}
 
 	for(auto &sprite: battery_displays_) {
 		if(const auto err = sprite.end().unwrap(); err) {
-			return engine::error("failed to end battery display", *err);
+			return pxe::error("failed to end battery display", *err);
 		}
 	}
 
@@ -140,47 +140,47 @@ auto game::end() -> engine::result<> {
 	return scene::end();
 }
 
-auto game::update(const float delta) -> engine::result<> {
+auto game::update(const float delta) -> pxe::result<> {
 	for(auto &sprite: battery_displays_) {
 		if(const auto err = sprite.update(delta).unwrap(); err) {
-			return engine::error("failed to update battery display", *err);
+			return pxe::error("failed to update battery display", *err);
 		}
 	}
 
 	return scene::update(delta);
 }
 
-auto game::draw() -> engine::result<> {
+auto game::draw() -> pxe::result<> {
 	if(const auto err = title_.draw().unwrap(); err) {
-		return engine::error("failed to draw title label", *err);
+		return pxe::error("failed to draw title label", *err);
 	}
 
 	if(const auto err = status_.draw().unwrap(); err) {
-		return engine::error("failed to draw status label", *err);
+		return pxe::error("failed to draw status label", *err);
 	}
 
 	if(const auto err = back_button_.draw().unwrap(); err) {
-		return engine::error("failed to draw back button", *err);
+		return pxe::error("failed to draw back button", *err);
 	}
 
 	if(const auto err = next_button_.draw().unwrap(); err) {
-		return engine::error("failed to draw next button", *err);
+		return pxe::error("failed to draw next button", *err);
 	}
 
 	if(const auto err = reset_button_.draw().unwrap(); err) {
-		return engine::error("failed to draw reset button", *err);
+		return pxe::error("failed to draw reset button", *err);
 	}
 
 	for(auto &sprite: battery_displays_) {
 		if(const auto err = sprite.draw().unwrap(); err) {
-			return engine::error("failed to draw battery sprite", *err);
+			return pxe::error("failed to draw battery sprite", *err);
 		}
 	}
 
 	return scene::draw();
 }
 
-auto game::layout(const engine::size screen_size) -> engine::result<> {
+auto game::layout(const pxe::size screen_size) -> pxe::result<> {
 	title_.set_position({
 		.x = screen_size.width / 2.0F,
 		.y = 10.0F,
@@ -238,9 +238,9 @@ auto game::layout(const engine::size screen_size) -> engine::result<> {
 	return true;
 }
 
-auto game::setup_puzzle(const std::string &puzzle_str) -> engine::result<> {
+auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 	if(const auto error = puzzle::from_string(puzzle_str).unwrap(current_puzzle_); error) {
-		return engine::error("failed to parse puzzle from string: {}", *error);
+		return pxe::error("failed to parse puzzle from string: {}", *error);
 	}
 
 	auto const total_batteries = current_puzzle_.size();
@@ -257,7 +257,7 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> engine::result<> {
 	return true;
 }
 
-auto game::enable() -> engine::result<> {
+auto game::enable() -> pxe::result<> {
 	const auto &app = dynamic_cast<energy_swap &>(get_app());
 
 	title_.set_text(std::format("Level {}", app.get_current_level()));
@@ -268,11 +268,11 @@ auto game::enable() -> engine::result<> {
 	status_.set_centered(true);
 
 	if(const auto err = scene::enable().unwrap(); err) {
-		return engine::error("failed to enable base scene", *err);
+		return pxe::error("failed to enable base scene", *err);
 	}
 
 	if(const auto err = get_app().play_music(game_music, 0.5F).unwrap(); err) {
-		return engine::error("fail to play game music", *err);
+		return pxe::error("fail to play game music", *err);
 	}
 
 	const auto &level_str = app.get_current_level_string();
@@ -280,7 +280,7 @@ auto game::enable() -> engine::result<> {
 	SPDLOG_DEBUG("setting up puzzle with level string: {}", level_str);
 
 	if(const auto err = setup_puzzle(level_str).unwrap(); err) {
-		return engine::error("failed to setup puzzle", *err);
+		return pxe::error("failed to setup puzzle", *err);
 	}
 
 	return true;
@@ -294,7 +294,7 @@ auto game::toggle_batteries(const size_t number) -> void {
 	}
 }
 
-auto game::on_battery_click(const battery_display::click &click) -> engine::result<> {
+auto game::on_battery_click(const battery_display::click &click) -> pxe::result<> {
 	const auto clicked_index = battery_order.at(click.index);
 
 	// find if we have a selected battery
@@ -306,7 +306,7 @@ auto game::on_battery_click(const battery_display::click &click) -> engine::resu
 
 	// regardless if we have a selected battery or not, play the click sound
 	if(const auto err = get_app().play_sound(battery_click_sound).unwrap()) {
-		return engine::error("failed to play battery click sound", *err);
+		return pxe::error("failed to play battery click sound", *err);
 	}
 
 	// if we have none
@@ -342,7 +342,7 @@ auto game::on_battery_click(const battery_display::click &click) -> engine::resu
 	return true;
 }
 
-auto game::on_button_click(const engine::button::click &evt) -> engine::result<> {
+auto game::on_button_click(const pxe::button::click &evt) -> pxe::result<> {
 	if(evt.id == next_button_.get_id()) {
 		get_app().post_event(next_level{});
 	} else if(evt.id == back_button_.get_id()) {

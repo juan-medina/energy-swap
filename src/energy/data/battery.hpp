@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../../engine/result.hpp"
+#include <pxe/result.hpp>
 
 #include <cstdint>
 #include <stddef.h>
@@ -47,7 +47,7 @@ public:
 	}
 
 	[[nodiscard]] auto string() const -> std::string;
-	[[nodiscard]] static auto from_string(const std::string &str) -> engine::result<battery>;
+	[[nodiscard]] static auto from_string(const std::string &str) -> pxe::result<battery>;
 
 private:
 	enum class state : std::uint8_t { normal, empty, full, closed };

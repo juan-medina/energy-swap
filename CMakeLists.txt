@@ -111,22 +111,9 @@ else ()
     target_compile_options(${APP_NAME} PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
 
-add_subdirectory(external/spdlog)
-target_link_libraries(${APP_NAME} PRIVATE spdlog::spdlog_header_only)
+add_subdirectory(external/pxe)
+target_link_libraries(${APP_NAME} PRIVATE pxe)
 
-target_compile_definitions(${APP_NAME} PRIVATE SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
-
-add_subdirectory(external/raylib)
-target_link_libraries(${APP_NAME} PRIVATE raylib)
-target_include_directories(${APP_NAME} SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/raylib/src)
-
-target_include_directories(${APP_NAME} SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/raygui/src)
-target_include_directories(${APP_NAME} SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/jsoncons/include)
-
-if (NOT EMSCRIPTEN)
-    add_subdirectory(external/boxer)
-    target_link_libraries(${APP_NAME} PRIVATE Boxer)
-endif ()
 
 if (EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")

@@ -3,19 +3,18 @@
 
 #pragma once
 
-#include "..//engine/components/component.hpp"
-#include "../engine/app.hpp"
-#include "../engine/result.hpp"
-
 #include <raylib.h>
 
+#include <pxe/app.hpp>
+#include <pxe/components/component.hpp>
+#include <pxe/result.hpp>
 #include <stddef.h>
 #include <string>
 #include <vector>
 
 namespace energy {
 
-class energy_swap: public engine::app {
+class energy_swap: public pxe::app {
 	static constexpr auto banner = R"(
   ______                               _____
  |  ____|                             / ____|
@@ -47,8 +46,8 @@ public:
 	}
 
 protected:
-	[[nodiscard]] auto init() -> engine::result<> override;
-	[[nodiscard]] auto end() -> engine::result<> override;
+	[[nodiscard]] auto init() -> pxe::result<> override;
+	[[nodiscard]] auto end() -> pxe::result<> override;
 
 private:
 	static constexpr auto font_path = "resources/fonts/PixeloidSans_16.fnt";
@@ -59,31 +58,31 @@ private:
 	static constexpr auto battery_click_sound_path = "resources/sounds/battery.wav";
 	static constexpr auto battery_click_sound = "battery";
 
-	static constexpr engine::size design_resolution{.width = 640, .height = 360};
+	static constexpr pxe::size design_resolution{.width = 640, .height = 360};
 
 	int license_scene_{-1};
 	int license_accepted_{0};
-	auto on_license_accepted() -> engine::result<>;
+	auto on_license_accepted() -> pxe::result<>;
 
 	int menu_scene_{-1};
 	int go_to_game_{0};
-	auto on_go_to_game() -> engine::result<>;
+	auto on_go_to_game() -> pxe::result<>;
 
 	int game_scene_{-1};
 
 	std::vector<std::string> levels_;
 	size_t current_level_{1};
 	static constexpr auto levels_path = "resources/levels/levels.txt";
-	auto load_levels() -> engine::result<>;
+	auto load_levels() -> pxe::result<>;
 
 	int next_level_{0};
-	auto on_next_level() -> engine::result<>;
+	auto on_next_level() -> pxe::result<>;
 
 	int game_back_{0};
-	auto on_game_back() -> engine::result<>;
+	auto on_game_back() -> pxe::result<>;
 
 	int reset_{0};
-	auto on_reset() -> engine::result<>;
+	auto on_reset() -> pxe::result<>;
 };
 
 } // namespace energy

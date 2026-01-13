@@ -3,9 +3,6 @@
 
 #pragma once
 
-#include "../../engine/app.hpp"
-#include "../../engine/components/sprite.hpp"
-#include "../../engine/result.hpp"
 #include "../data/battery.hpp"
 #include "raylib.h"
 
@@ -13,6 +10,9 @@
 #include <cstddef>
 #include <functional>
 #include <optional>
+#include <pxe/app.hpp>
+#include <pxe/components/sprite.hpp>
+#include <pxe/result.hpp>
 
 namespace engine {
 class app;
@@ -21,9 +21,9 @@ class app;
 namespace energy {
 class battery;
 
-class battery_display: public engine::sprite {
+class battery_display: public pxe::sprite {
 public:
-	auto init(engine::app &app) -> engine::result<> override;
+	auto init(pxe::app &app) -> pxe::result<> override;
 
 	static constexpr auto sprite_sheet_name = "sprites";
 	static constexpr auto battery_frame = "battery.png";
@@ -33,9 +33,9 @@ public:
 		battery_ = bat;
 	}
 
-	[[nodiscard]] auto draw() -> engine::result<> override;
+	[[nodiscard]] auto draw() -> pxe::result<> override;
 	auto set_position(const Vector2 &pos) -> void override;
-	[[nodiscard]] auto update(float delta) -> engine::result<> override;
+	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
 
 	auto set_scale(float scale) -> void override;
 

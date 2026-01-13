@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "../../engine/components/button.hpp"
-#include "../../engine/components/component.hpp"
-#include "../../engine/components/scroll_text.hpp"
-#include "../../engine/result.hpp"
-#include "../../engine/scenes/scene.hpp"
+#include <pxe/components/button.hpp>
+#include <pxe/components/component.hpp>
+#include <pxe/components/scroll_text.hpp>
+#include <pxe/result.hpp>
+#include <pxe/scenes/scene.hpp>
 
 namespace engine {
 class app;
@@ -16,7 +16,7 @@ struct size;
 
 namespace energy {
 
-class license: public engine::scene {
+class license: public pxe::scene {
 public:
 	license() = default;
 	~license() override = default;
@@ -29,23 +29,23 @@ public:
 	license(license &&) noexcept = default;
 	auto operator=(license &&) noexcept -> license & = default;
 
-	[[nodiscard]] auto init(engine::app &app) -> engine::result<> override;
-	[[nodiscard]] auto end() -> engine::result<> override;
+	[[nodiscard]] auto init(pxe::app &app) -> pxe::result<> override;
+	[[nodiscard]] auto end() -> pxe::result<> override;
 
-	[[nodiscard]] auto update(float delta) -> engine::result<> override;
-	[[nodiscard]] auto draw() -> engine::result<> override;
+	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
+	[[nodiscard]] auto draw() -> pxe::result<> override;
 
-	auto layout(engine::size screen_size) -> engine::result<> override;
+	auto layout(pxe::size screen_size) -> pxe::result<> override;
 
 	struct accepted {};
 
 private:
 	static constexpr auto license_path = "resources/license/license.txt";
-	engine::scroll_text scroll_text_;
-	engine::button accept_button_;
+	pxe::scroll_text scroll_text_;
+	pxe::button accept_button_;
 	int button_click_{0};
 
-	auto on_button_click(const engine::button::click &evt) -> engine::result<>;
+	auto on_button_click(const pxe::button::click &evt) -> pxe::result<>;
 };
 
 } // namespace energy

@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "../../engine/app.hpp"
-#include "../../engine/components/button.hpp"
-#include "../../engine/components/component.hpp"
-#include "../../engine/components/label.hpp"
-#include "../../engine/result.hpp"
-#include "../../engine/scenes/scene.hpp"
+#include <pxe/app.hpp>
+#include <pxe/components/button.hpp>
+#include <pxe/components/component.hpp>
+#include <pxe/components/label.hpp>
+#include <pxe/result.hpp>
+#include <pxe/scenes/scene.hpp>
 
 namespace engine {
 class app;
@@ -17,7 +17,7 @@ struct size;
 
 namespace energy {
 
-class menu: public engine::scene {
+class menu: public pxe::scene {
 public:
 	menu() = default;
 	~menu() override = default;
@@ -30,27 +30,27 @@ public:
 	menu(menu &&) noexcept = default;
 	auto operator=(menu &&) noexcept -> menu & = default;
 
-	[[nodiscard]] auto init(engine::app &app) -> engine::result<> override;
-	[[nodiscard]] auto end() -> engine::result<> override;
+	[[nodiscard]] auto init(pxe::app &app) -> pxe::result<> override;
+	[[nodiscard]] auto end() -> pxe::result<> override;
 
-	[[nodiscard]] auto update(float delta) -> engine::result<> override;
-	[[nodiscard]] auto draw() -> engine::result<> override;
+	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
+	[[nodiscard]] auto draw() -> pxe::result<> override;
 
-	auto layout(engine::size screen_size) -> engine::result<> override;
+	auto layout(pxe::size screen_size) -> pxe::result<> override;
 
 	struct go_to_game {};
 
-	auto enable() -> engine::result<> override;
+	auto enable() -> pxe::result<> override;
 
 private:
-	engine::label title_;
+	pxe::label title_;
 	static constexpr auto large_font_size = 20;
 	static constexpr auto menu_music_path = "resources/music/menu.ogg";
 
-	engine::button play_button_;
+	pxe::button play_button_;
 	int button_click_{0};
 
-	auto on_button_click(const engine::button::click &evt) -> engine::result<>;
+	auto on_button_click(const pxe::button::click &evt) -> pxe::result<>;
 };
 
 } // namespace energy

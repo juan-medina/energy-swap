@@ -3,14 +3,14 @@
 
 #include "spark.hpp"
 
-#include "../../engine/components/sprite_anim.hpp"
-#include "../../engine/result.hpp"
+#include <pxe/components/sprite_anim.hpp>
+#include <pxe/result.hpp>
 
 #include <raymath.h>
 
 namespace energy {
 
-auto spark::update(const float delta) -> engine::result<> {
+auto spark::update(const float delta) -> pxe::result<> {
 	if(!is_visible()) {
 		return sprite_anim::update(delta);
 	}
