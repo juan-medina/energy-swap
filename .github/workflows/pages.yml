@@ -2,7 +2,7 @@
 
 on:
     release:
-        types: [published]
+        types: [ published ]
 
 permissions:
     contents: read
@@ -17,38 +17,38 @@ jobs:
             url: ${{ steps.deployment.outputs.page_url }}
 
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-              with:
-                  submodules: recursive
-                  lfs: true
+            -   name: Checkout repository
+                uses: actions/checkout@v4
+                with:
+                    submodules: recursive
+                    lfs: true
 
-            - name: Set up Python
-              uses: actions/setup-python@v5
-              with:
-                  python-version: '3.x'
+            -   name: Set up Python
+                uses: actions/setup-python@v5
+                with:
+                    python-version: '3.x'
 
-            - name: Set up Emscripten
-              uses: mymindstorm/setup-emsdk@v14
+            -   name: Set up Emscripten
+                uses: mymindstorm/setup-emsdk@v14
 
-            - name: Configure and build (Emscripten)
-              run: |
-                  mkdir build
-                  cd build
-                  emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
-                  cmake --build . --config Release
+            -   name: Configure and build (Emscripten)
+                run: |
+                    mkdir build
+                    cd build
+                    emcmake cmake .. -DPLATFORM=Web -DCMAKE_BUILD_TYPE=Release
+                    cmake --build . --config Release
 
-            - name: Prepare deployment folder
-              run: |
-                  mkdir deploy
-                  cp build/index.* deploy/
-                  cp build/favicon.ico deploy/
+            -   name: Prepare deployment folder
+                run: |
+                    mkdir deploy
+                    cp build/index.* deploy/
+                    cp build/favicon.ico deploy/
 
-            - name: Upload artifact
-              uses: actions/upload-pages-artifact@v3
-              with:
-                  path: deploy
+            -   name: Upload artifact
+                uses: actions/upload-pages-artifact@v3
+                with:
+                    path: deploy
 
-            - name: Deploy to GitHub Pages
-              id: deployment
-              uses: actions/deploy-pages@v4
+            -   name: Deploy to GitHub Pages
+                id: deployment
+                uses: actions/deploy-pages@v4
