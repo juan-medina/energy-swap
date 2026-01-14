@@ -8,9 +8,7 @@
 
 ## Engine
 
-This project uses the `pxe` engine — an opinionated game engine that provides the core framework and utilities for this game.
-
-- [pxe](https://github.com/juan-medina/pxe) (licensed under MIT)
+This project uses [pxe](https://github.com/juan-medina/pxe) — an opinionated game engine that provides the core framework and utilities for this game. (licensed under MIT)
 
 ## Download & Play
 
