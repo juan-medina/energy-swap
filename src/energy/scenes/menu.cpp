@@ -91,8 +91,8 @@ auto menu::layout(const pxe::size screen_size) -> pxe::result<> {
 	return true;
 }
 
-auto menu::enable() -> pxe::result<> {
-	if(const auto err = scene::enable().unwrap(); err) {
+auto menu::show() -> pxe::result<> {
+	if(const auto err = scene::show().unwrap(); err) {
 		return pxe::error("failed to enable base scene", *err);
 	}
 

@@ -55,7 +55,7 @@ auto energy_swap::init() -> pxe::result<> {
 	go_to_game_ = on_event<menu::go_to_game>(this, &energy_swap::on_go_to_game);
 	next_level_ = on_event<game::next_level>(this, &energy_swap::on_next_level);
 	game_back_ = on_event<game::back>(this, &energy_swap::on_game_back);
-	reset_ = on_event<game::reset>(this, &energy_swap::on_reset);
+	reset_ = on_event<game::reset_level>(this, &energy_swap::on_reset_level);
 
 	return true;
 }
@@ -79,12 +79,12 @@ auto energy_swap::end() -> pxe::result<> {
 }
 
 auto energy_swap::on_license_accepted() -> pxe::result<> {
-	auto err = disable_scene(license_scene_).unwrap();
+	auto err = hide_scene(license_scene_).unwrap();
 	if(err) {
 		return pxe::error("fail to disable license scene", *err);
 	}
 
-	if(err = enable_scene(menu_scene_).unwrap(); err) {
+	if(err = show_scene(menu_scene_).unwrap(); err) {
 		return pxe::error("fail to enable menu scene", *err);
 	}
 
@@ -93,12 +93,12 @@ auto energy_swap::on_license_accepted() -> pxe::result<> {
 
 auto energy_swap::on_go_to_game() -> pxe::result<> {
 	current_level_ = 1;
-	auto err = disable_scene(menu_scene_).unwrap();
+	auto err = hide_scene(menu_scene_).unwrap();
 	if(err) {
 		return pxe::error("fail to disable menu scene", *err);
 	}
 
-	if(err = enable_scene(game_scene_).unwrap(); err) {
+	if(err = show_scene(game_scene_).unwrap(); err) {
 		return pxe::error("fail to enable game scene", *err);
 	}
 
@@ -128,28 +128,28 @@ auto energy_swap::load_levels() -> pxe::result<> {
 
 auto energy_swap::on_next_level() -> pxe::result<> {
 	current_level_++;
-	if(const auto err = re_enable_scene(game_scene_).unwrap(); err) {
+	if(const auto err = reset_scene(game_scene_).unwrap(); err) {
 		return pxe::error("fail to re-enable game scene", *err);
 	}
 	return true;
 }
 
 auto energy_swap::on_game_back() -> pxe::result<> {
-	auto err = disable_scene(game_scene_).unwrap();
+	auto err = hide_scene(game_scene_).unwrap();
 	if(err) {
 		return pxe::error("fail to disable game scene", *err);
 	}
 
-	if(err = enable_scene(menu_scene_).unwrap(); err) {
+	if(err = show_scene(menu_scene_).unwrap(); err) {
 		return pxe::error("fail to enable menu scene", *err);
 	}
 
 	return true;
 }
 
-auto energy_swap::on_reset() -> pxe::result<> {
-	if(const auto err = re_enable_scene(game_scene_).unwrap(); err) {
-		return pxe::error("fail to re-enable game scene", *err);
+auto energy_swap::on_reset_level() -> pxe::result<> {
+	if(const auto err = reset_scene(game_scene_).unwrap(); err) {
+		return pxe::error("fail to reset game scene", *err);
 	}
 	return true;
 }

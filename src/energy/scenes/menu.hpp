@@ -45,7 +45,7 @@ public:
 
 	struct go_to_game {};
 
-	auto enable() -> pxe::result<> override;
+	auto show() -> pxe::result<> override;
 
 private:
 	pxe::label title_;

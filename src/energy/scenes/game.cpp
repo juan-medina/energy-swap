@@ -263,7 +263,7 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 	return true;
 }
 
-auto game::enable() -> pxe::result<> {
+auto game::show() -> pxe::result<> {
 	const auto &app = dynamic_cast<energy_swap &>(get_app());
 
 	title_.set_text(std::format("Level {}", app.get_current_level()));
@@ -273,7 +273,7 @@ auto game::enable() -> pxe::result<> {
 	status_.set_text("");
 	status_.set_centered(true);
 
-	if(const auto err = scene::enable().unwrap(); err) {
+	if(const auto err = scene::show().unwrap(); err) {
 		return pxe::error("failed to enable base scene", *err);
 	}
 
@@ -290,6 +290,10 @@ auto game::enable() -> pxe::result<> {
 	}
 
 	return true;
+}
+
+auto game::reset() -> pxe::result<> {
+	return show();
 }
 
 auto game::toggle_batteries(const size_t number) -> void {
@@ -368,7 +372,7 @@ auto game::on_button_click(const pxe::button::click &evt) -> pxe::result<> {
 	} else if(evt.id == back_button_.get_id()) {
 		get_app().post_event(back{});
 	} else if(evt.id == reset_button_.get_id()) {
-		get_app().post_event(reset{});
+		get_app().post_event(reset_level{});
 	}
 
 	return true;

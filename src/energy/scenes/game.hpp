@@ -58,11 +58,13 @@ public:
 
 	[[nodiscard]] auto setup_puzzle(const std::string &puzzle_str) -> pxe::result<>;
 
-	[[nodiscard]] auto enable() -> pxe::result<> override;
+	[[nodiscard]] auto show() -> pxe::result<> override;
+
+	[[nodiscard]] auto reset() -> pxe::result<> override;
 
 	struct next_level {};
+	struct reset_level {};
 	struct back {};
-	struct reset {};
 
 private:
 	pxe::label title_;
