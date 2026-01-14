@@ -256,6 +256,10 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 		batteries_.at(i) = current_puzzle_.at(i);
 	}
 
+	for(auto &battery_display: battery_displays_) {
+		battery_display.set_enabled(true);
+	}
+
 	return true;
 }
 
@@ -357,12 +361,21 @@ auto game::on_button_click(const pxe::button::click &evt) -> pxe::result<> {
 }
 
 auto game::check_end() -> void {
+	auto game_ended = false;
 	if(current_puzzle_.is_solved()) {
 		status_.set_text("You Win, continue to the next level ...");
 		next_button_.set_visible(true);
 		reset_button_.set_visible(false);
+		game_ended = true;
 	} else if(!current_puzzle_.is_solvable()) {
 		status_.set_text("No more moves available, try again ...");
+		game_ended = true;
+	}
+
+	if(game_ended) {
+		for(auto &battery_display: battery_displays_) {
+			battery_display.set_enabled(false);
+		}
 	}
 }
 

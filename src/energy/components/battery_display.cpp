@@ -66,7 +66,7 @@ auto battery_display::update(const float delta) -> pxe::result<> {
 	if(const auto &bat = battery_->get(); bat.closed()) {
 		set_tint(energy_colors.at(battery_->get().at(0)));
 	} else {
-		if(point_inside(GetMousePosition())) {
+		if(point_inside(GetMousePosition()) && is_enabled()) {
 			hover_ = true;
 			if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
 				get_app().post_event(click{index_});
