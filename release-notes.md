@@ -8,4 +8,7 @@
 
 ### Improvements
 
+- **Battery Disable on Game Over**: Batteries will now automatically disable when the game ends either in victory or
+  defeat.
+
 ### Known Issues
