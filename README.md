@@ -6,6 +6,24 @@
 
 - **Description**: A small game where colored "energy" units are moved between battery nodes until each battery is either empty or contains a single color.
 
+## Engine
+
+This project uses the `pxe` engine — an opinionated game engine that provides the core framework and utilities for this game.
+
+- [pxe](https://github.com/juan-medina/pxe) (licensed under MIT)
+
+## Download & Play
+
+You can either download a native Windows build or play instantly in your browser.
+
+- **Download (Windows)** — Get the latest native Windows build from the Releases page: https://github.com/juan-medina/energy-swap/releases/
+  Note: The Windows executable requires the Microsoft Visual C\+\+ Redistributable (x64). If you see runtime errors, install the latest Visual C\+\+ runtime: https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
+
+- **Play in browser (WebAssembly)** — Run the game without installing: https://juan-medina.github.io/energy-swap/
+  Note: Use a modern browser with WebAssembly and WebGL support (Chrome, Edge, Firefox, Safari) for best results.
+
+Report bugs or feedback on the repository issues page: https://github.com/juan-medina/energy-swap/issues
+
 **How it works (brief)**
 
 - The main scene instantiates multiple battery scenes. Each battery holds up to 4 "energy" color units.

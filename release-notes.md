@@ -2,13 +2,14 @@
 
 ### New Features
 
-- **Energy Transfer Sound**: When energy is transferred between batteries, a sound effect will now play.
-
 ### Bug Fixes
 
 ### Improvements
 
-- **Battery Disable on Game Over**: Batteries will now automatically disable when the game ends either in victory or
-  defeat.
-
 ### Known Issues
+
+### Notes
+
+- The Windows executable requires the Microsoft Visual C\+\+ Redistributable (x64). If you see runtime errors, install the latest Visual C\+\+ runtime: https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
+
+- Run the game without installing at https://juan-medina.github.io/energy-swap/. Use a modern browser with WebAssembly and WebGL support (Chrome, Edge, Firefox, Safari) for best results.
