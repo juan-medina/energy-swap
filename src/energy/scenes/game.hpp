@@ -77,6 +77,7 @@ private:
 	static constexpr auto sprite_sheet_path = "resources/sprites/sprites.json";
 	static constexpr auto game_music = "resources/music/game.ogg";
 	static constexpr auto battery_click_sound = "battery";
+	static constexpr auto zap_sound = "zap";
 
 	auto toggle_batteries(size_t number) -> void;
 	static constexpr std::array<size_t, 12> battery_order{8, 4, 0, 1, 5, 9, 10, 6, 2, 3, 7, 11};
@@ -100,7 +101,7 @@ private:
 
 	auto find_free_spark() -> std::shared_ptr<spark>;
 
-	auto shoot_sparks(Vector2 from, Vector2 to, Color color, size_t count) -> void;
+	[[nodiscard]] auto shoot_sparks(Vector2 from, Vector2 to, Color color, size_t count) -> pxe::result<>;
 };
 
 } // namespace energy

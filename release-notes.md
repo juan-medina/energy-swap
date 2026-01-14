@@ -1,7 +1,8 @@
 ﻿## Release Notes
 
 ### New Features
-- **Hud Bar**: Adding a hud bar with a toggle fullscreen button and a exit the game button.
+
+- **Energy Transfer Sound**: When energy is transferred between batteries, a sound effect will now play.
 
 ### Bug Fixes
 

@@ -39,6 +39,10 @@ auto energy_swap::init() -> pxe::result<> {
 		return pxe::error{"failed to load battery click sound", *err};
 	}
 
+	if(const auto err = load_sound(zap_sound, zap_sound_path).unwrap(); err) {
+		return pxe::error{"failed to load zap sound", *err};
+	}
+
 	if(const auto err = load_levels().unwrap(); err) {
 		return pxe::error{"failed to load levels", *err};
 	}

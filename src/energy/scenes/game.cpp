@@ -310,13 +310,13 @@ auto game::on_battery_click(const battery_display::click &click) -> pxe::result<
 			return battery_display.is_selected();
 		});
 
-	// regardless if we have a selected battery or not, play the click sound
-	if(const auto err = get_app().play_sound(battery_click_sound).unwrap()) {
-		return pxe::error("failed to play battery click sound", *err);
-	}
-
 	// if we have none
 	if(selected_it == battery_displays_.end()) {
+		// play click sound only for selecting
+		if(const auto err = get_app().play_sound(battery_click_sound).unwrap(); err) {
+			return pxe::error("failed to play battery click sound", *err);
+		}
+
 		// select the clicked battery if it's not closed or empty
 		if(!batteries_.at(clicked_index).closed() && !batteries_.at(clicked_index).empty()) {
 			battery_displays_.at(click.index).set_selected(true);
@@ -327,15 +327,24 @@ auto game::on_battery_click(const battery_display::click &click) -> pxe::result<
 	// deselect it
 	selected_it->set_selected(false);
 
+	auto need_click_sound = true;
+
 	const auto selected_index = battery_order.at(selected_it->get_index());
 	auto &from_battery = batteries_.at(selected_index);
 
-	if(auto &to_battery = batteries_.at(clicked_index); to_battery.can_get_from(from_battery)) {
+	if(auto &to_battery = batteries_.at(clicked_index);
+	   (selected_index != clicked_index) && to_battery.can_get_from(from_battery)) {
 		// sparks
-		shoot_sparks(selected_it->get_position(),
-					 battery_displays_.at(click.index).get_position(),
-					 selected_it->get_top_color(),
-					 5);
+		if(const auto err = shoot_sparks(selected_it->get_position(),
+										 battery_displays_.at(click.index).get_position(),
+										 selected_it->get_top_color(),
+										 5)
+								.unwrap();
+		   err) {
+			return pxe::error("failed to shoot sparks", *err);
+		}
+		// no click sound on successful transfer since we have sparks sound
+		need_click_sound = false;
 
 		// transfer energy
 		to_battery.transfer_energy_from(from_battery);
@@ -345,6 +354,11 @@ auto game::on_battery_click(const battery_display::click &click) -> pxe::result<
 		check_end();
 	}
 
+	if(need_click_sound) {
+		if(const auto err = get_app().play_sound(battery_click_sound).unwrap(); err) {
+			return pxe::error("failed to play battery click sound", *err);
+		}
+	}
 	return true;
 }
 
@@ -392,7 +406,11 @@ auto game::find_free_spark() -> std::shared_ptr<spark> {
 	return nullptr;
 }
 
-auto game::shoot_sparks(const Vector2 from, const Vector2 to, const Color color, const size_t count) -> void {
+auto game::shoot_sparks(const Vector2 from, const Vector2 to, const Color color, const size_t count) -> pxe::result<> {
+	if(const auto err = get_app().play_sound(zap_sound).unwrap(); err) {
+		return pxe::error("failed to play zap sound", *err);
+	}
+
 	for(size_t i = 0; i < count; ++i) {
 		// from and to will be slightly random in each spark animation
 		auto new_from = Vector2{
@@ -414,6 +432,7 @@ auto game::shoot_sparks(const Vector2 from, const Vector2 to, const Color color,
 			SPDLOG_WARN("no free spark found to play animation");
 		}
 	}
+	return true;
 }
 
 } // namespace energy

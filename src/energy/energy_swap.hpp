@@ -58,6 +58,8 @@ private:
 	static constexpr auto click_sound = "click";
 	static constexpr auto battery_click_sound_path = "resources/sounds/battery.wav";
 	static constexpr auto battery_click_sound = "battery";
+	static constexpr auto zap_sound_path = "resources/sounds/zap.wav";
+	static constexpr auto zap_sound = "zap";
 
 	static constexpr pxe::size design_resolution{.width = 640, .height = 360};
 
