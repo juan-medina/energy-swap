@@ -4,6 +4,8 @@
 cmake_minimum_required(VERSION 3.13)
 
 set(APP_NAME "energy-swap")
+set(APP_COMPANY "Juan Medina")
+set(APP_COPYRIGHT "Copyright (c) 2026 Juan Medina")
 
 project(${APP_NAME}
         VERSION 0.1.0.0
