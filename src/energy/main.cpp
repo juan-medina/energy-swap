@@ -14,7 +14,6 @@
 #include <exception>
 #include <optional>
 #include <spdlog/spdlog.h>
-#include <string>
 
 [[nodiscard]] auto main(int /*argc*/, char * /*argv*/[]) -> int {
 	try {

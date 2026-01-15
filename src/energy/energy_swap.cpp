@@ -5,6 +5,7 @@
 
 #include <pxe/app.hpp>
 #include <pxe/result.hpp>
+#include <pxe/scenes/scene.hpp>
 
 #include "scenes/game.hpp"
 #include "scenes/license.hpp"

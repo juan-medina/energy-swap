@@ -15,7 +15,6 @@
 #include "../data/battery.hpp"
 #include "../data/puzzle.hpp"
 #include "../energy_swap.hpp"
-#include "spdlog/fmt/bundled/base.h"
 
 #include <raylib.h>
 
