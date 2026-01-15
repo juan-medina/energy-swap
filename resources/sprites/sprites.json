@@ -48,7 +48,7 @@
         "y": 0.5
       }
     },
-    "larger.png": {
+    "gear.png": {
       "frame": {
         "x": 4,
         "y": 92,
@@ -72,7 +72,7 @@
         "y": 0.5
       }
     },
-    "smaller.png": {
+    "larger.png": {
       "frame": {
         "x": 4,
         "y": 113,
@@ -96,10 +96,34 @@
         "y": 0.5
       }
     },
-    "full.png": {
+    "smaller.png": {
       "frame": {
         "x": 4,
         "y": 134,
+        "w": 13,
+        "h": 13
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 4,
+        "y": 4,
+        "w": 13,
+        "h": 13
+      },
+      "sourceSize": {
+        "w": 20,
+        "h": 20
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "full.png": {
+      "frame": {
+        "x": 4,
+        "y": 155,
         "w": 24,
         "h": 12
       },

@@ -233,9 +233,8 @@ auto game::layout(const pxe::size screen_size) -> pxe::result<> {
 		.y = center_pos_y,
 	});
 
-	const auto solved = current_puzzle_.is_solved();
-	next_button_.set_visible(solved);
-	reset_button_.set_visible(!solved);
+	next_button_.set_visible(false);
+	reset_button_.set_visible(true);
 
 	return true;
 }
