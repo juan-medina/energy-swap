@@ -6,10 +6,11 @@
 #include <pxe/app.hpp>
 #include <pxe/components/component.hpp>
 #include <pxe/result.hpp>
+#include <pxe/scenes/scene.hpp>
 
 #include <raylib.h>
 
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 #include <vector>
 
@@ -63,15 +64,15 @@ private:
 
 	static constexpr pxe::size design_resolution{.width = 640, .height = 360};
 
-	int license_scene_{-1};
+	pxe::scene_id license_scene_{0};
 	int license_accepted_{0};
 	auto on_license_accepted() -> pxe::result<>;
 
-	int menu_scene_{-1};
+	pxe::scene_id menu_scene_{0};
 	int go_to_game_{0};
 	auto on_go_to_game() -> pxe::result<>;
 
-	int game_scene_{-1};
+	pxe::scene_id game_scene_{0};
 
 	std::vector<std::string> levels_;
 	size_t current_level_{1};
