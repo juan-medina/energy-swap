@@ -11,6 +11,10 @@
 namespace energy {
 
 auto spark::update(const float delta) -> pxe::result<> {
+	if(!is_enabled()) {
+		return true;
+	}
+
 	if(!is_visible()) {
 		return sprite_anim::update(delta);
 	}

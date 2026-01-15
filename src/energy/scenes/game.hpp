@@ -6,7 +6,6 @@
 #include <pxe/app.hpp>
 #include <pxe/components/button.hpp>
 #include <pxe/components/component.hpp>
-#include <pxe/components/label.hpp>
 #include <pxe/result.hpp>
 #include <pxe/scenes/scene.hpp>
 
@@ -51,9 +50,6 @@ public:
 	[[nodiscard]] auto init(pxe::app &app) -> pxe::result<> override;
 	[[nodiscard]] auto end() -> pxe::result<> override;
 
-	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
-	[[nodiscard]] auto draw() -> pxe::result<> override;
-
 	auto layout(pxe::size screen_size) -> pxe::result<> override;
 
 	[[nodiscard]] auto setup_puzzle(const std::string &puzzle_str) -> pxe::result<>;
@@ -67,12 +63,12 @@ public:
 	struct back {};
 
 private:
-	pxe::label title_;
-	pxe::label status_;
+	size_t title_;
+	size_t status_;
 	static constexpr auto large_font_size = 20;
 
 	static constexpr auto max_batteries = 12;
-	std::array<battery_display, max_batteries> battery_displays_;
+	std::array<size_t, max_batteries> battery_displays_;
 	std::array<battery, max_batteries> batteries_;
 
 	static constexpr auto sprite_sheet_name = "sprites";
@@ -89,17 +85,17 @@ private:
 	int battery_click_{0};
 	auto on_battery_click(const battery_display::click &click) -> pxe::result<>;
 
-	pxe::button back_button_;
-	pxe::button next_button_;
-	pxe::button reset_button_;
+	size_t back_button_{0};
+	size_t next_button_{0};
+	size_t reset_button_{0};
 
 	int button_click_{0};
 	auto on_button_click(const pxe::button::click &evt) -> pxe::result<>;
 
-	auto check_end() -> void;
+	[[nodiscard]] auto check_end() -> pxe::result<>;
 
 	static auto constexpr max_sparks = 25;
-	std::array<size_t, max_sparks> sparks_;
+	std::array<size_t, max_sparks> sparks_{};
 
 	auto find_free_spark() -> std::shared_ptr<spark>;
 

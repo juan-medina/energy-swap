@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <format>
+#include <memory>
 #include <optional>
 #include <spdlog/spdlog.h>
 #include <string>
@@ -27,8 +28,8 @@ auto license::init(pxe::app &app) -> pxe::result<> {
 
 	SPDLOG_INFO("license scene initialized");
 
-	if(const auto err = scroll_text_.init(app).unwrap(); err) {
-		return pxe::error("failed to initialize scroll text component", *err);
+	if(const auto err = register_component<pxe::scroll_text>().unwrap(scroll_text_); err) {
+		return pxe::error("failed to register scroll text component", *err);
 	}
 
 	char *text = nullptr;
@@ -36,19 +37,29 @@ auto license::init(pxe::app &app) -> pxe::result<> {
 		return pxe::error(std::format("failed to load license file from {}", license_path));
 	}
 
-	scroll_text_.set_text(text);
-	UnloadFileText(text);
-	scroll_text_.set_position({.x = 10, .y = 10});
-	scroll_text_.set_size({.width = 500, .height = 400});
-	scroll_text_.set_title("License");
-
-	if(const auto err = accept_button_.init(app).unwrap(); err) {
-		return pxe::error("failed to initialize accept button component", *err);
+	std::shared_ptr<pxe::scroll_text> scroll_text_ptr;
+	if(const auto err = get_component<pxe::scroll_text>(scroll_text_).unwrap(scroll_text_ptr); err) {
+		UnloadFileText(text);
+		return pxe::error("failed to get scroll text component", *err);
 	}
 
-	accept_button_.set_text("Accept");
-	accept_button_.set_position({.x = 0, .y = 0});
-	accept_button_.set_size({.width = 60, .height = 30});
+	scroll_text_ptr->set_text(text);
+	UnloadFileText(text);
+	scroll_text_ptr->set_position({.x = 10, .y = 10});
+	scroll_text_ptr->set_size({.width = 500, .height = 400});
+	scroll_text_ptr->set_title("License");
+
+	if(const auto err = register_component<pxe::button>().unwrap(accept_button_); err) {
+		return pxe::error("failed to register accept button component", *err);
+	}
+
+	std::shared_ptr<pxe::button> button_ptr;
+	if(const auto err = get_component<pxe::button>(accept_button_).unwrap(button_ptr); err) {
+		return pxe::error("failed to get accept button component", *err);
+	}
+	button_ptr->set_text("Accept");
+	button_ptr->set_position({.x = 0, .y = 0});
+	button_ptr->set_size({.width = 60, .height = 30});
 
 	button_click_ = app.bind_event<pxe::button::click>(this, &license::on_button_click);
 
@@ -60,45 +71,33 @@ auto license::end() -> pxe::result<> {
 	return scene::end();
 }
 
-auto license::update(const float delta) -> pxe::result<> {
-	if(const auto err = scroll_text_.update(delta).unwrap(); err) {
-		return pxe::error("failed to update scroll text component", *err);
-	}
-
-	if(const auto err = accept_button_.update(delta).unwrap(); err) {
-		return pxe::error("failed to update accept button", *err);
-	}
-	return true;
-}
-
-auto license::draw() -> pxe::result<> {
-	if(const auto err = scroll_text_.draw().unwrap(); err) {
-		return pxe::error("failed to draw scroll text component", *err);
-	}
-
-	if(const auto err = accept_button_.draw().unwrap(); err) {
-		return pxe::error("failed to draw accept button", *err);
-	}
-	return true;
-}
-
 auto license::layout(const pxe::size screen_size) -> pxe::result<> {
+	std::shared_ptr<pxe::scroll_text> scroll_text_ptr;
+	if(const auto err = get_component<pxe::scroll_text>(scroll_text_).unwrap(scroll_text_ptr); err) {
+		return pxe::error("failed to get scroll text component", *err);
+	}
+
 	const auto min_width = screen_size.width * 2.5F / 3.0F;
-	scroll_text_.set_size({.width = std::min(min_width, 1200.0F), .height = screen_size.height * 3.5F / 5.0F});
+	scroll_text_ptr->set_size({.width = std::min(min_width, 1200.0F), .height = screen_size.height * 3.5F / 5.0F});
 
-	scroll_text_.set_position({.x = (screen_size.width - scroll_text_.get_size().width) / 2.0F,
-							   .y = (screen_size.height - scroll_text_.get_size().height) / 2.0F});
+	scroll_text_ptr->set_position({.x = (screen_size.width - scroll_text_ptr->get_size().width) / 2.0F,
+								   .y = (screen_size.height - scroll_text_ptr->get_size().height) / 2.0F});
 
-	const auto [width, height] = accept_button_.get_size();
+	std::shared_ptr<pxe::button> button_ptr;
+	if(const auto err = get_component<pxe::button>(accept_button_).unwrap(button_ptr); err) {
+		return pxe::error("failed to get accept button component", *err);
+	}
+
+	const auto [width, height] = button_ptr->get_size();
 	float const button_x = (screen_size.width - width) / 2.0F;
-	float const button_y = scroll_text_.get_position().y + scroll_text_.get_size().height + 10;
-	accept_button_.set_position({.x = button_x, .y = button_y});
+	float const button_y = scroll_text_ptr->get_position().y + scroll_text_ptr->get_size().height + 10;
+	button_ptr->set_position({.x = button_x, .y = button_y});
 
 	return true;
 }
 
 auto license::on_button_click(const pxe::button::click &evt) -> pxe::result<> {
-	if(evt.id == accept_button_.get_id()) {
+	if(evt.id == accept_button_) {
 		get_app().post_event(accepted{});
 	}
 	return true;

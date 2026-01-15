@@ -5,9 +5,9 @@
 
 #include <pxe/components/button.hpp>
 #include <pxe/components/component.hpp>
-#include <pxe/components/scroll_text.hpp>
 #include <pxe/result.hpp>
 #include <pxe/scenes/scene.hpp>
+#include <cstddef>
 
 namespace pxe {
 class app;
@@ -37,17 +37,14 @@ public:
 	[[nodiscard]] auto init(pxe::app &app) -> pxe::result<> override;
 	[[nodiscard]] auto end() -> pxe::result<> override;
 
-	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
-	[[nodiscard]] auto draw() -> pxe::result<> override;
-
 	auto layout(pxe::size screen_size) -> pxe::result<> override;
 
 	struct accepted {};
 
 private:
 	static constexpr auto license_path = "resources/license/license.txt";
-	pxe::scroll_text scroll_text_;
-	pxe::button accept_button_;
+	size_t scroll_text_{0};
+	size_t accept_button_{0};
 	int button_click_{0};
 
 	auto on_button_click(const pxe::button::click &evt) -> pxe::result<>;
