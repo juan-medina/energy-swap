@@ -1,4 +1,6 @@
-﻿# .github/workflows/windows-release.yml
+# SPDX-FileCopyrightText: 2026 Juan Medina
+# SPDX-License-Identifier: MIT
+
 name: Build Windows release asset
 
 on:
