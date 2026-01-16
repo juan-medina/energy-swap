@@ -6,10 +6,6 @@
 
 - **Description**: A small game where colored "energy" units are moved between battery nodes until each battery is either empty or contains a single color.
 
-## Engine
-
-This project uses [pxe](https://github.com/juan-medina/pxe) — an opinionated game engine that provides the core framework and utilities for this game. (licensed under MIT)
-
 ## Download & Play
 
 You can either download a native Windows build or play instantly in your browser.
@@ -33,13 +29,12 @@ Report bugs or feedback on the repository issues page: https://github.com/juan-m
 - Music by [Abstraction](https://abstractionmusic.com/) (licensed as Public Domain CC-0).
 - SFX by [Helton Yan & Beto Bezerra](https://heltonyan.itch.io/pixelcombat?download) (licensed under Attribution 4.0 International).
 - Particle Pack by [Polar_34](https://polar-34.itch.io/particles) (license under MIT).
+- Additional graphics by [Kenney.nl](https://kenney.nl/assets) (licensed under Public Domain CC-0).
 
-**Third-party libraries:**
-- [raylib](https://www.raylib.com/) (licensed under zlib/libpng)
-- [raygui](https://github.com/raysan5/raygui) (licensed under zlib/libpng)
-- [spdlog](https://github.com/gabime/spdlog) (licensed under MIT)
-- [Boxer](https://github.com/aaronmjacobs/Boxer) (licensed under MIT)
-- [jsoncons](https://github.com/danielaparker/jsoncons) (licensed under Boost Software License 1.0)
+## Engine
+
+This project uses [pxe](https://github.com/juan-medina/pxe) — an opinionated game engine that provides the core framework and utilities for this game. (licensed under MIT)
+
 
 **License**
 
