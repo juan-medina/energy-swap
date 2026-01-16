@@ -55,12 +55,12 @@ private:
 	static constexpr auto font_path = "resources/fonts/PixeloidSans_16.fnt";
 	static constexpr auto clear_color = Color{.r = 20, .g = 49, .b = 59, .a = 255};
 
-	static constexpr auto click_sound_path = "resources/sounds/click.wav";
-	static constexpr auto click_sound = "click";
-	static constexpr auto battery_click_sound_path = "resources/sounds/battery.wav";
-	static constexpr auto battery_click_sound = "battery";
-	static constexpr auto zap_sound_path = "resources/sounds/zap.wav";
-	static constexpr auto zap_sound = "zap";
+	static constexpr auto click_sfx_path = "resources/sfx/click.wav";
+	static constexpr auto click_sfx = "click";
+	static constexpr auto battery_click_sfx_path = "resources/sfx/battery.wav";
+	static constexpr auto battery_click_sfx = "battery";
+	static constexpr auto zap_sfx_path = "resources/sfx/zap.wav";
+	static constexpr auto zap_sfx = "zap";
 
 	static constexpr pxe::size design_resolution{.width = 640, .height = 360};
 

@@ -285,7 +285,7 @@ auto game::show() -> pxe::result<> {
 		return pxe::error("failed to enable base scene", *err);
 	}
 
-	if(const auto err = get_app().play_music(game_music, 0.5F).unwrap(); err) {
+	if(const auto err = get_app().play_music(game_music).unwrap(); err) {
 		return pxe::error("fail to play game music", *err);
 	}
 
@@ -340,7 +340,7 @@ auto game::on_battery_click(const battery_display::click &click) -> pxe::result<
 	// if we have none
 	if(selected_it == battery_displays_.end()) {
 		// play click sound only for selecting
-		if(const auto err = get_app().play_sound(battery_click_sound).unwrap(); err) {
+		if(const auto err = get_app().play_sfx(battery_click_sound).unwrap(); err) {
 			return pxe::error("failed to play battery click sound", *err);
 		}
 
@@ -389,7 +389,7 @@ auto game::on_battery_click(const battery_display::click &click) -> pxe::result<
 	}
 
 	if(need_click_sound) {
-		if(const auto err = get_app().play_sound(battery_click_sound).unwrap(); err) {
+		if(const auto err = get_app().play_sfx(battery_click_sound).unwrap(); err) {
 			return pxe::error("failed to play battery click sound", *err);
 		}
 	}
@@ -462,7 +462,7 @@ auto game::find_free_spark() -> std::shared_ptr<spark> {
 }
 
 auto game::shoot_sparks(const Vector2 from, const Vector2 to, const Color color, const size_t count) -> pxe::result<> {
-	if(const auto err = get_app().play_sound(zap_sound).unwrap(); err) {
+	if(const auto err = get_app().play_sfx(zap_sound).unwrap(); err) {
 		return pxe::error("failed to play zap sound", *err);
 	}
 

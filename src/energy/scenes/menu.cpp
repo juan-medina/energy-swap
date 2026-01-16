@@ -90,7 +90,7 @@ auto menu::show() -> pxe::result<> {
 		return pxe::error("failed to enable base scene", *err);
 	}
 
-	if(const auto err = get_app().play_music("resources/music/menu.ogg", 0.5F).unwrap(); err) {
+	if(const auto err = get_app().play_music("resources/music/menu.ogg").unwrap(); err) {
 		return pxe::error(menu_music_path, *err);
 	}
 

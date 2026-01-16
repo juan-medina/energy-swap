@@ -7,6 +7,7 @@
 #include <pxe/components/component.hpp>
 #include <pxe/result.hpp>
 #include <pxe/scenes/scene.hpp>
+
 #include <cstddef>
 
 namespace pxe {

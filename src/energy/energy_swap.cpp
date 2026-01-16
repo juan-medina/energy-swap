@@ -32,16 +32,16 @@ auto energy_swap::init() -> pxe::result<> {
 		return pxe::error{"failed to set default font", *err};
 	}
 
-	if(const auto err = load_sound(click_sound, click_sound_path).unwrap(); err) {
-		return pxe::error{"failed to load button sound", *err};
+	if(const auto err = load_sfx(click_sfx, click_sfx_path).unwrap(); err) {
+		return pxe::error{"failed to load button sfx", *err};
 	}
 
-	if(const auto err = load_sound(battery_click_sound, battery_click_sound_path).unwrap(); err) {
-		return pxe::error{"failed to load battery click sound", *err};
+	if(const auto err = load_sfx(battery_click_sfx, battery_click_sfx_path).unwrap(); err) {
+		return pxe::error{"failed to load battery click sfx", *err};
 	}
 
-	if(const auto err = load_sound(zap_sound, zap_sound_path).unwrap(); err) {
-		return pxe::error{"failed to load zap sound", *err};
+	if(const auto err = load_sfx(zap_sfx, zap_sfx_path).unwrap(); err) {
+		return pxe::error{"failed to load zap sfx", *err};
 	}
 
 	if(const auto err = load_levels().unwrap(); err) {
@@ -68,12 +68,12 @@ auto energy_swap::end() -> pxe::result<> {
 	unsubscribe(game_back_);
 	unsubscribe(reset_);
 
-	if(const auto err = unload_sound(click_sound).unwrap(); err) {
-		return pxe::error{"failed to unload click sound", *err};
+	if(const auto err = unload_sfx(click_sfx).unwrap(); err) {
+		return pxe::error{"failed to unload click sfx", *err};
 	}
 
-	if(const auto err = unload_sound(battery_click_sound).unwrap(); err) {
-		return pxe::error{"failed to unload battery click sound", *err};
+	if(const auto err = unload_sfx(battery_click_sfx).unwrap(); err) {
+		return pxe::error{"failed to unload battery click sfx", *err};
 	}
 
 	return app::end();
