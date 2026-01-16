@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Juan Medina
 # SPDX-License-Identifier: MIT
-ta
+
 name: Build Linux release asset
 
 on:
