@@ -1,6 +1,7 @@
 ﻿## Release Notes
 
 ### New Features
+- Added options for setting music and sound effects volume.
 
 ### Bug Fixes
 
