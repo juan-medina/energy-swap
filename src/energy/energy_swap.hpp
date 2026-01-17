@@ -64,16 +64,6 @@ private:
 
 	static constexpr pxe::size design_resolution{.width = 640, .height = 360};
 
-	pxe::scene_id license_scene_{0};
-	int license_accepted_{0};
-	auto on_license_accepted() -> pxe::result<>;
-
-	pxe::scene_id menu_scene_{0};
-	int go_to_game_{0};
-	auto on_go_to_game() -> pxe::result<>;
-
-	pxe::scene_id game_scene_{0};
-
 	std::vector<std::string> levels_;
 	size_t current_level_{1};
 	static constexpr auto levels_path = "resources/levels/levels.txt";
@@ -87,6 +77,8 @@ private:
 
 	int reset_{0};
 	auto on_reset_level() -> pxe::result<>;
+
+	pxe::scene_id game_scene_{};
 };
 
 } // namespace energy
