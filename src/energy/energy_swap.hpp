@@ -78,7 +78,7 @@ private:
 	int reset_{0};
 	auto on_reset_level() -> pxe::result<>;
 
-	pxe::scene_id game_scene_{};
+	pxe::scene_id game_scene_;
 };
 
 } // namespace energy

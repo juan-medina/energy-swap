@@ -4,6 +4,7 @@
 #include "energy_swap.hpp"
 
 #include <pxe/app.hpp>
+#include <pxe/main.hpp>
 #include <pxe/result.hpp>
 #include <pxe/scenes/scene.hpp>
 
@@ -16,6 +17,8 @@
 #include <optional>
 #include <sstream>
 #include <string>
+
+PXE_MAIN(energy::energy_swap)
 
 namespace energy {
 
@@ -46,8 +49,11 @@ auto energy_swap::init() -> pxe::result<> {
 		return pxe::error{"failed to load levels", *err};
 	}
 
+	// register scenes
 	game_scene_ = register_scene<game>(false);
 	set_main_scene(game_scene_);
+
+	// subscribe to events
 	next_level_ = on_event<game::next_level>(this, &energy_swap::on_next_level);
 	game_back_ = on_event<game::back>(this, &energy_swap::on_game_back);
 	reset_ = on_event<game::reset_level>(this, &energy_swap::on_reset_level);
@@ -56,10 +62,12 @@ auto energy_swap::init() -> pxe::result<> {
 }
 
 auto energy_swap::end() -> pxe::result<> {
+	// unsubscribe from events
 	unsubscribe(next_level_);
 	unsubscribe(game_back_);
 	unsubscribe(reset_);
 
+	// unload sfx
 	if(const auto err = unload_sfx(click_sfx).unwrap(); err) {
 		return pxe::error{"failed to unload click sfx", *err};
 	}
