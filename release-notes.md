@@ -2,8 +2,7 @@
 
 ### New Features
 
-- First linux release!
--
+- Adding CRT effects to the game for a more retro aesthetic.
 
 ### Bug Fixes
 
