@@ -131,9 +131,7 @@ auto energy_swap::on_game_back() -> pxe::result<> {
 		return pxe::error("fail to hide game scene", *err);
 	}
 
-	if(const auto err = show_scene(level_selection_scene_).unwrap(); err) {
-		return pxe::error("fail to show level selection scene", *err);
-	}
+	post_event(back_to_menu{});
 
 	return true;
 }

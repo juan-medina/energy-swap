@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #include "game.hpp"
@@ -281,6 +281,26 @@ auto game::show() -> pxe::result<> {
 	status_ptr->set_text("");
 	status_ptr->set_centered(true);
 
+	// Reset button visibility for new level
+	std::shared_ptr<pxe::button> back_button_ptr;
+	if(const auto err = get_component<pxe::button>(back_button_).unwrap(back_button_ptr); err) {
+		return pxe::error("failed to get back button", *err);
+	}
+
+	std::shared_ptr<pxe::button> next_button_ptr;
+	if(const auto err = get_component<pxe::button>(next_button_).unwrap(next_button_ptr); err) {
+		return pxe::error("failed to get next button", *err);
+	}
+
+	std::shared_ptr<pxe::button> reset_button_ptr;
+	if(const auto err = get_component<pxe::button>(reset_button_).unwrap(reset_button_ptr); err) {
+		return pxe::error("failed to get reset button", *err);
+	}
+
+	back_button_ptr->set_visible(true);
+	next_button_ptr->set_visible(false);
+	reset_button_ptr->set_visible(true);
+
 	if(const auto err = scene::show().unwrap(); err) {
 		return pxe::error("failed to enable base scene", *err);
 	}
@@ -409,6 +429,10 @@ auto game::on_button_click(const pxe::button::click &evt) -> pxe::result<> {
 }
 
 auto game::check_end() -> pxe::result<> {
+	auto &app = dynamic_cast<energy_swap &>(get_app());
+	const auto current_level = app.get_current_level();
+	const auto total_levels = app.get_total_levels();
+
 	auto game_ended = false;
 
 	std::shared_ptr<pxe::label> status_ptr;
@@ -417,7 +441,6 @@ auto game::check_end() -> pxe::result<> {
 	}
 
 	if(current_puzzle_.is_solved()) {
-		status_ptr->set_text("You Win, continue to the next level ...");
 		std::shared_ptr<pxe::button> next_button_ptr;
 		if(const auto err = get_component<pxe::button>(next_button_).unwrap(next_button_ptr); err) {
 			return pxe::error("failed to get next button", *err);
@@ -428,8 +451,17 @@ auto game::check_end() -> pxe::result<> {
 			return pxe::error("failed to get next button", *err);
 		}
 
-		next_button_ptr->set_visible(true);
-		reset_button_ptr->set_visible(false);
+		// Check if this is the last level
+		if(current_level >= total_levels) {
+			status_ptr->set_text("Congratulations! You completed all levels!");
+			next_button_ptr->set_visible(false);
+			reset_button_ptr->set_visible(false);
+		} else {
+			status_ptr->set_text("You Win, continue to the next level ...");
+			next_button_ptr->set_visible(true);
+			reset_button_ptr->set_visible(false);
+		}
+
 		game_ended = true;
 	} else if(!current_puzzle_.is_solvable()) {
 		status_ptr->set_text("No more moves available, try again ...");
