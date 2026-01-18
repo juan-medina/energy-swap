@@ -6,7 +6,7 @@
 
 ### Improvements
 
-- New graphics
+- Batteries have now a noticeable color cycle when selected.
 
 ### Known Issues
 

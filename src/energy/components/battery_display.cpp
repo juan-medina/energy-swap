@@ -61,7 +61,31 @@ auto battery_display::update(const float delta) -> pxe::result<> {
 	assert(battery_.has_value() && "Battery reference not set for battery display");
 
 	hover_ = false;
-	set_tint(WHITE);
+	hover_ = false;
+
+	if(const auto &bat = battery_->get(); bat.closed()) {
+		set_tint(energy_colors.at(battery_->get().at(0)));
+		tint_progress_ = 0.0F;
+		tint_increasing_ = true;
+	} else if(selected_ && !bat.empty()) {
+		// Animate tint between WHITE and top color
+		tint_progress_ += delta * tint_cycle_speed * (tint_increasing_ ? 1.0F : -1.0F);
+
+		if(tint_progress_ >= 1.0F) {
+			tint_progress_ = 1.0F;
+			tint_increasing_ = false;
+		} else if(tint_progress_ <= 0.0F) {
+			tint_progress_ = 0.0F;
+			tint_increasing_ = true;
+		}
+
+		const auto top_color = get_top_color();
+		set_tint(ColorLerp(WHITE, top_color, 0.25F + (tint_progress_ * 0.75F)));
+	} else {
+		set_tint(WHITE);
+		tint_progress_ = 0.0F;
+		tint_increasing_ = true;
+	}
 
 	if(const auto &bat = battery_->get(); bat.closed()) {
 		set_tint(energy_colors.at(battery_->get().at(0)));

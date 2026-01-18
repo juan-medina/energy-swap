@@ -20,10 +20,6 @@ namespace pxe {
 class app;
 } // namespace pxe
 
-namespace engine {
-class app;
-} // namespace engine
-
 namespace energy {
 class battery;
 
@@ -65,7 +61,7 @@ public:
 
 	auto reset() -> void;
 
-	auto get_top_color() -> Color {
+	[[nodiscard]] auto get_top_color() const -> Color {
 		Color result = {.r = 0, .g = 0, .b = 0, .a = 0};
 		if(battery_.has_value()) {
 			const auto color_index = battery_->get().at(battery_->get().size() - 1);
@@ -79,6 +75,10 @@ private:
 	static constexpr auto hover_scale = 1.25F;
 	static constexpr auto selected_scale = 1.4F;
 	static constexpr auto hover_selected_scale = 1.5F;
+	static constexpr auto tint_cycle_speed = 4.0F;
+
+	float tint_progress_ = 0.0F;
+	bool tint_increasing_ = true;
 
 	std::optional<std::reference_wrapper<battery>> battery_;
 	std::array<sprite, 4> segments_;
