@@ -12,10 +12,6 @@ uniform float screen_width;
 uniform float screen_height;
 uniform float time;
 
-// Curvature constants
-const bool curvature = false;
-const float barrel_power = 1.025;
-
 // Color bleeding constants
 uniform bool color_bleed;
 const float color_bleeding = 1.2;
@@ -28,16 +24,6 @@ const float lines_distance = 2.0;
 const float scan_size = 1.0;
 const float scanline_alpha = 0.85;
 const float lines_velocity = 20.0;
-
-vec2 distort(vec2 p) {
-    float theta = atan(p.y, p.x);
-    float radius = pow(length(p), barrel_power);
-
-    p.x = radius * cos(theta);
-    p.y = radius * sin(theta);
-
-    return 0.5 * (p + vec2(1.0, 1.0));
-}
 
 void get_color_bleeding(inout vec4 current_color, inout vec4 color_left) {
     current_color = current_color * vec4(color_bleeding, 0.5, 1.0 - color_bleeding, 1.0);
@@ -53,20 +39,6 @@ void get_color_scanline(vec2 uv, inout vec4 c, float t) {
 
 void main() {
     vec2 xy = fragTexCoord;
-
-    if (curvature) {
-        xy = fragTexCoord * 2.0;
-
-        xy.x -= 1.0;
-        xy.y -= 1.0;
-
-        float d = length(xy);
-        if (d < 1.5) {
-            xy = distort(xy);
-        } else {
-            xy = fragTexCoord;
-        }
-    }
 
     vec4 current_color = texture2D(texture0, xy);
 
