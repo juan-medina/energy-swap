@@ -1,4 +1,6 @@
-// resources/shaders/crt.fs
+// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-License-Identifier: MIT
+
 #version 100
 
 precision mediump float;
