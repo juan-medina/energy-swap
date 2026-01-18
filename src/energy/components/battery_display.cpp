@@ -11,8 +11,8 @@
 
 #include <raylib.h>
 
-#include <assert.h>
-#include <memory>
+#include <cassert>
+#include <cstddef>
 
 namespace energy {
 
@@ -107,9 +107,10 @@ auto battery_display::reset() -> void {
 auto battery_display::readjust_segments() -> void {
 	const auto pos = get_position();
 	Vector2 segment_pos = pos;
+	segment_pos.x += (1.0F * get_scale());
 	segment_pos.y = pos.y + (29.0F * get_scale());
 	for(auto &segment: segments_) {
-		segment_pos.y -= (10.0F * get_scale());
+		segment_pos.y -= (11.0F * get_scale());
 		segment.set_position(segment_pos);
 	}
 }

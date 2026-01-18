@@ -2,11 +2,11 @@
 
 ### New Features
 
-- Adding CRT effects to the game for a more retro aesthetic.
-
 ### Bug Fixes
 
 ### Improvements
+
+- New graphics
 
 ### Known Issues
 
