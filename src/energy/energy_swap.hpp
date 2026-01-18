@@ -56,7 +56,7 @@ public:
 	}
 
 	[[nodiscard]] auto get_max_reached_level() -> size_t {
-		return static_cast<size_t>(get_setting<int>("max_reached_level", 1));
+		return static_cast<size_t>(get_setting<int>(max_level_key, 1));
 	}
 
 	struct level_selected {
@@ -83,6 +83,7 @@ private:
 	std::vector<std::string> levels_;
 	size_t current_level_{1};
 	static constexpr auto levels_path = "resources/levels/levels.txt";
+	static constexpr auto max_level_key = "game.max_level_reached";
 	auto load_levels() -> pxe::result<>;
 
 	int next_level_{0};

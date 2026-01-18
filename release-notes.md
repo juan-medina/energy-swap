@@ -2,6 +2,8 @@
 
 ### New Features
 
+- Now the game supports level selection from the main menu, and stores your progress.
+
 ### Bug Fixes
 
 ### Improvements

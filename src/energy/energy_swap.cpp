@@ -112,9 +112,8 @@ auto energy_swap::on_next_level() -> pxe::result<> {
 	current_level_++;
 
 	// Update max reached level if we've progressed further
-	if(const auto max_reached = get_setting<int>("max_reached_level", 1);
-	   current_level_ > static_cast<size_t>(max_reached)) {
-		set_setting("max_reached_level", static_cast<int>(current_level_));
+	if(const auto max_reached = get_setting<int>(max_level_key, 1); current_level_ > static_cast<size_t>(max_reached)) {
+		set_setting(max_level_key, static_cast<int>(current_level_));
 		if(const auto err = save_settings().unwrap(); err) {
 			return pxe::error("failed to save settings", *err);
 		}
