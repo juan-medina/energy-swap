@@ -9,9 +9,11 @@
 #include <pxe/scenes/scene.hpp>
 
 #include "scenes/game.hpp"
+#include "scenes/level_selection.hpp"
 
 #include <raylib.h>
 
+#include <cstddef>
 #include <format>
 #include <fstream>
 #include <optional>
@@ -49,14 +51,19 @@ auto energy_swap::init() -> pxe::result<> {
 		return pxe::error{"failed to load levels", *err};
 	}
 
-	// register scenes
+	// Load current level from settings (defaults to max reached level or 1)
+	current_level_ = get_max_reached_level();
+
+	level_selection_scene_ = register_scene<level_selection>(false);
 	game_scene_ = register_scene<game>(false);
-	set_main_scene(game_scene_);
+
+	set_main_scene(level_selection_scene_);
 
 	// subscribe to events
 	next_level_ = on_event<game::next_level>(this, &energy_swap::on_next_level);
 	game_back_ = on_event<game::back>(this, &energy_swap::on_game_back);
 	reset_ = on_event<game::reset_level>(this, &energy_swap::on_reset_level);
+	level_selected_ = bind_event<level_selected>(this, &energy_swap::on_level_selected);
 
 	return true;
 }
@@ -66,6 +73,7 @@ auto energy_swap::end() -> pxe::result<> {
 	unsubscribe(next_level_);
 	unsubscribe(game_back_);
 	unsubscribe(reset_);
+	unsubscribe(level_selected_);
 
 	// unload sfx
 	if(const auto err = unload_sfx(click_sfx).unwrap(); err) {
@@ -102,6 +110,16 @@ auto energy_swap::load_levels() -> pxe::result<> {
 
 auto energy_swap::on_next_level() -> pxe::result<> {
 	current_level_++;
+
+	// Update max reached level if we've progressed further
+	if(const auto max_reached = get_setting<int>("max_reached_level", 1);
+	   current_level_ > static_cast<size_t>(max_reached)) {
+		set_setting("max_reached_level", static_cast<int>(current_level_));
+		if(const auto err = save_settings().unwrap(); err) {
+			return pxe::error("failed to save settings", *err);
+		}
+	}
+
 	if(const auto err = reset_scene(game_scene_).unwrap(); err) {
 		return pxe::error("fail to reset game scene", *err);
 	}
@@ -109,12 +127,13 @@ auto energy_swap::on_next_level() -> pxe::result<> {
 }
 
 auto energy_swap::on_game_back() -> pxe::result<> {
-	if(const auto err = hide_scene(game_scene_).unwrap()) {
-		return pxe::error("fail to disable game scene", *err);
+	if(const auto err = hide_scene(game_scene_).unwrap(); err) {
+		return pxe::error("fail to hide game scene", *err);
 	}
-	current_level_ = 1;
 
-	post_event(back_to_menu{});
+	if(const auto err = show_scene(level_selection_scene_).unwrap(); err) {
+		return pxe::error("fail to show level selection scene", *err);
+	}
 
 	return true;
 }
@@ -123,6 +142,20 @@ auto energy_swap::on_reset_level() -> pxe::result<> {
 	if(const auto err = reset_scene(game_scene_).unwrap(); err) {
 		return pxe::error("fail to reset game scene", *err);
 	}
+	return true;
+}
+
+auto energy_swap::on_level_selected(const level_selected &evt) -> pxe::result<> {
+	current_level_ = evt.level;
+
+	if(const auto err = hide_scene(level_selection_scene_).unwrap(); err) {
+		return pxe::error("fail to hide level selection scene", *err);
+	}
+
+	if(const auto err = show_scene(game_scene_).unwrap(); err) {
+		return pxe::error("fail to show game scene", *err);
+	}
+
 	return true;
 }
 

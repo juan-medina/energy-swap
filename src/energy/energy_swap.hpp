@@ -47,6 +47,22 @@ public:
 		return levels_.at(current_level_ - 1);
 	}
 
+	auto set_current_level(const size_t level) -> void {
+		current_level_ = level;
+	}
+
+	[[nodiscard]] auto get_total_levels() const -> size_t {
+		return levels_.size();
+	}
+
+	[[nodiscard]] auto get_max_reached_level() -> size_t {
+		return static_cast<size_t>(get_setting<int>("max_reached_level", 1));
+	}
+
+	struct level_selected {
+		size_t level;
+	};
+
 protected:
 	[[nodiscard]] auto init() -> pxe::result<> override;
 	[[nodiscard]] auto end() -> pxe::result<> override;
@@ -78,7 +94,11 @@ private:
 	int reset_{0};
 	auto on_reset_level() -> pxe::result<>;
 
+	int level_selected_{0};
+	auto on_level_selected(const level_selected &evt) -> pxe::result<>;
+
 	pxe::scene_id game_scene_;
+	pxe::scene_id level_selection_scene_;
 };
 
 } // namespace energy
