@@ -99,7 +99,7 @@ auto level_selection::layout(const pxe::size screen_size) -> pxe::result<> {
 	constexpr auto button_spacing = 10.0F;
 	constexpr auto grid_width = (50.0F * cols) + (button_spacing * (cols - 1));
 	constexpr auto grid_height = (50.0F * rows) + (button_spacing * (rows - 1));
-	const auto start_x = ((screen_size.width - grid_width) / 2.0F) + 25.0F;
+	const auto start_x = ((screen_size.width - grid_width) / 2.0F);
 	const auto start_y = ((screen_size.height - grid_height) / 2.0F) + 25.0F;
 
 	for(size_t i = 0; i < max_level_buttons; ++i) {
@@ -125,23 +125,22 @@ auto level_selection::layout(const pxe::size screen_size) -> pxe::result<> {
 		return pxe::error("failed to get next page button", *err);
 	}
 
+	// Position page buttons centered below the grid
 	constexpr auto button_v_gap = 10.0F;
-	const auto center_pos_x = screen_size.width * 0.5F;
 	const auto [button_width, button_height] = prev_button_ptr->get_size();
 	const auto center_pos_y = screen_size.height - button_height - button_v_gap;
 
-	constexpr auto page_button_spacing = 150.0F;
-
+	// Place prev button at left edge of grid
 	prev_button_ptr->set_position({
-		.x = center_pos_x - page_button_spacing,
+		.x = start_x,
 		.y = center_pos_y,
 	});
 
+	// Next button at right edge
 	next_button_ptr->set_position({
-		.x = center_pos_x + page_button_spacing,
+		.x = start_x + grid_width - button_width,
 		.y = center_pos_y,
 	});
-
 	return true;
 }
 
