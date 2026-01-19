@@ -299,8 +299,11 @@ auto game::show() -> pxe::result<> {
 	}
 
 	back_button_ptr->set_visible(true);
+	back_button_ptr->set_game_pad_button(GAMEPAD_BUTTON_RIGHT_FACE_RIGHT);
 	next_button_ptr->set_visible(false);
+	next_button_ptr->set_game_pad_button(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
 	reset_button_ptr->set_visible(true);
+	reset_button_ptr->set_game_pad_button(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
 
 	if(const auto err = scene::show().unwrap(); err) {
 		return pxe::error("failed to enable base scene", *err);

@@ -34,6 +34,7 @@ public:
 
 	[[nodiscard]] auto init(pxe::app &app) -> pxe::result<> override;
 	[[nodiscard]] auto end() -> pxe::result<> override;
+	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
 
 	auto layout(pxe::size screen_size) -> pxe::result<> override;
 
@@ -50,7 +51,7 @@ private:
 	size_t current_page_{0};
 
 	static constexpr auto max_level_buttons = levels_per_page;
-	std::array<size_t, max_level_buttons> level_buttons_;
+	std::array<size_t, max_level_buttons> level_buttons_{};
 
 	size_t prev_page_button_{0};
 	size_t next_page_button_{0};
@@ -62,6 +63,12 @@ private:
 
 	static constexpr auto max_reached_level_key = "max_reached_level";
 	size_t max_reached_level_{1};
+
+	size_t selected_level_{1};
+	auto on_dpad_input(int dx, int dy) -> pxe::result<>;
+	static constexpr auto click_sfx_ = "click";
+	auto controller_move_level() -> pxe::result<>;
+	auto controller_move_pages() -> pxe::result<>;
 };
 
 } // namespace energy

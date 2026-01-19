@@ -11,6 +11,9 @@
 
 #include "../energy_swap.hpp"
 
+#include <raylib.h>
+
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <memory>
@@ -80,6 +83,42 @@ auto level_selection::init(pxe::app &app) -> pxe::result<> {
 auto level_selection::end() -> pxe::result<> {
 	get_app().unsubscribe(button_click_);
 	return scene::end();
+}
+
+auto level_selection::update(const float delta) -> pxe::result<> {
+	if(const auto err = scene::update(delta).unwrap(); err) {
+		return pxe::error("failed to update base scene", *err);
+	}
+
+	if(!IsGamepadAvailable(0)) {
+		return true;
+	}
+
+	const auto previous_level = selected_level_;
+	const auto previous_page = current_page_;
+
+	if(!get_app().is_in_controller_mode()) {
+		return true;
+	}
+
+	if(auto const err = controller_move_level().unwrap(); err) {
+		return pxe::error("failed to handle controller level move", *err);
+	}
+
+	if(auto const err = controller_move_pages().unwrap(); err) {
+		return pxe::error("failed to handle controller page move", *err);
+	}
+
+	if((previous_level != selected_level_) || (previous_page != current_page_)) {
+		if(const auto err = get_app().play_sfx(click_sfx_).unwrap(); err) {
+			return pxe::error("failed to play click sfx", *err);
+		}
+		if(const auto err = update_buttons().unwrap(); err) {
+			return pxe::error("failed to update buttons", *err);
+		}
+	}
+
+	return true;
 }
 
 auto level_selection::layout(const pxe::size screen_size) -> pxe::result<> {
@@ -152,6 +191,7 @@ auto level_selection::show() -> pxe::result<> {
 
 	// Get current level from app
 	const auto current_level = app.get_current_level();
+	selected_level_ = current_level;
 
 	// Calculate which page the current level is on
 	current_page_ = (current_level - 1) / levels_per_page;
@@ -177,26 +217,22 @@ auto level_selection::show() -> pxe::result<> {
 }
 
 auto level_selection::update_buttons() -> pxe::result<> {
-	auto &app = dynamic_cast<energy_swap &>(get_app());
-	const auto current_level = app.get_current_level();
 	const auto start_level = (current_page_ * levels_per_page) + 1;
 
 	for(size_t i = 0; i < max_level_buttons; ++i) {
 		const auto level = start_level + i;
-
 		std::shared_ptr<pxe::button> button_ptr;
 		if(const auto err = get_component<pxe::button>(level_buttons_.at(i)).unwrap(button_ptr); err) {
 			return pxe::error("failed to get level button", *err);
 		}
-
 		const auto level_str = std::to_string(level);
-		if(level == current_level) {
+		if(level == selected_level_) {
 			button_ptr->set_text(GuiIconText(ICON_STAR, level_str.c_str()));
+			button_ptr->set_game_pad_button(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
 		} else {
 			button_ptr->set_text(level_str);
+			button_ptr->set_game_pad_button(-1);
 		}
-
-		// Enable button only if level is unlocked
 		button_ptr->set_enabled(level <= max_reached_level_);
 	}
 
@@ -220,6 +256,63 @@ auto level_selection::update_buttons() -> pxe::result<> {
 	const int next_icon = (current_page_ == total_pages - 1) ? ICON_PLAYER_NEXT : ICON_ARROW_RIGHT;
 	next_button_ptr->set_text(GuiIconText(next_icon, ""));
 
+	return true;
+}
+
+auto level_selection::on_dpad_input(int dx, int dy) -> pxe::result<> {
+	const int idx = static_cast<int>(selected_level_ - 1) % levels_per_page;
+	int row = idx / 5;
+	int col = idx % 5;
+
+	// Move selection
+	row += dy;
+	col += dx;
+
+	// Clamp to grid
+	row = std::clamp(row, 0, 1);
+	col = std::clamp(col, 0, 4);
+
+	const int new_idx = (row * 5) + col;
+	if(const size_t new_level = (current_page_ * levels_per_page) + new_idx + 1; new_level <= max_reached_level_) {
+		selected_level_ = new_level;
+	}
+
+	return true;
+}
+
+auto level_selection::controller_move_level() -> pxe::result<> {
+	const auto left = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT);
+	const auto right = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT);
+	const auto up = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP);
+	const auto down = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN);
+
+	if(left || right || up || down) {
+		const auto dx = left ? -1 : (right ? 1 : 0); // NOLINT(*-avoid-nested-conditional-operator)
+		const auto dy = up ? -1 : (down ? 1 : 0);	 // NOLINT(*-avoid-nested-conditional-operator)
+		if(const auto err = on_dpad_input(dx, dy).unwrap(); err) {
+			return pxe::error("failed to handle dpad input", *err);
+		}
+	}
+
+	return true;
+}
+
+auto level_selection::controller_move_pages() -> pxe::result<> {
+	const auto left_trigger = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_TRIGGER_1);
+	const auto right_trigger = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_TRIGGER_1);
+
+	auto previous_page = current_page_;
+	if(left_trigger && current_page_ > 0) {
+		current_page_--;
+	}
+	if(right_trigger && current_page_ < total_pages - 1) {
+		current_page_++;
+	}
+	if(previous_page != current_page_) {
+		// Move selection to first unlocked level on new page
+		const auto start_level = (current_page_ * levels_per_page) + 1;
+		selected_level_ = start_level <= max_reached_level_ ? start_level : max_reached_level_;
+	}
 	return true;
 }
 
