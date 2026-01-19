@@ -5,6 +5,26 @@
   "savePath": "",
   "images": [
     {
+      "name": "button_06.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/menu/button_06.png",
+      "folder": ""
+    },
+    {
+      "name": "button_07.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/menu/button_07.png",
+      "folder": ""
+    },
+    {
+      "name": "button_09.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/menu/button_09.png",
+      "folder": ""
+    },
+    {
+      "name": "button_11.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/menu/button_11.png",
+      "folder": ""
+    },
+    {
       "name": "logo.png",
       "path": "C:/Users/mail/Documents/Source/energy-swap/media/menu/logo.png",
       "folder": ""

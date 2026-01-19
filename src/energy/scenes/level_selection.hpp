@@ -68,7 +68,7 @@ private:
 	auto on_dpad_input(int dx, int dy) -> pxe::result<>;
 	static constexpr auto click_sfx_ = "click";
 	auto controller_move_level() -> pxe::result<>;
-	auto controller_move_pages() -> pxe::result<>;
+	auto check_page_movement() -> pxe::result<>;
 };
 
 } // namespace energy

@@ -105,10 +105,6 @@ auto level_selection::update(const float delta) -> pxe::result<> {
 		return pxe::error("failed to handle controller level move", *err);
 	}
 
-	if(auto const err = controller_move_pages().unwrap(); err) {
-		return pxe::error("failed to handle controller page move", *err);
-	}
-
 	if((previous_level != selected_level_) || (previous_page != current_page_)) {
 		if(const auto err = get_app().play_sfx(click_sfx_).unwrap(); err) {
 			return pxe::error("failed to play click sfx", *err);
@@ -158,12 +154,14 @@ auto level_selection::layout(const pxe::size screen_size) -> pxe::result<> {
 	if(const auto err = get_component<pxe::button>(prev_page_button_).unwrap(prev_button_ptr); err) {
 		return pxe::error("failed to get prev page button", *err);
 	}
+	prev_button_ptr->set_controller_button(GAMEPAD_BUTTON_LEFT_TRIGGER_1);
+	prev_button_ptr->set_controller_button_position(pxe::button::controller_button_position::top_left);
 
 	std::shared_ptr<pxe::button> next_button_ptr;
 	if(const auto err = get_component<pxe::button>(next_page_button_).unwrap(next_button_ptr); err) {
 		return pxe::error("failed to get next page button", *err);
 	}
-
+	next_button_ptr->set_controller_button(GAMEPAD_BUTTON_RIGHT_TRIGGER_1);
 	// Position page buttons centered below the grid
 	constexpr auto button_v_gap = 10.0F;
 	const auto [button_width, button_height] = prev_button_ptr->get_size();
@@ -228,10 +226,10 @@ auto level_selection::update_buttons() -> pxe::result<> {
 		const auto level_str = std::to_string(level);
 		if(level == selected_level_) {
 			button_ptr->set_text(GuiIconText(ICON_STAR, level_str.c_str()));
-			button_ptr->set_game_pad_button(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
+			button_ptr->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
 		} else {
 			button_ptr->set_text(level_str);
-			button_ptr->set_game_pad_button(-1);
+			button_ptr->set_controller_button(-1);
 		}
 		button_ptr->set_enabled(level <= max_reached_level_);
 	}
@@ -297,22 +295,14 @@ auto level_selection::controller_move_level() -> pxe::result<> {
 	return true;
 }
 
-auto level_selection::controller_move_pages() -> pxe::result<> {
-	const auto left_trigger = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_TRIGGER_1);
-	const auto right_trigger = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_TRIGGER_1);
+auto level_selection::check_page_movement() -> pxe::result<> {
+	const auto start_level = (current_page_ * levels_per_page) + 1;
+	selected_level_ = start_level <= max_reached_level_ ? start_level : max_reached_level_;
 
-	auto previous_page = current_page_;
-	if(left_trigger && current_page_ > 0) {
-		current_page_--;
+	if(const auto err = update_buttons().unwrap(); err) {
+		return pxe::error("failed to update buttons", *err);
 	}
-	if(right_trigger && current_page_ < total_pages - 1) {
-		current_page_++;
-	}
-	if(previous_page != current_page_) {
-		// Move selection to first unlocked level on new page
-		const auto start_level = (current_page_ * levels_per_page) + 1;
-		selected_level_ = start_level <= max_reached_level_ ? start_level : max_reached_level_;
-	}
+
 	return true;
 }
 
@@ -320,15 +310,15 @@ auto level_selection::on_button_click(const pxe::button::click &evt) -> pxe::res
 	if(evt.id == prev_page_button_) {
 		if(current_page_ > 0) {
 			current_page_--;
-			if(const auto err = update_buttons().unwrap(); err) {
-				return pxe::error("failed to update buttons", *err);
+			if(auto const err = check_page_movement().unwrap(); err) {
+				return pxe::error("failed to handle page move", *err);
 			}
 		}
 	} else if(evt.id == next_page_button_) {
 		if(current_page_ < total_pages - 1) {
 			current_page_++;
-			if(const auto err = update_buttons().unwrap(); err) {
-				return pxe::error("failed to update buttons", *err);
+			if(auto const err = check_page_movement().unwrap(); err) {
+				return pxe::error("failed to handle page move", *err);
 			}
 		}
 	} else {
