@@ -25,6 +25,7 @@
 #include <memory>
 #include <optional>
 #include <ranges>
+#include <raygui.h>
 #include <spdlog/spdlog.h>
 
 namespace energy {
@@ -100,17 +101,17 @@ auto game::init(pxe::app &app) -> pxe::result<> {
 		return pxe::error("failed to get back button", *err);
 	}
 
-	back_button_ptr->set_text("Back");
+	back_button_ptr->set_text(GuiIconText(ICON_PLAYER_PREVIOUS, "Back"));
 	back_button_ptr->set_position({.x = 0, .y = 0});
-	back_button_ptr->set_size({.width = 45, .height = 25});
+	back_button_ptr->set_size({.width = 65, .height = 25});
 
-	next_button_ptr->set_text("Next");
+	next_button_ptr->set_text(GuiIconText(ICON_PLAYER_NEXT, "Next"));
 	next_button_ptr->set_position({.x = 0, .y = 0});
-	next_button_ptr->set_size({.width = 45, .height = 25});
+	next_button_ptr->set_size({.width = 65, .height = 25});
 
-	reset_button_ptr->set_text("Reset");
+	reset_button_ptr->set_text(GuiIconText(ICON_UNDO, "Reset"));
 	reset_button_ptr->set_position({.x = 0, .y = 0});
-	reset_button_ptr->set_size({.width = 45, .height = 25});
+	reset_button_ptr->set_size({.width = 65, .height = 25});
 
 	button_click_ = app.bind_event<pxe::button::click>(this, &game::on_button_click);
 

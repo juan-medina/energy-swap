@@ -13,9 +13,10 @@
 
 #include <array>
 #include <cstddef>
-#include <format>
 #include <memory>
+#include <raygui.h>
 #include <spdlog/spdlog.h>
+#include <string>
 
 namespace energy {
 
@@ -54,11 +55,11 @@ auto level_selection::init(pxe::app &app) -> pxe::result<> {
 		return pxe::error("failed to get next page button", *err);
 	}
 
-	prev_button_ptr->set_text("<");
+	prev_button_ptr->set_text(GuiIconText(ICON_PLAYER_PREVIOUS, ""));
 	prev_button_ptr->set_size({.width = 45, .height = 25});
 	prev_button_ptr->set_font_size(button_font_size);
 
-	next_button_ptr->set_text(">");
+	next_button_ptr->set_text(GuiIconText(ICON_PLAYER_NEXT, ""));
 	next_button_ptr->set_size({.width = 45, .height = 25});
 	next_button_ptr->set_font_size(button_font_size);
 
@@ -189,10 +190,11 @@ auto level_selection::update_buttons() -> pxe::result<> {
 			return pxe::error("failed to get level button", *err);
 		}
 
+		const auto level_str = std::to_string(level);
 		if(level == current_level) {
-			button_ptr->set_text(std::format("> {} <", level));
+			button_ptr->set_text(GuiIconText(ICON_STAR, level_str.c_str()));
 		} else {
-			button_ptr->set_text(std::format("{}", level));
+			button_ptr->set_text(level_str);
 		}
 
 		// Enable button only if level is unlocked
@@ -211,6 +213,13 @@ auto level_selection::update_buttons() -> pxe::result<> {
 
 	prev_button_ptr->set_enabled(current_page_ > 0);
 	next_button_ptr->set_enabled(current_page_ < total_pages - 1);
+
+	const int prev_icon = (current_page_ == 0) ? ICON_PLAYER_PREVIOUS : ICON_ARROW_LEFT;
+
+	prev_button_ptr->set_text(GuiIconText(prev_icon, ""));
+
+	const int next_icon = (current_page_ == total_pages - 1) ? ICON_PLAYER_NEXT : ICON_ARROW_RIGHT;
+	next_button_ptr->set_text(GuiIconText(next_icon, ""));
 
 	return true;
 }
