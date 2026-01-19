@@ -73,6 +73,7 @@ auto level_selection::init(pxe::app &app) -> pxe::result<> {
 		}
 		button_ptr->set_size({.width = 50, .height = 50});
 		button_ptr->set_font_size(button_font_size);
+		button_ptr->set_controller_button_position(pxe::button::controller_button_position::bottom_center);
 	}
 
 	button_click_ = app.bind_event<pxe::button::click>(this, &level_selection::on_button_click);
@@ -223,14 +224,17 @@ auto level_selection::update_buttons() -> pxe::result<> {
 		if(const auto err = get_component<pxe::button>(level_buttons_.at(i)).unwrap(button_ptr); err) {
 			return pxe::error("failed to get level button", *err);
 		}
-		const auto level_str = std::to_string(level);
+		auto level_str = std::to_string(level);
+		auto controller_button = -1;
 		if(level == selected_level_) {
-			button_ptr->set_text(GuiIconText(ICON_STAR, level_str.c_str()));
-			button_ptr->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
-		} else {
-			button_ptr->set_text(level_str);
-			button_ptr->set_controller_button(-1);
+			controller_button = GAMEPAD_BUTTON_RIGHT_FACE_DOWN;
 		}
+		if(level == max_reached_level_) {
+			level_str = GuiIconText(ICON_STAR, level_str.c_str());
+		}
+
+		button_ptr->set_controller_button(controller_button);
+		button_ptr->set_text(level_str);
 		button_ptr->set_enabled(level <= max_reached_level_);
 	}
 
