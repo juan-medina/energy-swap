@@ -49,6 +49,10 @@ auto level_selection::init(pxe::app &app) -> pxe::result<> {
 		return pxe::error("failed to register next page button", *err);
 	}
 
+	if(const auto err = register_component<pxe::button>().unwrap(back_button_); err) {
+		return pxe::error("failed to register back button", *err);
+	}
+
 	std::shared_ptr<pxe::button> prev_button_ptr;
 	if(const auto err = get_component<pxe::button>(prev_page_button_).unwrap(prev_button_ptr); err) {
 		return pxe::error("failed to get prev page button", *err);
@@ -59,13 +63,25 @@ auto level_selection::init(pxe::app &app) -> pxe::result<> {
 		return pxe::error("failed to get next page button", *err);
 	}
 
+	std::shared_ptr<pxe::button> back_button_ptr;
+	if(const auto err = get_component<pxe::button>(back_button_).unwrap(back_button_ptr); err) {
+		return pxe::error("failed to get back button", *err);
+	}
+
 	prev_button_ptr->set_text(GuiIconText(ICON_PLAYER_PREVIOUS, ""));
 	prev_button_ptr->set_size({.width = 45, .height = 25});
 	prev_button_ptr->set_font_size(button_font_size);
+	prev_button_ptr->set_controller_button(GAMEPAD_BUTTON_LEFT_TRIGGER_1);
 
 	next_button_ptr->set_text(GuiIconText(ICON_PLAYER_NEXT, ""));
 	next_button_ptr->set_size({.width = 45, .height = 25});
 	next_button_ptr->set_font_size(button_font_size);
+	next_button_ptr->set_controller_button(GAMEPAD_BUTTON_RIGHT_TRIGGER_1);
+
+	back_button_ptr->set_text(GuiIconText(ICON_PLAYER_PREVIOUS, "Back"));
+	back_button_ptr->set_size({.width = 70, .height = 25});
+	back_button_ptr->set_font_size(button_font_size);
+	back_button_ptr->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_RIGHT);
 
 	for(size_t i = 0; i < max_level_buttons; ++i) {
 		std::shared_ptr<pxe::button> button_ptr;
@@ -108,7 +124,7 @@ auto level_selection::update(const float delta) -> pxe::result<> {
 	}
 
 	if((previous_level != selected_level_) || (previous_page != current_page_)) {
-		if(const auto err = get_app().play_sfx(click_sfx_).unwrap(); err) {
+		if(const auto err = get_app().play_sfx(click_sfx).unwrap(); err) {
 			return pxe::error("failed to play click sfx", *err);
 		}
 		if(const auto err = update_buttons().unwrap(); err) {
@@ -156,14 +172,14 @@ auto level_selection::layout(const pxe::size screen_size) -> pxe::result<> {
 	if(const auto err = get_component<pxe::button>(prev_page_button_).unwrap(prev_button_ptr); err) {
 		return pxe::error("failed to get prev page button", *err);
 	}
-	prev_button_ptr->set_controller_button(GAMEPAD_BUTTON_LEFT_TRIGGER_1);
+
 	prev_button_ptr->set_controller_button_alignment(pxe::vertical_alignment::bottom, pxe::horizontal_alignment::left);
 
 	std::shared_ptr<pxe::button> next_button_ptr;
 	if(const auto err = get_component<pxe::button>(next_page_button_).unwrap(next_button_ptr); err) {
 		return pxe::error("failed to get next page button", *err);
 	}
-	next_button_ptr->set_controller_button(GAMEPAD_BUTTON_RIGHT_TRIGGER_1);
+
 	// Position page buttons centered below the grid
 	constexpr auto button_v_gap = 10.0F;
 	const auto [button_width, button_height] = prev_button_ptr->get_size();
@@ -180,6 +196,20 @@ auto level_selection::layout(const pxe::size screen_size) -> pxe::result<> {
 		.x = start_x + grid_width - button_width,
 		.y = center_pos_y,
 	});
+
+	std::shared_ptr<pxe::button> back_button_ptr;
+	if(const auto err = get_component<pxe::button>(back_button_).unwrap(back_button_ptr); err) {
+		return pxe::error("failed to get back button", *err);
+	}
+
+	const auto [back_button_width, back_button_height] = back_button_ptr->get_size();
+
+	// Place back button at bottom center
+	back_button_ptr->set_position({
+		.x = (screen_size.width - back_button_width) / 2.0F,
+		.y = screen_size.height - button_height - button_v_gap,
+	});
+
 	return true;
 }
 
@@ -326,6 +356,11 @@ auto level_selection::on_button_click(const pxe::button::click &evt) -> pxe::res
 				return pxe::error("failed to handle page move", *err);
 			}
 		}
+	} else if(evt.id == back_button_) {
+		set_visible(false);
+
+		// Post event to go back to main menu
+		get_app().post_event(energy_swap::back_to_menu{});
 	} else {
 		// Check if it's a level button
 		for(size_t i = 0; i < max_level_buttons; ++i) {

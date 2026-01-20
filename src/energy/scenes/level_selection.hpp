@@ -55,6 +55,7 @@ private:
 
 	size_t prev_page_button_{0};
 	size_t next_page_button_{0};
+	size_t back_button_{0};
 
 	int button_click_{0};
 	auto on_button_click(const pxe::button::click &evt) -> pxe::result<>;
@@ -66,7 +67,7 @@ private:
 
 	size_t selected_level_{1};
 	auto on_dpad_input(int dx, int dy) -> pxe::result<>;
-	static constexpr auto click_sfx_ = "click";
+	static constexpr auto click_sfx = "click";
 	auto controller_move_level() -> pxe::result<>;
 	auto check_page_movement() -> pxe::result<>;
 };
