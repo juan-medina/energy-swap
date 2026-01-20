@@ -72,7 +72,7 @@
         "y": 0.5
       }
     },
-    "button_06.png": {
+    "button_05.png": {
       "frame": {
         "x": 357,
         "y": 4,
@@ -96,9 +96,33 @@
         "y": 0.5
       }
     },
-    "button_07.png": {
+    "button_06.png": {
       "frame": {
         "x": 379,
+        "y": 4,
+        "w": 14,
+        "h": 14
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 1,
+        "w": 14,
+        "h": 14
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 16
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "button_07.png": {
+      "frame": {
+        "x": 401,
         "y": 4,
         "w": 14,
         "h": 14

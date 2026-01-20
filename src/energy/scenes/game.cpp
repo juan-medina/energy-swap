@@ -19,8 +19,10 @@
 #include <raylib.h>
 
 #include <array>
+#include <cmath>
 #include <cstddef>
 #include <format>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -71,6 +73,39 @@ auto game::end() -> pxe::result<> {
 	get_app().unsubscribe(battery_click_);
 
 	return scene::end();
+}
+
+auto game::update(const float delta) -> pxe::result<> {
+	if(const auto err = scene::update(delta).unwrap(); err) {
+		return pxe::error("failed to update base scene", *err);
+	}
+
+	if(get_app().is_in_controller_mode()) {
+		auto const focused = find_focussed_battery();
+		if(!focused.has_value()) {
+			if(current_puzzle_.is_solved() || !current_puzzle_.is_solvable()) {
+				return true;
+			}
+			// find first visible battery that is not locked or full
+			for(const auto id: battery_displays_) {
+				std::shared_ptr<battery_display> battery_ptr;
+				if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+					return pxe::error("failed to get battery display component", *err);
+				}
+
+				const auto idx = battery_ptr->get_index();
+				if(auto &bat = current_puzzle_.at(idx); battery_ptr->is_visible() && !bat.closed()) {
+					battery_ptr->set_focussed(true);
+					return true;
+				}
+			}
+		}
+		if(const auto err = controller_move_battery(*focused).unwrap(); err) {
+			return pxe::error("failed to handle controller battery move", *err);
+		}
+	}
+
+	return true;
 }
 
 auto game::init_ui_components() -> pxe::result<> {
@@ -352,6 +387,13 @@ auto game::reset() -> pxe::result<> {
 		}
 		spark_ptr->set_visible(false);
 	}
+	for(const auto &id: battery_displays_) {
+		std::shared_ptr<battery_display> battery_ptr;
+		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+			return pxe::error("failed to get battery display component", *err);
+		}
+		battery_ptr->reset(); // NOLINT(*-ambiguous-smartptr-reset-call)
+	}
 	return show();
 }
 
@@ -397,9 +439,9 @@ auto game::configure_button_visibility() const -> pxe::result<> {
 	back_button_ptr->set_visible(true);
 	back_button_ptr->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_RIGHT);
 	next_button_ptr->set_visible(false);
-	next_button_ptr->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
+	next_button_ptr->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_UP);
 	reset_button_ptr->set_visible(true);
-	reset_button_ptr->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
+	reset_button_ptr->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_UP);
 
 	return true;
 }
@@ -427,6 +469,7 @@ auto game::disable_all_batteries() const -> void {
 			continue;
 		}
 		battery_ptr->set_enabled(false);
+		battery_ptr->set_focussed(false);
 	}
 }
 
@@ -604,6 +647,94 @@ auto game::find_free_spark() const -> std::shared_ptr<spark> {
 		}
 	}
 	return nullptr;
+}
+
+auto game::find_focussed_battery() const -> std::optional<size_t> {
+	for(const auto id: battery_displays_) {
+		std::shared_ptr<battery_display> battery_ptr;
+		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+			continue;
+		}
+		if(battery_ptr->is_focussed()) {
+			return id;
+		}
+	}
+	return std::nullopt;
+}
+
+auto game::controller_move_battery(size_t focused) -> pxe::result<> {
+	const auto left = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT);
+	const auto right = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT);
+	const auto up = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP);
+	const auto down = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN);
+
+	if(left || right || up || down) {
+		const auto dx = left ? -1 : (right ? 1 : 0); // NOLINT(*-avoid-nested-conditional-operator)
+		const auto dy = up ? -1 : (down ? 1 : 0);	 // NOLINT(*-avoid-nested-conditional-operator)
+		return move_focus_to(focused, dx, dy);
+	}
+	return true;
+}
+
+auto game::move_focus_to(const size_t focus, const int dx, const int dy) -> pxe::result<> {
+	std::shared_ptr<battery_display> focus_battery_ptr;
+	if(const auto err = get_component<battery_display>(focus).unwrap(focus_battery_ptr); err) {
+		return pxe::error("failed to get focussed battery display", *err);
+	}
+
+	const auto focus_pos = focus_battery_ptr->get_position();
+	std::optional<size_t> closest_id;
+	auto closest_distance = std::numeric_limits<float>::max();
+
+	for(const auto id: battery_displays_) {
+		if(id == focus) {
+			continue;
+		}
+
+		std::shared_ptr<battery_display> battery_ptr;
+		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+			return pxe::error("failed to get battery display component", *err);
+		}
+
+		if(!battery_ptr->is_visible()) {
+			continue;
+		}
+
+		const auto display_idx = battery_ptr->get_index();
+		const auto puzzle_idx = battery_order.at(display_idx);
+
+		if(auto &bat = current_puzzle_.at(puzzle_idx); bat.closed()) {
+			continue;
+		}
+
+		const auto battery_pos = battery_ptr->get_position();
+		const auto delta_x = battery_pos.x - focus_pos.x;
+		const auto delta_y = battery_pos.y - focus_pos.y;
+
+		const auto is_correct_direction =
+			(dx != 0 && std::signbit(delta_x) == std::signbit(static_cast<float>(dx)) && std::abs(delta_x) > 1.0F)
+			|| (dy != 0 && std::signbit(delta_y) == std::signbit(static_cast<float>(dy)) && std::abs(delta_y) > 1.0F);
+
+		if(!is_correct_direction) {
+			continue;
+		}
+
+		if(const auto distance = std::sqrt((delta_x * delta_x) + (delta_y * delta_y)); distance < closest_distance) {
+			closest_distance = distance;
+			closest_id = id;
+		}
+	}
+
+	if(closest_id.has_value()) {
+		std::shared_ptr<battery_display> new_focus_ptr;
+		if(const auto err = get_component<battery_display>(*closest_id).unwrap(new_focus_ptr); err) {
+			return pxe::error("failed to get new focussed battery display", *err);
+		}
+		focus_battery_ptr->set_focussed(false);
+		new_focus_ptr->set_focussed(true);
+	}
+
+	return true;
 }
 
 auto game::shoot_sparks(const Vector2 from, const Vector2 to, const Color color, const size_t count) -> pxe::result<> {

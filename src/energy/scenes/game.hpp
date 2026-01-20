@@ -43,6 +43,7 @@ public:
 
 	[[nodiscard]] auto init(pxe::app &app) -> pxe::result<> override;
 	[[nodiscard]] auto end() -> pxe::result<> override;
+	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
 
 	auto layout(pxe::size screen_size) -> pxe::result<> override;
 
@@ -115,6 +116,10 @@ private:
 
 	[[nodiscard]] auto shoot_sparks(Vector2 from, Vector2 to, Color color, size_t count) -> pxe::result<>;
 	[[nodiscard]] auto find_free_spark() const -> std::shared_ptr<spark>;
+
+	[[nodiscard]] auto find_focussed_battery() const -> std::optional<size_t>;
+	[[nodiscard]] auto controller_move_battery(size_t focused) -> pxe::result<>;
+	[[nodiscard]] auto move_focus_to(size_t focus, int dx, int dy) -> pxe::result<>;
 };
 
 } // namespace energy

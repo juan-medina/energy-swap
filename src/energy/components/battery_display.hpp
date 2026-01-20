@@ -4,7 +4,9 @@
 #pragma once
 
 #include <pxe/app.hpp>
+#include <pxe/components/button.hpp>
 #include <pxe/components/sprite.hpp>
+#include <pxe/components/ui_component.hpp>
 #include <pxe/result.hpp>
 
 #include "../data/battery.hpp"
@@ -15,6 +17,7 @@
 #include <cstddef>
 #include <functional>
 #include <optional>
+#include <string>
 
 namespace pxe {
 class app;
@@ -23,13 +26,15 @@ class app;
 namespace energy {
 class battery;
 
-class battery_display: public pxe::sprite {
+class battery_display: public pxe::ui_component {
 public:
 	auto init(pxe::app &app) -> pxe::result<> override;
 
 	static constexpr auto sprite_sheet_name = "sprites";
 	static constexpr auto battery_frame = "battery.png";
 	static constexpr auto full_segment_frame = "full.png";
+	static constexpr auto controller_sheet_name = "menu";
+	static constexpr auto controller_button_frame = "button_07.png";
 
 	auto set_battery(battery &bat) -> void {
 		battery_ = bat;
@@ -39,7 +44,7 @@ public:
 	auto set_position(const Vector2 &pos) -> void override;
 	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
 
-	auto set_scale(float scale) -> void override;
+	auto set_scale(float scale) -> void;
 
 	auto set_index(const size_t &idx) -> void {
 		index_ = idx;
@@ -81,7 +86,8 @@ private:
 	bool tint_increasing_ = true;
 
 	std::optional<std::reference_wrapper<battery>> battery_;
-	std::array<sprite, 4> segments_;
+	std::array<pxe::sprite, 4> segments_;
+	pxe::sprite battery_sprite_;
 
 	static constexpr std::array<Color, 11> energy_colors = {{
 		{.r = 0xD0, .g = 0x00, .b = 0x00, .a = 0x00}, // transparent
@@ -103,6 +109,11 @@ private:
 	bool hover_ = false;
 	bool selected_ = false;
 	size_t index_ = 0;
+	static auto constexpr controller_button = GAMEPAD_BUTTON_RIGHT_FACE_DOWN;
+	static auto constexpr button_sheet = pxe::button::controller_sprite_list();
+	std::string button_frame_;
+
+	auto handle_tint(float delta) -> void;
 };
 
 } // namespace energy

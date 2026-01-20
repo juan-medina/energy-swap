@@ -5,6 +5,11 @@
   "savePath": "",
   "images": [
     {
+      "name": "button_05.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/menu/button_05.png",
+      "folder": ""
+    },
+    {
       "name": "button_06.png",
       "path": "C:/Users/mail/Documents/Source/energy-swap/media/menu/button_06.png",
       "folder": ""
