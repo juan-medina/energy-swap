@@ -98,13 +98,11 @@ auto game::init_battery_displays() -> pxe::result<> {
 	}
 
 	for(const auto index: std::views::iota(0, max_batteries)) {
-		const auto ordered = battery_order.at(index);
 		const auto id = battery_displays_.at(index);
 		std::shared_ptr<battery_display> battery_display_ptr;
 		if(const auto err = get_component<battery_display>(id).unwrap(battery_display_ptr); err) {
 			return pxe::error("failed to get battery display component", *err);
 		}
-		battery_display_ptr->set_battery(batteries_.at(ordered));
 		battery_display_ptr->set_index(index);
 	}
 
@@ -306,10 +304,6 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 		battery_ptr->reset(); // NOLINT(*-ambiguous-smartptr-reset-call)
 	}
 
-	for(auto i = static_cast<size_t>(0); i < total_batteries; ++i) {
-		batteries_.at(i) = current_puzzle_.at(i);
-	}
-
 	for(const auto &id: battery_displays_) {
 		std::shared_ptr<battery_display> battery_ptr;
 		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
@@ -351,6 +345,13 @@ auto game::show() -> pxe::result<> {
 }
 
 auto game::reset() -> pxe::result<> {
+	for(const auto &id: sparks_) {
+		std::shared_ptr<spark> spark_ptr;
+		if(const auto err = get_component<spark>(id).unwrap(spark_ptr); err) {
+			return pxe::error("failed to get spark component", *err);
+		}
+		spark_ptr->set_visible(false);
+	}
 	return show();
 }
 
@@ -403,7 +404,7 @@ auto game::configure_button_visibility() const -> pxe::result<> {
 	return true;
 }
 
-auto game::toggle_batteries(const size_t number) const -> void {
+auto game::toggle_batteries(const size_t number) -> void {
 	auto index = static_cast<size_t>(0);
 	for(const auto battery_num: battery_order) {
 		const auto id = battery_displays_.at(index);
@@ -412,6 +413,9 @@ auto game::toggle_batteries(const size_t number) const -> void {
 			continue;
 		}
 		battery_ptr->set_visible(battery_num < number);
+		if(battery_num < number) {
+			battery_ptr->set_battery(current_puzzle_.at(battery_num));
+		}
 		++index;
 	}
 }
@@ -463,7 +467,7 @@ auto game::handle_battery_selection(const size_t clicked_index, battery_display 
 		return pxe::error("failed to play battery click sound", *err);
 	}
 
-	if(!batteries_.at(clicked_index).closed() && !batteries_.at(clicked_index).empty()) {
+	if(!current_puzzle_.at(clicked_index).closed() && !current_puzzle_.at(clicked_index).empty()) {
 		clicked_display.set_selected(true);
 	}
 
@@ -482,11 +486,11 @@ auto game::handle_battery_transfer(const size_t selected_index,
 	selected_battery_ptr->set_selected(false);
 
 	const auto selected_battery_index = battery_order.at(selected_battery_ptr->get_index());
-	auto &from_battery = batteries_.at(selected_battery_index);
+	auto &from_battery = current_puzzle_.at(selected_battery_index);
 
 	auto need_click_sound = true;
 
-	if(auto &to_battery = batteries_.at(clicked_index);
+	if(auto &to_battery = current_puzzle_.at(clicked_index);
 	   (selected_battery_index != clicked_index) && to_battery.can_get_from(from_battery)) {
 		if(const auto err = shoot_sparks(selected_battery_ptr->get_position(),
 										 clicked_display.get_position(),

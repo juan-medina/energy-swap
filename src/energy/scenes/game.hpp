@@ -11,7 +11,6 @@
 
 #include "../components/battery_display.hpp"
 #include "../components/spark.hpp"
-#include "../data/battery.hpp"
 #include "../data/puzzle.hpp"
 
 #include <raylib.h>
@@ -19,18 +18,13 @@
 #include <array>
 #include <cstddef>
 #include <memory>
-#include <raymath.h>
+#include <optional>
 #include <string>
 
 namespace pxe {
 class app;
 struct size;
 } // namespace pxe
-
-namespace engine {
-class app;
-struct size;
-} // namespace engine
 
 namespace energy {
 
@@ -77,7 +71,6 @@ private:
 	size_t status_{};
 
 	std::array<size_t, max_batteries> battery_displays_{};
-	std::array<battery, max_batteries> batteries_{};
 	puzzle current_puzzle_{};
 
 	size_t back_button_{};
@@ -102,13 +95,14 @@ private:
 	[[nodiscard]] auto configure_show_ui() -> pxe::result<>;
 	[[nodiscard]] auto configure_button_visibility() const -> pxe::result<>;
 
-	auto toggle_batteries(size_t number) const -> void;
+	auto toggle_batteries(size_t number) -> void;
 	auto disable_all_batteries() const -> void;
 
 	auto on_battery_click(const battery_display::click &click) -> pxe::result<>;
 	auto on_button_click(const pxe::button::click &evt) -> pxe::result<>;
 
-	[[nodiscard]] auto handle_battery_selection(size_t clicked_index, battery_display &clicked_display) -> pxe::result<>;
+	[[nodiscard]] auto handle_battery_selection(size_t clicked_index, battery_display &clicked_display)
+		-> pxe::result<>;
 	[[nodiscard]] auto handle_battery_transfer(size_t selected_index,
 											   size_t clicked_index,
 											   const battery_display &clicked_display) -> pxe::result<>;
