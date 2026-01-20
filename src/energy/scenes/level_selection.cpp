@@ -257,13 +257,17 @@ auto level_selection::update_buttons() -> pxe::result<> {
 		}
 		auto level_str = std::to_string(level);
 		auto controller_button = -1;
+		auto focussed = false;
+		button_ptr->set_focussed(false);
 		if(level == selected_level_) {
 			controller_button = GAMEPAD_BUTTON_RIGHT_FACE_DOWN;
+			focussed = true;
 		}
 		if(level == max_reached_level_) {
 			level_str = GuiIconText(ICON_STAR, level_str.c_str());
 		}
 
+		button_ptr->set_focussed(focussed);
 		button_ptr->set_controller_button(controller_button);
 		button_ptr->set_text(level_str);
 		button_ptr->set_enabled(level <= max_reached_level_);
