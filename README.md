@@ -16,6 +16,11 @@ You can either download a native Windows build or play instantly in your browser
 - **Play in browser (WebAssembly)** — Run the game without installing: https://juan-medina.github.io/energy-swap/
   Note: Use a modern browser with WebAssembly and WebGL support (Chrome, Edge, Firefox, Safari) for best results.
 
+- If you want to use a controller in the browser version sometimes you need to:
+	- Connect the controller and power it on before opening the browser.
+	- Focus the browser window and press a button on the controller to "wake it up".
+    - If still not working, close and reopen the browser.
+
 Report bugs or feedback on the repository issues page: https://github.com/juan-medina/energy-swap/issues
 
 **How it works (brief)**

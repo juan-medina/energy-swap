@@ -2,15 +2,15 @@
 
 ### New Features
 
-- Now the game supports level selection from the main menu, and stores your progress.
+- Initial release with controller support.
 
 ### Bug Fixes
 
 ### Improvements
 
-- Batteries have now a noticeable color cycle when selected.
-
 ### Known Issues
+
+- Options are not designed, yet, for controller navigation.
 
 ### Notes
 
@@ -19,3 +19,8 @@
 
 - Run the game without installing at https://juan-medina.github.io/energy-swap/. Use a modern browser with WebAssembly
   and WebGL support (Chrome, Edge, Firefox, Safari) for best results.
+
+- If you want to use a controller in the browser version sometimes you need to:
+	- Connect the controller and power it on before opening the browser.
+	- Focus the browser window and press a button on the controller to "wake it up".
+	- If still not working, close and reopen the browser.
