@@ -5,6 +5,7 @@
 
 #include <pxe/app.hpp>
 #include <pxe/components/button.hpp>
+#include <pxe/components/component.hpp>
 #include <pxe/components/label.hpp>
 #include <pxe/result.hpp>
 #include <pxe/scenes/scene.hpp>
@@ -73,7 +74,7 @@ auto level_selection::init(pxe::app &app) -> pxe::result<> {
 		}
 		button_ptr->set_size({.width = 50, .height = 50});
 		button_ptr->set_font_size(button_font_size);
-		button_ptr->set_controller_button_position(pxe::button::controller_button_position::bottom_center);
+		button_ptr->set_controller_button_alignment(pxe::vertical_alignment::bottom, pxe::horizontal_alignment::center);
 	}
 
 	button_click_ = app.bind_event<pxe::button::click>(this, &level_selection::on_button_click);
@@ -156,7 +157,7 @@ auto level_selection::layout(const pxe::size screen_size) -> pxe::result<> {
 		return pxe::error("failed to get prev page button", *err);
 	}
 	prev_button_ptr->set_controller_button(GAMEPAD_BUTTON_LEFT_TRIGGER_1);
-	prev_button_ptr->set_controller_button_position(pxe::button::controller_button_position::top_left);
+	prev_button_ptr->set_controller_button_alignment(pxe::vertical_alignment::bottom, pxe::horizontal_alignment::left);
 
 	std::shared_ptr<pxe::button> next_button_ptr;
 	if(const auto err = get_component<pxe::button>(next_page_button_).unwrap(next_button_ptr); err) {
