@@ -111,7 +111,7 @@ auto battery_display::update(const float delta) -> pxe::result<> {
 	}
 
 	if(is_focussed()) {
-		if(IsGamepadButtonPressed(0, controller_button)) {
+		if(get_app().is_controller_button_pressed(controller_button)) {
 			get_app().post_event(click{index_});
 		}
 	}

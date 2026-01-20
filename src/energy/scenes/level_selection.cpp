@@ -108,7 +108,7 @@ auto level_selection::update(const float delta) -> pxe::result<> {
 		return pxe::error("failed to update base scene", *err);
 	}
 
-	if(!IsGamepadAvailable(0)) {
+	if(!get_app().is_in_controller_mode()) {
 		return true;
 	}
 
@@ -318,10 +318,11 @@ auto level_selection::on_dpad_input(int dx, int dy) -> pxe::result<> {
 }
 
 auto level_selection::controller_move_level() -> pxe::result<> {
-	const auto left = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT);
-	const auto right = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT);
-	const auto up = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP);
-	const auto down = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN);
+	const auto &app = get_app();
+	const auto left = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_LEFT);
+	const auto right = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_RIGHT);
+	const auto up = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_UP);
+	const auto down = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_DOWN);
 
 	if(left || right || up || down) {
 		const auto dx = left ? -1 : (right ? 1 : 0); // NOLINT(*-avoid-nested-conditional-operator)

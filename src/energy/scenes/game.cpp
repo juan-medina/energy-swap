@@ -663,10 +663,11 @@ auto game::find_focussed_battery() const -> std::optional<size_t> {
 }
 
 auto game::controller_move_battery(size_t focused) -> pxe::result<> {
-	const auto left = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT);
-	const auto right = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT);
-	const auto up = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP);
-	const auto down = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN);
+	const auto &app = get_app();
+	const auto left = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_LEFT);
+	const auto right = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_RIGHT);
+	const auto up = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_UP);
+	const auto down = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_DOWN);
 
 	if(left || right || up || down) {
 		const auto dx = left ? -1 : (right ? 1 : 0); // NOLINT(*-avoid-nested-conditional-operator)
