@@ -24,106 +24,10 @@
         "y": 0.5
       }
     },
-    "cross.png": {
-      "frame": {
-        "x": 4,
-        "y": 70,
-        "w": 13,
-        "h": 13
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 4,
-        "y": 4,
-        "w": 13,
-        "h": 13
-      },
-      "sourceSize": {
-        "w": 20,
-        "h": 20
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "gear.png": {
-      "frame": {
-        "x": 4,
-        "y": 91,
-        "w": 13,
-        "h": 13
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 4,
-        "y": 4,
-        "w": 13,
-        "h": 13
-      },
-      "sourceSize": {
-        "w": 20,
-        "h": 20
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "larger.png": {
-      "frame": {
-        "x": 4,
-        "y": 112,
-        "w": 13,
-        "h": 13
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 4,
-        "y": 4,
-        "w": 13,
-        "h": 13
-      },
-      "sourceSize": {
-        "w": 20,
-        "h": 20
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "smaller.png": {
-      "frame": {
-        "x": 4,
-        "y": 133,
-        "w": 13,
-        "h": 13
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 4,
-        "y": 4,
-        "w": 13,
-        "h": 13
-      },
-      "sourceSize": {
-        "w": 20,
-        "h": 20
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
     "full.png": {
       "frame": {
         "x": 4,
-        "y": 154,
+        "y": 70,
         "w": 26,
         "h": 9
       },
@@ -146,8 +50,8 @@
     },
     "spark_3.png": {
       "frame": {
-        "x": 25,
-        "y": 70,
+        "x": 4,
+        "y": 87,
         "w": 7,
         "h": 7
       },
@@ -170,8 +74,8 @@
     },
     "spark_4.png": {
       "frame": {
-        "x": 25,
-        "y": 85,
+        "x": 4,
+        "y": 102,
         "w": 9,
         "h": 6
       },
@@ -194,8 +98,8 @@
     },
     "spark_5.png": {
       "frame": {
-        "x": 40,
-        "y": 70,
+        "x": 19,
+        "y": 87,
         "w": 9,
         "h": 6
       },
@@ -218,8 +122,8 @@
     },
     "spark_6.png": {
       "frame": {
-        "x": 25,
-        "y": 99,
+        "x": 4,
+        "y": 116,
         "w": 10,
         "h": 5
       },
@@ -242,8 +146,8 @@
     },
     "spark_2.png": {
       "frame": {
-        "x": 42,
-        "y": 84,
+        "x": 21,
+        "y": 101,
         "w": 4,
         "h": 5
       },
@@ -266,8 +170,8 @@
     },
     "spark_1.png": {
       "frame": {
-        "x": 25,
-        "y": 112,
+        "x": 4,
+        "y": 129,
         "w": 2,
         "h": 2
       },
