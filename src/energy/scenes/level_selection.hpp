@@ -60,7 +60,7 @@ private:
 	int button_click_{0};
 	auto on_button_click(const pxe::button::click &evt) -> pxe::result<>;
 
-	auto update_buttons() -> pxe::result<>;
+	auto update_buttons() const -> pxe::result<>;
 
 	static constexpr auto max_reached_level_key = "max_reached_level";
 	size_t max_reached_level_{1};

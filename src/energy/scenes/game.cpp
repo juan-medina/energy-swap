@@ -662,7 +662,10 @@ auto game::find_focussed_battery() const -> std::optional<size_t> {
 	return std::nullopt;
 }
 
-auto game::controller_move_battery(size_t focused) -> pxe::result<> {
+auto game::controller_move_battery(const size_t focused) -> pxe::result<> {
+	if(!is_enabled()) {
+		return true;
+	}
 	const auto &app = get_app();
 	const auto left = app.is_direction_pressed(pxe::direction::left);
 	const auto right = app.is_direction_pressed(pxe::direction::right);

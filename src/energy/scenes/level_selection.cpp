@@ -246,7 +246,7 @@ auto level_selection::show() -> pxe::result<> {
 	return true;
 }
 
-auto level_selection::update_buttons() -> pxe::result<> {
+auto level_selection::update_buttons() const -> pxe::result<> {
 	const auto start_level = (current_page_ * levels_per_page) + 1;
 
 	for(size_t i = 0; i < max_level_buttons; ++i) {
@@ -318,6 +318,9 @@ auto level_selection::on_dpad_input(int dx, int dy) -> pxe::result<> {
 }
 
 auto level_selection::controller_move_level() -> pxe::result<> {
+	if(!is_enabled()) {
+		return true;
+	}
 	const auto &app = get_app();
 	const auto left = app.is_direction_pressed(pxe::direction::left);
 	const auto right = app.is_direction_pressed(pxe::direction::right);

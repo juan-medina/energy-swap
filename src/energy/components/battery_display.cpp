@@ -55,7 +55,7 @@ auto battery_display::draw() -> pxe::result<> {
 		}
 	}
 
-	if(is_focussed()) {
+	if(is_focussed() && is_enabled()) {
 		auto pos = get_position();
 		auto size = battery_sprite_.get_size();
 		pos.y += (size.height / 2);
