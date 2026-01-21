@@ -2,15 +2,13 @@
 
 ### New Features
 
-- Initial release with controller support.
+- Controller support completed.
 
 ### Bug Fixes
 
 ### Improvements
 
 ### Known Issues
-
-- Options are not designed, yet, for controller navigation.
 
 ### Notes
 
