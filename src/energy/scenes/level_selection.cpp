@@ -319,10 +319,10 @@ auto level_selection::on_dpad_input(int dx, int dy) -> pxe::result<> {
 
 auto level_selection::controller_move_level() -> pxe::result<> {
 	const auto &app = get_app();
-	const auto left = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_LEFT);
-	const auto right = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_RIGHT);
-	const auto up = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_UP);
-	const auto down = app.is_controller_button_pressed(GAMEPAD_BUTTON_LEFT_FACE_DOWN);
+	const auto left = app.is_direction_pressed(pxe::direction::left);
+	const auto right = app.is_direction_pressed(pxe::direction::right);
+	const auto up = app.is_direction_pressed(pxe::direction::up);
+	const auto down = app.is_direction_pressed(pxe::direction::down);
 
 	if(left || right || up || down) {
 		const auto dx = left ? -1 : (right ? 1 : 0); // NOLINT(*-avoid-nested-conditional-operator)
