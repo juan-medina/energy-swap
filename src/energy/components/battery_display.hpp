@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Juan Medina
+// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #pragma once
@@ -28,25 +28,44 @@ class battery;
 
 class battery_display: public pxe::ui_component {
 public:
-	auto init(pxe::app &app) -> pxe::result<> override;
+	// =============================================================================
+	// Event Types
+	// =============================================================================
+	struct click {
+		size_t index;
+	};
 
-	static constexpr auto sprite_sheet_name = "sprites";
-	static constexpr auto battery_frame = "battery.png";
-	static constexpr auto full_segment_frame = "full.png";
-	static constexpr auto controller_sheet_name = "menu";
-	static constexpr auto controller_button_frame = "button_07.png";
+	// =============================================================================
+	// Lifecycle
+	// =============================================================================
+	[[nodiscard]] auto init(pxe::app &app) -> pxe::result<> override;
+	auto reset() -> void;
 
+	// =============================================================================
+	// Update and Rendering
+	// =============================================================================
+	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
+	[[nodiscard]] auto draw() -> pxe::result<> override;
+
+	// =============================================================================
+	// Position and Scale
+	// =============================================================================
+	auto set_position(const Vector2 &pos) -> void override;
+	auto set_scale(float scale) -> void;
+
+	// =============================================================================
+	// Battery Management
+	// =============================================================================
 	auto set_battery(battery &bat) -> void {
 		battery_ = bat;
 	}
 
-	[[nodiscard]] auto draw() -> pxe::result<> override;
-	auto set_position(const Vector2 &pos) -> void override;
-	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
+	[[nodiscard]] auto get_top_color() const -> Color;
 
-	auto set_scale(float scale) -> void;
-
-	auto set_index(const size_t &idx) -> void {
+	// =============================================================================
+	// Index Management
+	// =============================================================================
+	auto set_index(size_t idx) -> void {
 		index_ = idx;
 	}
 
@@ -54,41 +73,39 @@ public:
 		return index_;
 	}
 
+	// =============================================================================
+	// Selection State
+	// =============================================================================
+	auto set_selected(bool selected) -> void;
+
 	[[nodiscard]] auto is_selected() const -> bool {
 		return selected_;
 	}
 
-	auto set_selected(bool selected) -> void;
-
-	struct click {
-		size_t index;
-	};
-
-	auto reset() -> void;
-
-	[[nodiscard]] auto get_top_color() const -> Color {
-		Color result = {.r = 0, .g = 0, .b = 0, .a = 0};
-		if(battery_.has_value()) {
-			const auto color_index = battery_->get().at(battery_->get().size() - 1);
-			result = energy_colors.at(color_index);
-		}
-
-		return result;
-	}
-
 private:
+	// =============================================================================
+	// Resource Constants
+	// =============================================================================
+	static constexpr auto sprite_sheet_name = "sprites";
+	static constexpr auto battery_frame = "battery.png";
+	static constexpr auto full_segment_frame = "full.png";
+
+	// =============================================================================
+	// Visual Constants
+	// =============================================================================
 	static constexpr auto hover_scale = 1.25F;
 	static constexpr auto selected_scale = 1.4F;
 	static constexpr auto hover_selected_scale = 1.5F;
 	static constexpr auto tint_cycle_speed = 4.0F;
 
-	float tint_progress_ = 0.0F;
-	bool tint_increasing_ = true;
+	// =============================================================================
+	// Input Constants
+	// =============================================================================
+	static constexpr auto controller_button = GAMEPAD_BUTTON_RIGHT_FACE_DOWN;
 
-	std::optional<std::reference_wrapper<battery>> battery_;
-	std::array<pxe::sprite, 4> segments_;
-	pxe::sprite battery_sprite_;
-
+	// =============================================================================
+	// Color Palette
+	// =============================================================================
 	static constexpr std::array<Color, 11> energy_colors = {{
 		{.r = 0xD0, .g = 0x00, .b = 0x00, .a = 0x00}, // transparent
 		{.r = 0xD6, .g = 0x27, .b = 0x28, .a = 0xFF}, // red
@@ -103,17 +120,52 @@ private:
 		{.r = 0x1F, .g = 0x77, .b = 0xB4, .a = 0xFF}, // blue
 	}};
 
-	auto readjust_segments() -> void;
-	auto adjust_scale() -> void;
+	// =============================================================================
+	// Battery Data
+	// =============================================================================
+	std::optional<std::reference_wrapper<battery>> battery_;
+	size_t index_{0};
 
-	bool hover_ = false;
-	bool selected_ = false;
-	size_t index_ = 0;
-	static auto constexpr controller_button = GAMEPAD_BUTTON_RIGHT_FACE_DOWN;
-	static auto constexpr button_sheet = pxe::button::controller_sprite_list();
+	// =============================================================================
+	// Rendering Components
+	// =============================================================================
+	pxe::sprite battery_sprite_;
+	std::array<pxe::sprite, 4> segments_;
+
+	// =============================================================================
+	// State Management
+	// =============================================================================
+	bool hover_{false};
+	bool selected_{false};
+	float tint_progress_{0.0F};
+	bool tint_increasing_{true};
+
+	// =============================================================================
+	// Controller Input
+	// =============================================================================
 	std::string button_frame_;
+	static constexpr auto button_sheet = pxe::button::controller_sprite_list();
 
+	// =============================================================================
+	// Visual Update Methods
+	// =============================================================================
 	auto handle_tint(float delta) -> void;
+	auto adjust_scale() -> void;
+	auto readjust_segments() -> void;
+	auto update_segment_colors() -> void;
+
+	// =============================================================================
+	// Input Handling
+	// =============================================================================
+	[[nodiscard]] auto handle_mouse_input() -> bool;
+	auto handle_controller_input() -> void;
+
+	// =============================================================================
+	// State Queries
+	// =============================================================================
+	[[nodiscard]] auto is_battery_closed() const -> bool;
+	[[nodiscard]] auto get_battery_base_color() const -> Color;
+	[[nodiscard]] auto calculate_tint_color() const -> Color;
 };
 
 } // namespace energy
