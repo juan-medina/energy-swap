@@ -14,6 +14,7 @@ performance-*,
 readability-*,
 -readability-magic-numbers,
 -*-identifier-length,
+llvm-include-cleaner,
 '
 
 CheckOptions:
