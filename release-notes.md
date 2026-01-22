@@ -2,7 +2,7 @@
 
 ### New Features
 
-- Controller support completed.
+- About screen with the game credits.
 
 ### Bug Fixes
 
