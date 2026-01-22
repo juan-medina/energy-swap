@@ -119,13 +119,27 @@ auto game::reset() -> pxe::result<> {
 
 	for(const auto &id: battery_displays_) {
 		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
 			return pxe::error("failed to get battery display component", *err);
 		}
 		battery_ptr->reset(); // NOLINT(*-ambiguous-smartptr-reset-call)
 	}
 
 	return show();
+}
+
+auto game::update(const float delta) -> pxe::result<> {
+	if(const auto err = scene::update(delta).unwrap(); err) {
+		return pxe::error("failed to update base scene", *err);
+	}
+
+	if(get_app().is_in_controller_mode()) {
+		if(const auto err = update_controller_input().unwrap(); err) {
+			return pxe::error("failed to update controller input", *err);
+		}
+	}
+
+	return true;
 }
 
 // ============================================================================
@@ -149,8 +163,9 @@ auto game::init_battery_displays() -> pxe::result<> {
 		if(const auto err = register_component<battery_display>().unwrap(id); err) {
 			return pxe::error("failed to register battery display", *err);
 		}
+
 		std::shared_ptr<battery_display> battery_display_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_display_ptr); err) {
+		if(const auto err = get_battery_display(id).unwrap(battery_display_ptr); err) {
 			return pxe::error("failed to get battery display component", *err);
 		}
 		battery_display_ptr->set_visible(false);
@@ -159,7 +174,7 @@ auto game::init_battery_displays() -> pxe::result<> {
 	for(const auto index: std::views::iota(0, max_batteries)) {
 		const auto id = battery_displays_.at(index);
 		std::shared_ptr<battery_display> battery_display_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_display_ptr); err) {
+		if(const auto err = get_battery_display(id).unwrap(battery_display_ptr); err) {
 			return pxe::error("failed to get battery display component", *err);
 		}
 		battery_display_ptr->set_index(index);
@@ -224,36 +239,6 @@ auto game::init_sparks() -> pxe::result<> {
 		spark_ptr->set_scale(2.0F);
 		spark_ptr->set_visible(false);
 	}
-	return true;
-}
-
-// ============================================================================
-// Update
-// ============================================================================
-
-auto game::update(const float delta) -> pxe::result<> {
-	if(const auto err = scene::update(delta).unwrap(); err) {
-		return pxe::error("failed to update base scene", *err);
-	}
-
-	if(!get_app().is_in_controller_mode()) {
-		return true;
-	}
-
-	auto const focused = find_focussed_battery();
-	if(!focused.has_value()) {
-		if(should_auto_focus_battery()) {
-			if(const auto err = auto_focus_first_available_battery().unwrap(); err) {
-				return pxe::error("failed to auto focus battery", *err);
-			}
-		}
-		return true;
-	}
-
-	if(const auto err = controller_move_battery(*focused).unwrap(); err) {
-		return pxe::error("failed to handle controller battery move", *err);
-	}
-
 	return true;
 }
 
@@ -325,8 +310,9 @@ auto game::layout_batteries(const pxe::size screen_size) const -> pxe::result<> 
 		auto const pos_x = start_x + (battery_width * static_cast<float>(col)) + (battery_width / 2.0F);
 		auto const pos_y = start_y + (battery_height * static_cast<float>(row)) + (battery_height / 2.0F);
 		const auto id = battery_displays_.at(i);
+
 		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
 			return pxe::error("failed to get battery display component", *err);
 		}
 		battery_ptr->set_position({.x = pos_x, .y = pos_y});
@@ -448,7 +434,7 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 	for(const auto index: std::views::iota(0, max_batteries)) {
 		const auto id = battery_displays_.at(index);
 		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
 			return pxe::error("failed to get battery display component", *err);
 		}
 		battery_ptr->reset(); // NOLINT(*-ambiguous-smartptr-reset-call)
@@ -456,7 +442,7 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 
 	for(const auto &id: battery_displays_) {
 		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
 			return pxe::error("failed to get battery display component", *err);
 		}
 		battery_ptr->set_enabled(true);
@@ -474,7 +460,7 @@ auto game::toggle_batteries(const size_t number) -> void {
 	for(const auto battery_num: battery_order) {
 		const auto id = battery_displays_.at(index);
 		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
 			continue;
 		}
 		battery_ptr->set_visible(battery_num < number);
@@ -488,7 +474,7 @@ auto game::toggle_batteries(const size_t number) -> void {
 auto game::disable_all_batteries() const -> void {
 	for(const auto &id: battery_displays_) {
 		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
 			continue;
 		}
 		battery_ptr->set_enabled(false);
@@ -500,7 +486,7 @@ auto game::find_selected_battery() const -> std::optional<size_t> {
 	for(size_t i = 0; i < battery_displays_.size(); ++i) {
 		const auto id = battery_displays_.at(i);
 		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
 			continue;
 		}
 		if(battery_ptr->is_selected()) {
@@ -513,7 +499,7 @@ auto game::find_selected_battery() const -> std::optional<size_t> {
 auto game::find_focussed_battery() const -> std::optional<size_t> {
 	for(const auto id: battery_displays_) {
 		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
 			continue;
 		}
 		if(battery_ptr->is_focussed()) {
@@ -521,6 +507,14 @@ auto game::find_focussed_battery() const -> std::optional<size_t> {
 		}
 	}
 	return std::nullopt;
+}
+
+auto game::get_battery_display(const size_t id) const -> pxe::result<std::shared_ptr<battery_display>> {
+	std::shared_ptr<battery_display> battery_ptr;
+	if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+		return pxe::error("failed to get battery display component", *err);
+	}
+	return battery_ptr;
 }
 
 // ============================================================================
@@ -532,7 +526,7 @@ auto game::on_battery_click(const battery_display::click &click) -> pxe::result<
 
 	const auto click_index_id = battery_displays_.at(click.index);
 	std::shared_ptr<battery_display> click_index_battery_ptr;
-	if(const auto err = get_component<battery_display>(click_index_id).unwrap(click_index_battery_ptr); err) {
+	if(const auto err = get_battery_display(click_index_id).unwrap(click_index_battery_ptr); err) {
 		return pxe::error("failed to get battery display component", *err);
 	}
 
@@ -558,7 +552,7 @@ auto game::on_button_click(const pxe::button::click &evt) -> pxe::result<> {
 }
 
 // ============================================================================
-// Battery Click Handling
+// Battery Click Processing
 // ============================================================================
 
 auto game::handle_battery_selection(const size_t clicked_index, battery_display &clicked_display) -> pxe::result<> {
@@ -578,7 +572,7 @@ auto game::handle_battery_transfer(const size_t selected_index,
 								   const battery_display &clicked_display) -> pxe::result<> {
 	const auto selected_id = battery_displays_.at(selected_index);
 	std::shared_ptr<battery_display> selected_battery_ptr;
-	if(const auto err = get_component<battery_display>(selected_id).unwrap(selected_battery_ptr); err) {
+	if(const auto err = get_battery_display(selected_id).unwrap(selected_battery_ptr); err) {
 		return pxe::error("failed to get selected battery display", *err);
 	}
 
@@ -591,24 +585,17 @@ auto game::handle_battery_transfer(const size_t selected_index,
 
 	if(auto &to_battery = current_puzzle_.at(clicked_index);
 	   (selected_battery_index != clicked_index) && to_battery.can_get_from(from_battery)) {
-		if(const auto err = shoot_sparks(selected_battery_ptr->get_position(),
-										 clicked_display.get_position(),
-										 selected_battery_ptr->get_top_color(),
-										 5)
+		if(const auto err = execute_energy_transfer(selected_battery_index,
+													clicked_index,
+													selected_battery_ptr->get_position(),
+													clicked_display.get_position(),
+													selected_battery_ptr->get_top_color())
 								.unwrap();
 		   err) {
-			return pxe::error("failed to shoot sparks", *err);
+			return pxe::error("failed to execute energy transfer", *err);
 		}
 
 		need_click_sound = false;
-
-		to_battery.transfer_energy_from(from_battery);
-		current_puzzle_.at(selected_battery_index) = from_battery;
-		current_puzzle_.at(clicked_index) = to_battery;
-
-		if(const auto err = check_end().unwrap(); err) {
-			return pxe::error("failed to check end condition", *err);
-		}
 	}
 
 	if(need_click_sound) {
@@ -620,8 +607,31 @@ auto game::handle_battery_transfer(const size_t selected_index,
 	return true;
 }
 
+auto game::execute_energy_transfer(const size_t from_index,
+								   const size_t to_index,
+								   const Vector2 &from_pos,
+								   const Vector2 &to_pos,
+								   const Color spark_color) -> pxe::result<> {
+	if(const auto err = shoot_sparks(from_pos, to_pos, spark_color, 5).unwrap(); err) {
+		return pxe::error("failed to shoot sparks", *err);
+	}
+
+	auto &from_battery = current_puzzle_.at(from_index);
+	auto &to_battery = current_puzzle_.at(to_index);
+
+	to_battery.transfer_energy_from(from_battery);
+	current_puzzle_.at(from_index) = from_battery;
+	current_puzzle_.at(to_index) = to_battery;
+
+	if(const auto err = check_end().unwrap(); err) {
+		return pxe::error("failed to check end condition", *err);
+	}
+
+	return true;
+}
+
 // ============================================================================
-// Game State
+// Win/Lose Conditions
 // ============================================================================
 
 auto game::check_end() -> pxe::result<> {
@@ -641,6 +651,34 @@ auto game::handle_puzzle_solved() -> pxe::result<> {
 	const auto current_level = app.get_current_level();
 	const auto total_levels = app.get_total_levels();
 
+	if(current_level >= total_levels) {
+		if(const auto err = update_end_game_ui("Congratulations! You completed all levels!", false, false).unwrap();
+		   err) {
+			return pxe::error("failed to update end game UI", *err);
+		}
+	} else {
+		if(const auto err = update_end_game_ui("You Win, continue to the next level ...", true, false).unwrap(); err) {
+			return pxe::error("failed to update end game UI", *err);
+		}
+	}
+
+	disable_all_batteries();
+
+	return true;
+}
+
+auto game::handle_puzzle_unsolvable() const -> pxe::result<> {
+	if(const auto err = update_end_game_ui("No more moves available, try again ...", false, true).unwrap(); err) {
+		return pxe::error("failed to update end game UI", *err);
+	}
+
+	disable_all_batteries();
+
+	return true;
+}
+
+auto game::update_end_game_ui(const std::string &status_message, const bool show_next, const bool show_reset) const
+	-> pxe::result<> {
 	std::shared_ptr<pxe::label> status_ptr;
 	if(const auto err = get_component<pxe::label>(status_).unwrap(status_ptr); err) {
 		return pxe::error("failed to get status label", *err);
@@ -656,30 +694,9 @@ auto game::handle_puzzle_solved() -> pxe::result<> {
 		return pxe::error("failed to get reset button", *err);
 	}
 
-	if(current_level >= total_levels) {
-		status_ptr->set_text("Congratulations! You completed all levels!");
-		next_button_ptr->set_visible(false);
-		reset_button_ptr->set_visible(false);
-	} else {
-		status_ptr->set_text("You Win, continue to the next level ...");
-		next_button_ptr->set_visible(true);
-		reset_button_ptr->set_visible(false);
-	}
-
-	disable_all_batteries();
-
-	return true;
-}
-
-auto game::handle_puzzle_unsolvable() const -> pxe::result<> {
-	std::shared_ptr<pxe::label> status_ptr;
-	if(const auto err = get_component<pxe::label>(status_).unwrap(status_ptr); err) {
-		return pxe::error("failed to get status label", *err);
-	}
-
-	status_ptr->set_text("No more moves available, try again ...");
-
-	disable_all_batteries();
+	status_ptr->set_text(status_message);
+	next_button_ptr->set_visible(show_next);
+	reset_button_ptr->set_visible(show_reset);
 
 	return true;
 }
@@ -730,8 +747,26 @@ auto game::find_free_spark() const -> std::shared_ptr<spark> {
 }
 
 // ============================================================================
-// Controller Navigation
+// Controller Input
 // ============================================================================
+
+auto game::update_controller_input() -> pxe::result<> {
+	auto const focused = find_focussed_battery();
+	if(!focused.has_value()) {
+		if(should_auto_focus_battery()) {
+			if(const auto err = auto_focus_first_available_battery().unwrap(); err) {
+				return pxe::error("failed to auto focus battery", *err);
+			}
+		}
+		return true;
+	}
+
+	if(const auto err = controller_move_battery(*focused).unwrap(); err) {
+		return pxe::error("failed to handle controller battery move", *err);
+	}
+
+	return true;
+}
 
 auto game::should_auto_focus_battery() const -> bool {
 	return !current_puzzle_.is_solved() && current_puzzle_.is_solvable();
@@ -740,7 +775,7 @@ auto game::should_auto_focus_battery() const -> bool {
 auto game::auto_focus_first_available_battery() -> pxe::result<> {
 	for(const auto id: battery_displays_) {
 		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
+		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
 			return pxe::error("failed to get battery display component", *err);
 		}
 
@@ -773,10 +808,29 @@ auto game::controller_move_battery(const size_t focused) -> pxe::result<> {
 	return true;
 }
 
-auto game::move_focus_to(const size_t focus, const int dx, const int dy) -> pxe::result<> {
+auto game::move_focus_to(const size_t focus, const int dx, const int dy) const -> pxe::result<> {
 	std::shared_ptr<battery_display> focus_battery_ptr;
-	if(const auto err = get_component<battery_display>(focus).unwrap(focus_battery_ptr); err) {
+	if(const auto err = get_battery_display(focus).unwrap(focus_battery_ptr); err) {
 		return pxe::error("failed to get focussed battery display", *err);
+	}
+
+	if(const auto closest_id = find_closest_battery_in_direction(focus, dx, dy); closest_id.has_value()) {
+		std::shared_ptr<battery_display> new_focus_ptr;
+		if(const auto err = get_battery_display(*closest_id).unwrap(new_focus_ptr); err) {
+			return pxe::error("failed to get new focussed battery display", *err);
+		}
+		focus_battery_ptr->set_focussed(false);
+		new_focus_ptr->set_focussed(true);
+	}
+
+	return true;
+}
+
+auto game::find_closest_battery_in_direction(const size_t focus, const int dx, const int dy) const
+	-> std::optional<size_t> {
+	std::shared_ptr<battery_display> focus_battery_ptr;
+	if(const auto err = get_battery_display(focus).unwrap(focus_battery_ptr); err) {
+		return std::nullopt;
 	}
 
 	const auto focus_pos = focus_battery_ptr->get_position();
@@ -789,8 +843,8 @@ auto game::move_focus_to(const size_t focus, const int dx, const int dy) -> pxe:
 		}
 
 		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_component<battery_display>(id).unwrap(battery_ptr); err) {
-			return pxe::error("failed to get battery display component", *err);
+		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
+			continue;
 		}
 
 		if(!battery_ptr->is_visible()) {
@@ -800,21 +854,18 @@ auto game::move_focus_to(const size_t focus, const int dx, const int dy) -> pxe:
 		const auto display_idx = battery_ptr->get_index();
 		const auto puzzle_idx = battery_order.at(display_idx);
 
-		if(auto &bat = current_puzzle_.at(puzzle_idx); bat.closed()) {
+		if(const auto &bat = current_puzzle_.at(puzzle_idx); bat.closed()) {
 			continue;
 		}
 
 		const auto battery_pos = battery_ptr->get_position();
-		const auto delta_x = battery_pos.x - focus_pos.x;
-		const auto delta_y = battery_pos.y - focus_pos.y;
 
-		const auto is_correct_direction =
-			(dx != 0 && std::signbit(delta_x) == std::signbit(static_cast<float>(dx)) && std::abs(delta_x) > 1.0F)
-			|| (dy != 0 && std::signbit(delta_y) == std::signbit(static_cast<float>(dy)) && std::abs(delta_y) > 1.0F);
-
-		if(!is_correct_direction) {
+		if(!is_battery_in_direction(focus_pos, battery_pos, dx, dy)) {
 			continue;
 		}
+
+		const auto delta_x = battery_pos.x - focus_pos.x;
+		const auto delta_y = battery_pos.y - focus_pos.y;
 
 		if(const auto distance = std::sqrt((delta_x * delta_x) + (delta_y * delta_y)); distance < closest_distance) {
 			closest_distance = distance;
@@ -822,16 +873,16 @@ auto game::move_focus_to(const size_t focus, const int dx, const int dy) -> pxe:
 		}
 	}
 
-	if(closest_id.has_value()) {
-		std::shared_ptr<battery_display> new_focus_ptr;
-		if(const auto err = get_component<battery_display>(*closest_id).unwrap(new_focus_ptr); err) {
-			return pxe::error("failed to get new focussed battery display", *err);
-		}
-		focus_battery_ptr->set_focussed(false);
-		new_focus_ptr->set_focussed(true);
-	}
+	return closest_id;
+}
 
-	return true;
+auto game::is_battery_in_direction(const Vector2 focus_pos, const Vector2 candidate_pos, const int dx, const int dy)
+	-> bool {
+	const auto delta_x = candidate_pos.x - focus_pos.x;
+	const auto delta_y = candidate_pos.y - focus_pos.y;
+
+	return (dx != 0 && std::signbit(delta_x) == std::signbit(static_cast<float>(dx)) && std::abs(delta_x) > 1.0F)
+		   || (dy != 0 && std::signbit(delta_y) == std::signbit(static_cast<float>(dy)) && std::abs(delta_y) > 1.0F);
 }
 
 } // namespace energy

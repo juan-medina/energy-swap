@@ -2,6 +2,8 @@
 
 Use the existing codebase as reference for architecture, naming conventions, patterns, logging style, and how similar classes are structured. Follow the conventions and design patterns already present in the project.
 
+A class that already exist and have been refact is pxe::app and is provided in the context.
+
 Now apply the following refactor specification:
 
 CONTEXT:
@@ -14,6 +16,7 @@ The class is <NAME_OF_CLASS>.
 
 INSTRUCTIONS:
 - You need to provide the full header (.hpp) and implementation (.cpp) files for the refactored class.
+- Do not change the list of #include directives in either the header or the implementation file. Preserve them exactly as they appear.
 - Reorganize the class by grouping related methods and attributes by responsibility or concern.
 - Maintain the standard order: public, protected, private.
 - Break down large or complex methods into smaller, clear helper functions that each express a single idea.

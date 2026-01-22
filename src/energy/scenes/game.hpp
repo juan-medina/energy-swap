@@ -33,20 +33,16 @@ public:
 	game() = default;
 	~game() override = default;
 
-	// Copyable
 	game(const game &) = default;
 	auto operator=(const game &) -> game & = default;
 
-	// Movable
 	game(game &&) noexcept = default;
 	auto operator=(game &&) noexcept -> game & = default;
 
 	[[nodiscard]] auto init(pxe::app &app) -> pxe::result<> override;
 	[[nodiscard]] auto end() -> pxe::result<> override;
 	[[nodiscard]] auto update(float delta) -> pxe::result<> override;
-
-	auto layout(pxe::size screen_size) -> pxe::result<> override;
-
+	[[nodiscard]] auto layout(pxe::size screen_size) -> pxe::result<> override;
 	[[nodiscard]] auto show() -> pxe::result<> override;
 	[[nodiscard]] auto reset() -> pxe::result<> override;
 
@@ -68,69 +64,111 @@ private:
 	static constexpr auto battery_click_sound = "battery";
 	static constexpr auto zap_sound = "zap";
 
-	// UI Component IDs
+	// ========================================================================
+	// Component State
+	// ========================================================================
+
 	size_t title_{};
 	size_t status_{};
 	size_t back_button_{};
 	size_t next_button_{};
 	size_t reset_button_{};
-
-	// Game Components
 	std::array<size_t, max_batteries> battery_displays_{};
 	std::array<size_t, max_sparks> sparks_{};
-	puzzle current_puzzle_{};
 
-	// Event Subscriptions
+	// ========================================================================
+	// Game State
+	// ========================================================================
+
+	puzzle current_puzzle_{};
 	int battery_click_{};
 	int button_click_{};
 
+	// ========================================================================
 	// Initialization
+	// ========================================================================
+
 	[[nodiscard]] auto init_ui_components() -> pxe::result<>;
 	[[nodiscard]] auto init_battery_displays() -> pxe::result<>;
 	[[nodiscard]] auto init_buttons() -> pxe::result<>;
 	[[nodiscard]] auto init_sparks() -> pxe::result<>;
 
+	// ========================================================================
 	// Layout
+	// ========================================================================
+
 	[[nodiscard]] auto layout_title(pxe::size screen_size) const -> pxe::result<>;
 	[[nodiscard]] auto layout_status(pxe::size screen_size) const -> pxe::result<>;
 	[[nodiscard]] auto layout_batteries(pxe::size screen_size) const -> pxe::result<>;
 	[[nodiscard]] auto layout_buttons(pxe::size screen_size) const -> pxe::result<>;
 
+	// ========================================================================
 	// Configuration
+	// ========================================================================
+
 	[[nodiscard]] auto configure_show_ui() -> pxe::result<>;
 	[[nodiscard]] auto configure_button_visibility() const -> pxe::result<>;
 
+	// ========================================================================
 	// Battery Management
+	// ========================================================================
+
 	auto toggle_batteries(size_t number) -> void;
 	auto disable_all_batteries() const -> void;
 	[[nodiscard]] auto find_selected_battery() const -> std::optional<size_t>;
 	[[nodiscard]] auto find_focussed_battery() const -> std::optional<size_t>;
+	[[nodiscard]] auto get_battery_display(size_t id) const -> pxe::result<std::shared_ptr<battery_display>>;
 
+	// ========================================================================
 	// Event Handlers
+	// ========================================================================
+
 	auto on_battery_click(const battery_display::click &click) -> pxe::result<>;
 	auto on_button_click(const pxe::button::click &evt) -> pxe::result<>;
 
-	// Battery Click Handling
+	// ========================================================================
+	// Battery Click Processing
+	// ========================================================================
+
 	[[nodiscard]] auto handle_battery_selection(size_t clicked_index, battery_display &clicked_display)
 		-> pxe::result<>;
 	[[nodiscard]] auto handle_battery_transfer(size_t selected_index,
 											   size_t clicked_index,
 											   const battery_display &clicked_display) -> pxe::result<>;
+	[[nodiscard]] auto execute_energy_transfer(size_t from_index,
+											   size_t to_index,
+											   const Vector2 &from_pos,
+											   const Vector2 &to_pos,
+											   Color spark_color) -> pxe::result<>;
 
-	// Game State
+	// ========================================================================
+	// Win/Lose Conditions
+	// ========================================================================
+
 	[[nodiscard]] auto check_end() -> pxe::result<>;
 	[[nodiscard]] auto handle_puzzle_solved() -> pxe::result<>;
 	[[nodiscard]] auto handle_puzzle_unsolvable() const -> pxe::result<>;
+	[[nodiscard]] auto update_end_game_ui(const std::string &status_message, bool show_next, bool show_reset) const
+		-> pxe::result<>;
 
+	// ========================================================================
 	// Visual Effects
+	// ========================================================================
+
 	[[nodiscard]] auto shoot_sparks(Vector2 from, Vector2 to, Color color, size_t count) -> pxe::result<>;
 	[[nodiscard]] auto find_free_spark() const -> std::shared_ptr<spark>;
 
-	// Controller Navigation
+	// ========================================================================
+	// Controller Input
+	// ========================================================================
+
+	[[nodiscard]] auto update_controller_input() -> pxe::result<>;
 	[[nodiscard]] auto controller_move_battery(size_t focused) -> pxe::result<>;
-	[[nodiscard]] auto move_focus_to(size_t focus, int dx, int dy) -> pxe::result<>;
+	[[nodiscard]] auto move_focus_to(size_t focus, int dx, int dy) const -> pxe::result<>;
 	[[nodiscard]] auto should_auto_focus_battery() const -> bool;
 	[[nodiscard]] auto auto_focus_first_available_battery() -> pxe::result<>;
+	[[nodiscard]] auto find_closest_battery_in_direction(size_t focus, int dx, int dy) const -> std::optional<size_t>;
+	[[nodiscard]] static auto is_battery_in_direction(Vector2 focus_pos, Vector2 candidate_pos, int dx, int dy) -> bool;
 };
 
 } // namespace energy
