@@ -18,6 +18,7 @@
 #include <array>
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <raygui.h>
 #include <spdlog/spdlog.h>
 #include <string>

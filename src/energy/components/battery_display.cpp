@@ -5,6 +5,7 @@
 
 #include <pxe/app.hpp>
 #include <pxe/components/button.hpp>
+#include <pxe/components/component.hpp>
 #include <pxe/components/sprite.hpp>
 #include <pxe/components/ui_component.hpp>
 #include <pxe/result.hpp>
