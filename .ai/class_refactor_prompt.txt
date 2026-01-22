@@ -1,0 +1,36 @@
+@workspace
+
+Use the existing codebase as reference for architecture, naming conventions, patterns, logging style, and how similar classes are structured. Follow the conventions and design patterns already present in the project.
+
+Now apply the following refactor specification:
+
+CONTEXT:
+You will refactor a C++ class. The class is becoming complex, and the goal is to improve structure, readability, and maintainability without changing any behavior, functionality, or public-facing API. The refactored class must remain fully compatible with all existing consumers. The project uses C++20 as the standard, and modern C++20 features should be used when appropriate. However, the codebase also uses raylib, which requires certain C-style or C11-style patterns in some areas. These raylib-driven constraints must be respected.
+
+REQUEST:
+Perform a major refactor of the class while preserving its external behavior and semantics.
+
+The class is <NAME_OF_CLASS>.
+
+INSTRUCTIONS:
+- You need to provide the full header (.hpp) and implementation (.cpp) files for the refactored class.
+- Reorganize the class by grouping related methods and attributes by responsibility or concern.
+- Maintain the standard order: public, protected, private.
+- Break down large or complex methods into smaller, clear helper functions that each express a single idea.
+- Preserve all existing logic exactly.
+- Any function that does not use instance state should be made static, except event handlers or callbacks that must remain instance methods.
+- Do not add comments about the refactor itself. Preserve existing comments. Add new comments only when the logic is non-obvious or requires explanation.
+- Avoid comments that simply restate what the code already expresses.
+- Follow the existing logging style: debug logs for internal checkpoints, info logs only for meaningful events.
+- Apply modern C++20 conventions wherever possible.
+- Respect raylib constraints: when raylib forces C-style or C11-style patterns, keep them as-is.
+- Mark functions that return a value as [[nodiscard]].
+- Mark methods that read instance state but do not modify it as const.
+- In header files, do not mark parameters as const unless the function is inline.
+- In implementation files, const parameters are allowed.
+
+SCOPE:
+Do not modify functionality, behavior, or the public API. Do not introduce new dependencies. Do not change naming unless required for clarity in helper functions. Do not modernize raylib-dependent code beyond what raylib supports.
+
+PREFERENCES:
+Output full rewritten files, not a diff or list of changes. The result should reflect what a modern, experienced C++20 developer would propose during a code review, while respecting raylib’s constraints.
