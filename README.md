@@ -40,6 +40,15 @@ Report bugs or feedback on the repository issues page: https://github.com/juan-m
 
 This project uses [pxe](https://github.com/juan-medina/pxe) — an opinionated game engine that provides the core framework and utilities for this game. (licensed under MIT)
 
+pxe uses several third-party libraries:
+
+- [raylib](https://www.raylib.com/) (licensed under zlib/libpng)
+- [raygui](https://github.com/raysan5/raygui) (licensed under zlib/libpng)
+- [spdlog](https://github.com/gabime/spdlog) (licensed under MIT)
+- [Boxer](https://github.com/aaronmjacobs/Boxer) (licensed under MIT)
+- [jsoncons](https://github.com/danielaparker/jsoncons) (licensed under Boost Software License 1.0)
+- [PlatformFolders](https://github.com/sago007/PlatformFolders) (licensed under MIT)
+- CRT Shader based on [Godot CRT Shader](https://perons.itch.io/godot-crt-shader) by perons.
 
 **License**
 

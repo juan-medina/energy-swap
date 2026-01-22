@@ -1,0 +1,68 @@
+ENERGY SWAP
+
+    A puzzle game where colored energy units flow between battery nodes.
+    Your goal: organize each battery to be empty or contain a single color!
+
+    Strategy meets simplicity in this addictive color-matching challenge.
+
+
+CREDITS
+
+
+    GAME DESIGN & PROGRAMMING
+    Juan Medina.
+
+
+    MUSIC
+    Abstraction Music.
+    (Licensed under Public Domain CC-0)
+
+
+    SOUND EFFECTS
+    Helton Yan & Beto Bezerra.
+    (Licensed under Attribution 4.0 International)
+
+
+    VISUAL EFFECTS
+    Particle Pack by Polar_34.
+    (Licensed under MIT)
+
+
+    GRAPHICS
+    Additional graphics by Kenney.nl
+    (Licensed under Public Domain CC-0)
+
+
+POWERED BY
+
+
+    ENGINE
+    pxe - An opinionated game engine by Juan Medina.
+
+    CORE LIBRARIES
+    - raylib - Simple and easy-to-use library for game programming.
+    - raygui - Immediate mode GUI for raylib.
+    - spdlog - Fast C++ logging library.
+    - jsoncons - C++ JSON processing library.
+    - Boxer - Cross-platform message boxes.
+    - PlatformFolders - Cross-platform folder locations.
+    - Emscripten - C/C++ to WebAssembly compiler.
+    - CRT Shader based on Godot CRT Shader by perons.
+-------------------------------------------------------------------------------
+
+    Copyright © 2026 Juan Medina
+    Licensed under the MIT License
+
+    More information & full credits:
+    https://github.com/juan-medina/energy-swap
+
+    Report bugs or feedback:
+    https://github.com/juan-medina/energy-swap/issues
+
+-------------------------------------------------------------------------------
+
+    Special thanks to all players who support indie game development
+    and the open source community for making this possible!
+
+    This game was crafted with passion and dedication.
+    Thank you for playing!
