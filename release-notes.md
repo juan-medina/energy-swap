@@ -2,9 +2,9 @@
 
 ### New Features
 
-- About screen with the game credits.
-
 ### Bug Fixes
+
+- Quit button should not be visible on WebAssembly version anymore.
 
 ### Improvements
 
