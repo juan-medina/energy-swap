@@ -121,10 +121,7 @@ auto energy_swap::on_next_level() -> pxe::result<> {
 		}
 	}
 
-	if(const auto err = reset_scene(game_scene_).unwrap(); err) {
-		return pxe::error("fail to reset game scene", *err);
-	}
-	return true;
+	return reset(game_scene_);
 }
 
 auto energy_swap::on_game_back() -> pxe::result<> {
@@ -134,10 +131,7 @@ auto energy_swap::on_game_back() -> pxe::result<> {
 }
 
 auto energy_swap::on_reset_level() -> pxe::result<> {
-	if(const auto err = reset_scene(game_scene_).unwrap(); err) {
-		return pxe::error("fail to reset game scene", *err);
-	}
-	return true;
+	return reset(game_scene_);
 }
 
 auto energy_swap::on_level_selected(const level_selected &evt) -> pxe::result<> {
