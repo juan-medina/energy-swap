@@ -15,6 +15,8 @@
 - The Windows executable requires the Microsoft Visual C\+\+ Redistributable (x64). If you see runtime errors, install
   the latest Visual C\+\+ runtime: https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
 
+- macOS users: Run `xattr -cr EnergySwap.app` in Terminal before opening the app, or right-click → hold Option → Open.
+
 - Run the game without installing at https://juan-medina.github.io/energy-swap/. Use a modern browser with WebAssembly
   and WebGL support (Chrome, Edge, Firefox, Safari) for best results.
 

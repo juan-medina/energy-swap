@@ -54,13 +54,13 @@ jobs:
                   mkdir -p "$appBundle/Contents/MacOS"
                   mkdir -p "$appBundle/Contents/Resources"
 
-                  # Copy executable
+                  # Copy executable (rename to avoid conflicts with wrapper script)
                   exe="build-macos/$app"
                   if [ ! -f "$exe" ]; then
                       echo "Executable not found: $exe"
                       exit 1
                   fi
-                  cp "$exe" "$appBundle/Contents/MacOS/"
+                  cp "$exe" "$appBundle/Contents/MacOS/${app}-bin"
 
                   # Copy resources next to executable so relative paths work
                   resources="build-macos/resources"
@@ -69,6 +69,13 @@ jobs:
                       exit 1
                   fi
                   cp -r "$resources" "$appBundle/Contents/MacOS/"
+
+                  # Create wrapper script that sets working directory
+                  cat > "$appBundle/Contents/MacOS/$app" << 'EOFSCRIPT'
+                  #!/bin/bash
+                  cd "$(dirname "$0")"
+                  exec ./energy-swap-bin "$@"
+                  EOFSCRIPT
 
                   # Create Info.plist
                   cat > "$appBundle/Contents/Info.plist" << EOF
@@ -98,8 +105,9 @@ jobs:
                   </plist>
                   EOF
 
-                  # Make executable runnable
+                  # Make both executable and wrapper runnable
                   chmod +x "$appBundle/Contents/MacOS/$app"
+                  chmod +x "$appBundle/Contents/MacOS/${app}-bin"
 
                   # Package into tar.gz
                   tar -czf "$tarPath" -C "$pkgDir" .
