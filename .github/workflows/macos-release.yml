@@ -1,0 +1,112 @@
+# SPDX-FileCopyrightText: 2026 Juan Medina
+# SPDX-License-Identifier: MIT
+
+name: Build macOS release asset
+
+on:
+    release:
+        types: [published]
+
+permissions:
+    contents: write
+
+jobs:
+    build-macos-and-attach:
+        runs-on: macos-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+                  lfs: true
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: 3.x
+
+            - name: Install dependencies
+              run: |
+                  brew install pkg-config
+
+            - name: Configure
+              run: |
+                  cmake -S . -B build-macos -DCMAKE_BUILD_TYPE=Release -DENABLE_VERSION_BUMP=OFF
+
+            - name: Build (Release)
+              run: |
+                  cmake --build build-macos --config Release
+
+            - name: Package (create .app bundle)
+              run: |
+                  tag="${{ github.ref_name }}"
+                  app="energy-swap"
+                  appName="EnergySwap"
+                  outDir="dist"
+                  pkgDir="$outDir/$app-macos-x64-$tag"
+                  tarPath="$outDir/$app-macos-x64-$tag.tar.gz"
+
+                  mkdir -p "$pkgDir"
+
+                  # Create .app bundle structure
+                  appBundle="$pkgDir/$appName.app"
+                  mkdir -p "$appBundle/Contents/MacOS"
+                  mkdir -p "$appBundle/Contents/Resources"
+
+                  # Copy executable
+                  exe="build-macos/$app"
+                  if [ ! -f "$exe" ]; then
+                      echo "Executable not found: $exe"
+                      exit 1
+                  fi
+                  cp "$exe" "$appBundle/Contents/MacOS/"
+
+                  # Copy resources next to executable so relative paths work
+                  resources="build-macos/resources"
+                  if [ ! -d "$resources" ]; then
+                      echo "Missing packaged resources folder at: $resources"
+                      exit 1
+                  fi
+                  cp -r "$resources" "$appBundle/Contents/MacOS/"
+
+                  # Create Info.plist
+                  cat > "$appBundle/Contents/Info.plist" << EOF
+                  <?xml version="1.0" encoding="UTF-8"?>
+                  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                  <plist version="1.0">
+                  <dict>
+                      <key>CFBundleExecutable</key>
+                      <string>$app</string>
+                      <key>CFBundleIdentifier</key>
+                      <string>com.juanmedina.energyswap</string>
+                      <key>CFBundleName</key>
+                      <string>$appName</string>
+                      <key>CFBundleDisplayName</key>
+                      <string>Energy Swap</string>
+                      <key>CFBundleVersion</key>
+                      <string>$tag</string>
+                      <key>CFBundleShortVersionString</key>
+                      <string>$tag</string>
+                      <key>CFBundlePackageType</key>
+                      <string>APPL</string>
+                      <key>LSMinimumSystemVersion</key>
+                      <string>10.15</string>
+                      <key>NSHighResolutionCapable</key>
+                      <true/>
+                  </dict>
+                  </plist>
+                  EOF
+
+                  # Make executable runnable
+                  chmod +x "$appBundle/Contents/MacOS/$app"
+
+                  # Package into tar.gz
+                  tar -czf "$tarPath" -C "$pkgDir" .
+
+                  echo "TAR_PATH=$tarPath" >> $GITHUB_ENV
+
+            - name: Attach tar.gz to GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  files: ${{ env.TAR_PATH }}

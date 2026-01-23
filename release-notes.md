@@ -1,10 +1,10 @@
-﻿## Release Notes
+## Release Notes
 
 ### New Features
 
-### Bug Fixes
+- First macOS release!
 
-- Quit button should not be visible on WebAssembly version anymore.
+### Bug Fixes
 
 ### Improvements
 
