@@ -369,7 +369,7 @@ auto level_selection::on_button_click(const pxe::button::click &evt) -> pxe::res
 		set_visible(false);
 
 		// Post event to go back to main menu
-		get_app().post_event(energy_swap::back_to_menu{});
+		get_app().post_event(back{});
 	} else {
 		// Check if it's a level button
 		for(size_t i = 0; i < max_level_buttons; ++i) {

@@ -40,6 +40,8 @@ public:
 
 	[[nodiscard]] auto show() -> pxe::result<> override;
 
+	struct back {};
+
 private:
 	size_t title_{0};
 

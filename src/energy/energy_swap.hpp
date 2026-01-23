@@ -98,6 +98,9 @@ private:
 	int level_selected_{0};
 	auto on_level_selected(const level_selected &evt) -> pxe::result<>;
 
+	int back_from_level_selection_{0};
+	[[nodiscard]] auto on_back_from_level_selection() -> pxe::result<>;
+
 	pxe::scene_id game_scene_;
 	pxe::scene_id level_selection_scene_;
 };

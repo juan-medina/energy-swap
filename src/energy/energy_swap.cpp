@@ -64,6 +64,7 @@ auto energy_swap::init() -> pxe::result<> {
 	game_back_ = on_event<game::back>(this, &energy_swap::on_game_back);
 	reset_ = on_event<game::reset_level>(this, &energy_swap::on_reset_level);
 	level_selected_ = bind_event<level_selected>(this, &energy_swap::on_level_selected);
+	back_from_level_selection_ = on_event<level_selection::back>(this, &energy_swap::on_back_from_level_selection);
 
 	return true;
 }
@@ -74,6 +75,7 @@ auto energy_swap::end() -> pxe::result<> {
 	unsubscribe(game_back_);
 	unsubscribe(reset_);
 	unsubscribe(level_selected_);
+	unsubscribe(back_from_level_selection_);
 
 	// unload sfx
 	if(const auto err = unload_sfx(click_sfx).unwrap(); err) {
@@ -126,11 +128,7 @@ auto energy_swap::on_next_level() -> pxe::result<> {
 }
 
 auto energy_swap::on_game_back() -> pxe::result<> {
-	if(const auto err = hide_scene(game_scene_).unwrap(); err) {
-		return pxe::error("fail to hide game scene", *err);
-	}
-
-	post_event(back_to_menu{});
+	post_event(back_to_menu_from{.id = game_scene_});
 
 	return true;
 }
@@ -145,13 +143,11 @@ auto energy_swap::on_reset_level() -> pxe::result<> {
 auto energy_swap::on_level_selected(const level_selected &evt) -> pxe::result<> {
 	current_level_ = evt.level;
 
-	if(const auto err = hide_scene(level_selection_scene_).unwrap(); err) {
-		return pxe::error("fail to hide level selection scene", *err);
-	}
+	return replace_scene(level_selection_scene_, game_scene_);
+}
 
-	if(const auto err = show_scene(game_scene_).unwrap(); err) {
-		return pxe::error("fail to show game scene", *err);
-	}
+auto energy_swap::on_back_from_level_selection() -> pxe::result<> {
+	post_event(back_to_menu_from{.id = level_selection_scene_});
 
 	return true;
 }
