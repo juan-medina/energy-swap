@@ -61,3 +61,6 @@
 
 	By downloading, installing, using, or distributing the software, you agree to
 	be bound by the terms of this EULA.
+
+	For questions about this agreement or more information, visit:
+	[https://github.com/juan-medina/energy-swap](https://github.com/juan-medina/energy-swap)

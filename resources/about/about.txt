@@ -10,54 +10,49 @@ CREDITS
 
 
     GAME DESIGN & PROGRAMMING
-    Juan Medina.
+    [Juan Medina](https://juan-medina.com).
 
 
     MUSIC
-    Abstraction Music.
+    [Abstraction Music](https://abstractionmusic.com/).
     (Licensed under Public Domain CC-0)
 
 
     SOUND EFFECTS
-    Helton Yan & Beto Bezerra.
+    [Helton Yan & Beto Bezerra](https://heltonyan.itch.io/pixelcombat).
     (Licensed under Attribution 4.0 International)
 
 
     VISUAL EFFECTS
-    Particle Pack by Polar_34.
+    [Particle Pack by Polar_34](https://polar-34.itch.io/particles).
     (Licensed under MIT)
 
 
     GRAPHICS
-    Additional graphics by Kenney.nl
+    [Additional graphics by Kenney.nl](https://kenney.nl/assets)
     (Licensed under Public Domain CC-0)
 
 
 POWERED BY
 
+    Built with [pxe](https://github.com/juan-medina/pxe) - an opinionated game engine by Juan Medina, powered by:
 
-    ENGINE
-    pxe - An opinionated game engine by Juan Medina.
-
-    CORE LIBRARIES
-    - raylib - Simple and easy-to-use library for game programming.
-    - raygui - Immediate mode GUI for raylib.
-    - spdlog - Fast C++ logging library.
-    - jsoncons - C++ JSON processing library.
-    - Boxer - Cross-platform message boxes.
-    - PlatformFolders - Cross-platform folder locations.
-    - Emscripten - C/C++ to WebAssembly compiler.
-    - CRT Shader based on Godot CRT Shader by perons.
+    - [raylib](https://www.raylib.com/) - Simple and easy-to-use library for game programming.
+    - [raygui](https://github.com/raysan5/raygui) - Immediate mode GUI for raylib.
+    - [spdlog](https://github.com/gabime/spdlog) - Fast C++ logging library.
+    - [jsoncons](https://github.com/danielaparker/jsoncons) - C++ JSON processing library.
+    - [Boxer](https://github.com/aaronmjacobs/Boxer) - Cross-platform message boxes.
+    - [PlatformFolders](https://github.com/sago007/PlatformFolders) - Cross-platform folder locations.
+    - [Emscripten](https://emscripten.org/) - C/C++ to WebAssembly compiler.
+    - [CRT Shader based on Godot CRT Shader by perons](https://perons.itch.io/godot-crt-shader).
 -------------------------------------------------------------------------------
 
     Copyright © 2026 Juan Medina
-    Licensed under the MIT License
+    All rights reserved
 
-    More information & full credits:
-    https://github.com/juan-medina/energy-swap
+    [More information & full source-code](https://github.com/juan-medina/energy-swap)
 
-    Report bugs or feedback:
-    https://github.com/juan-medina/energy-swap/issues
+    [Report bugs or feedback](https://github.com/juan-medina/energy-swap/issues)
 
 -------------------------------------------------------------------------------
 
