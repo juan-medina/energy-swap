@@ -12,7 +12,7 @@ You can download native builds or play instantly in your browser.
 
 - **Download native builds** — Get the latest Windows, linux or macOS builds from the Releases page: https://github.com/juan-medina/energy-swap/releases/
   Windows: Requires Microsoft Visual C\+\+ Redistributable (x64).
-  macOS: Run `xattr -cr EnergySwap.app` before opening, or right-click → hold Option → Open.
+  macOS: Run `xattr -cr EnergySwap.app` before opening.
 
 - **Play in browser (WebAssembly)** — Run the game without installing: https://juan-medina.github.io/energy-swap/
   Note: Use a modern browser with WebAssembly and WebGL support (Chrome, Edge, Firefox, Safari) for best results.
