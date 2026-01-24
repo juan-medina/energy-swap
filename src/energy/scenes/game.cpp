@@ -15,6 +15,7 @@
 #include "../data/battery.hpp"
 #include "../data/puzzle.hpp"
 #include "../energy_swap.hpp"
+#include "../level_manager.hpp"
 
 #include <raylib.h>
 
@@ -97,7 +98,7 @@ auto game::show() -> pxe::result<> {
 	}
 
 	const auto &app = dynamic_cast<energy_swap &>(get_app());
-	const auto &level_str = app.get_current_level_string();
+	const auto &level_str = app.get_level_manager().get_current_level_string();
 
 	SPDLOG_DEBUG("setting up puzzle with level string: {}", level_str);
 
@@ -383,7 +384,7 @@ auto game::configure_show_ui() -> pxe::result<> {
 		return pxe::error("failed to get status label", *err);
 	}
 
-	title_ptr->set_text(std::format("Level {}", app.get_current_level()));
+	title_ptr->set_text(std::format("Level {}", app.get_level_manager().get_current_level()));
 	title_ptr->set_font_size(30);
 	title_ptr->set_centered(true);
 
@@ -648,16 +649,15 @@ auto game::check_end() -> pxe::result<> {
 
 auto game::handle_puzzle_solved() -> pxe::result<> {
 	auto &app = dynamic_cast<energy_swap &>(get_app());
-	const auto current_level = app.get_current_level();
-	const auto total_levels = app.get_total_levels();
+	const auto current_level = app.get_level_manager().get_current_level();
+	const auto total_levels = app.get_level_manager().get_total_levels();
 
 	if(current_level >= total_levels) {
-		if(const auto err = update_end_game_ui("Congratulations! You completed all levels!", false, false).unwrap();
-		   err) {
+		if(const auto err = update_end_game_ui(win_message, false, false).unwrap(); err) {
 			return pxe::error("failed to update end game UI", *err);
 		}
 	} else {
-		if(const auto err = update_end_game_ui("You Win, continue to the next level ...", true, false).unwrap(); err) {
+		if(const auto err = update_end_game_ui(continue_message, true, false).unwrap(); err) {
 			return pxe::error("failed to update end game UI", *err);
 		}
 	}
@@ -668,7 +668,7 @@ auto game::handle_puzzle_solved() -> pxe::result<> {
 }
 
 auto game::handle_puzzle_unsolvable() const -> pxe::result<> {
-	if(const auto err = update_end_game_ui("No more moves available, try again ...", false, true).unwrap(); err) {
+	if(const auto err = update_end_game_ui(unsolvable_message, false, true).unwrap(); err) {
 		return pxe::error("failed to update end game UI", *err);
 	}
 

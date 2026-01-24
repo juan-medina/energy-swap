@@ -11,6 +11,7 @@
 #include <pxe/scenes/scene.hpp>
 
 #include "../energy_swap.hpp"
+#include "../level_manager.hpp"
 
 #include <raylib.h>
 
@@ -216,12 +217,13 @@ auto level_selection::layout(const pxe::size screen_size) -> pxe::result<> {
 
 auto level_selection::show() -> pxe::result<> {
 	auto &app = dynamic_cast<energy_swap &>(get_app());
+	auto &level_manager = app.get_level_manager();
 
 	// Load max reached level from settings
-	max_reached_level_ = app.get_max_reached_level();
+	max_reached_level_ = level_manager.get_max_reached_level();
 
 	// Get current level from app
-	const auto current_level = app.get_current_level();
+	const auto current_level = level_manager.get_current_level();
 	selected_level_ = current_level;
 
 	// Calculate which page the current level is on

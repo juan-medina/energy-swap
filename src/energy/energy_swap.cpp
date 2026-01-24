@@ -14,10 +14,7 @@
 #include <raylib.h>
 
 #include <cstddef>
-#include <format>
-#include <fstream>
 #include <optional>
-#include <sstream>
 #include <string>
 
 PXE_MAIN(energy::energy_swap)
@@ -47,12 +44,14 @@ auto energy_swap::init() -> pxe::result<> {
 		return pxe::error{"failed to load zap sfx", *err};
 	}
 
-	if(const auto err = load_levels().unwrap(); err) {
+	// Use LevelManager to load levels
+	if(const auto err = level_manager_.load_levels(levels_path).unwrap(); err) {
 		return pxe::error{"failed to load levels", *err};
 	}
 
 	// Load current level from settings (defaults to max reached level or 1)
-	current_level_ = get_max_reached_level();
+	level_manager_.set_max_reached_level(static_cast<size_t>(get_setting<int>(max_level_key, 1)));
+	level_manager_.set_current_level(level_manager_.get_max_reached_level());
 
 	level_selection_scene_ = register_scene<level_selection>(false);
 	game_scene_ = register_scene<game>(false);
@@ -89,33 +88,15 @@ auto energy_swap::end() -> pxe::result<> {
 	return app::end();
 }
 
-auto energy_swap::load_levels() -> pxe::result<> {
-	if(std::ifstream const level_file(levels_path); !level_file.is_open()) {
-		return pxe::error(std::format("can not load levels file: {}", levels_path));
-	}
-
-	char *text = nullptr;
-	if(text = LoadFileText(levels_path); text == nullptr) {
-		return pxe::error(std::format("failed to load levels file from {}", levels_path));
-	}
-
-	std::istringstream stream(text);
-	std::string line;
-	while(std::getline(stream, line)) {
-		levels_.emplace_back(line);
-	}
-
-	UnloadFileText(text);
-
-	return true;
-}
+// No longer needed: load_levels handled by LevelManager
 
 auto energy_swap::on_next_level() -> pxe::result<> {
-	current_level_++;
+	level_manager_.set_current_level(level_manager_.get_current_level() + 1);
 
 	// Update max reached level if we've progressed further
-	if(const auto max_reached = get_setting<int>(max_level_key, 1); current_level_ > static_cast<size_t>(max_reached)) {
-		set_setting(max_level_key, static_cast<int>(current_level_));
+	if(level_manager_.get_current_level() > level_manager_.get_max_reached_level()) {
+		level_manager_.set_max_reached_level(level_manager_.get_current_level());
+		set_setting(max_level_key, static_cast<int>(level_manager_.get_current_level()));
 		if(const auto err = save_settings().unwrap(); err) {
 			return pxe::error("failed to save settings", *err);
 		}
@@ -135,8 +116,7 @@ auto energy_swap::on_reset_level() -> pxe::result<> {
 }
 
 auto energy_swap::on_level_selected(const level_selected &evt) -> pxe::result<> {
-	current_level_ = evt.level;
-
+	level_manager_.set_current_level(evt.level);
 	return replace_scene(level_selection_scene_, game_scene_);
 }
 

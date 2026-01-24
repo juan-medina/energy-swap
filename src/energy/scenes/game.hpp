@@ -150,6 +150,9 @@ private:
 	[[nodiscard]] auto handle_puzzle_unsolvable() const -> pxe::result<>;
 	[[nodiscard]] auto update_end_game_ui(const std::string &status_message, bool show_next, bool show_reset) const
 		-> pxe::result<>;
+	static auto constexpr win_message = "Congratulations! You completed all levels!";
+	static auto constexpr continue_message = "You Win, continue to the next level ...";
+	static auto constexpr unsolvable_message = "No more moves available, try again ...";
 
 	// ========================================================================
 	// Visual Effects

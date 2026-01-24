@@ -8,11 +8,12 @@
 #include <pxe/result.hpp>
 #include <pxe/scenes/scene.hpp>
 
+#include "level_manager.hpp"
+
 #include <raylib.h>
 
 #include <cstddef>
 #include <string>
-#include <vector>
 
 namespace energy {
 
@@ -39,24 +40,12 @@ public:
 	energy_swap(energy_swap &&) noexcept = delete;
 	auto operator=(energy_swap &&) noexcept -> energy_swap & = delete;
 
-	[[nodiscard]] auto get_current_level() const -> size_t {
-		return current_level_;
+	// LevelManager access
+	[[nodiscard]] auto get_level_manager() -> energy::level_manager & {
+		return level_manager_;
 	}
-
-	[[nodiscard]] auto get_current_level_string() const -> const std::string & {
-		return levels_.at(current_level_ - 1);
-	}
-
-	auto set_current_level(const size_t level) -> void {
-		current_level_ = level;
-	}
-
-	[[nodiscard]] auto get_total_levels() const -> size_t {
-		return levels_.size();
-	}
-
-	[[nodiscard]] auto get_max_reached_level() -> size_t {
-		return static_cast<size_t>(get_setting<int>(max_level_key, 1));
+	[[nodiscard]] auto get_level_manager() const -> const energy::level_manager & {
+		return level_manager_;
 	}
 
 	struct level_selected {
@@ -80,11 +69,11 @@ private:
 
 	static constexpr pxe::size design_resolution{.width = 640, .height = 360};
 
-	std::vector<std::string> levels_;
-	size_t current_level_{1};
 	static constexpr auto levels_path = "resources/levels/levels.txt";
 	static constexpr auto max_level_key = "game.max_level_reached";
 	auto load_levels() -> pxe::result<>;
+
+	energy::level_manager level_manager_;
 
 	int next_level_{0};
 	auto on_next_level() -> pxe::result<>;
