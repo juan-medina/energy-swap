@@ -1,9 +1,33 @@
 {
   "frames": {
-    "logo.png": {
+    "pxe.png": {
       "frame": {
         "x": 4,
         "y": 4,
+        "w": 395,
+        "h": 339
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 11,
+        "w": 395,
+        "h": 339
+      },
+      "sourceSize": {
+        "w": 395,
+        "h": 350
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "logo.png": {
+      "frame": {
+        "x": 4,
+        "y": 351,
         "w": 297,
         "h": 134
       },
@@ -27,7 +51,7 @@
     "gear.png": {
       "frame": {
         "x": 309,
-        "y": 4,
+        "y": 351,
         "w": 32,
         "h": 32
       },
@@ -51,7 +75,7 @@
     "button_09.png": {
       "frame": {
         "x": 349,
-        "y": 4,
+        "y": 351,
         "w": 16,
         "h": 15
       },
@@ -75,7 +99,7 @@
     "button_11.png": {
       "frame": {
         "x": 373,
-        "y": 4,
+        "y": 351,
         "w": 16,
         "h": 15
       },
@@ -96,9 +120,33 @@
         "y": 0.5
       }
     },
-    "button_15.png": {
+    "button_05.png": {
       "frame": {
         "x": 397,
+        "y": 351,
+        "w": 14,
+        "h": 14
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 1,
+        "w": 14,
+        "h": 14
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 16
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "button_15.png": {
+      "frame": {
+        "x": 407,
         "y": 4,
         "w": 16,
         "h": 10
@@ -120,33 +168,9 @@
         "y": 0.5
       }
     },
-    "button_05.png": {
-      "frame": {
-        "x": 421,
-        "y": 4,
-        "w": 14,
-        "h": 14
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 1,
-        "y": 1,
-        "w": 14,
-        "h": 14
-      },
-      "sourceSize": {
-        "w": 16,
-        "h": 16
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
     "button_06.png": {
       "frame": {
-        "x": 397,
+        "x": 407,
         "y": 22,
         "w": 14,
         "h": 14
@@ -170,8 +194,8 @@
     },
     "button_07.png": {
       "frame": {
-        "x": 349,
-        "y": 27,
+        "x": 407,
+        "y": 44,
         "w": 14,
         "h": 14
       },
@@ -194,8 +218,8 @@
     },
     "button_08.png": {
       "frame": {
-        "x": 371,
-        "y": 27,
+        "x": 407,
+        "y": 66,
         "w": 14,
         "h": 14
       },
@@ -224,7 +248,7 @@
     "format": "RGBA8888",
     "size": {
       "w": 512,
-      "h": 256
+      "h": 512
     },
     "scale": 1
   }
