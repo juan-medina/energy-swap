@@ -36,6 +36,14 @@ Report bugs or feedback on the repository issues page: https://github.com/juan-m
 - SFX by [Helton Yan & Beto Bezerra](https://heltonyan.itch.io/pixelcombat?download) (licensed under Attribution 4.0 International).
 - Particle Pack by [Polar_34](https://polar-34.itch.io/particles) (license under MIT).
 - Additional graphics by [Kenney.nl](https://kenney.nl/assets) (licensed under Public Domain CC-0).
+- [Pixeloid font by GGBotNet](https://ggbot.itch.io/pixeloid-font) (licensed under SIL Open Font License).
+
+## Tools Used
+
+- [Free Texture Packer](https://www.free-tex-packer.com/app/) — Used for conveniently packing sprites into sheets.
+- [aseprite](https://www.aseprite.org/) — Pixel art editor for creating and animating sprites.
+- [Bitmap Font Generator (BMFont)](https://angelcode.com/products/bmfont/) — Tool for generating bitmap fonts used in the UI.
+- [Audacity](https://www.audacityteam.org/) — Audio editor for processing and editing music and sound effects.
 
 ## Engine
 

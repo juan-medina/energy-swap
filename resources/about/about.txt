@@ -31,20 +31,32 @@ CREDITS
     GRAPHICS
     [Additional graphics by Kenney.nl](https://kenney.nl/assets)
     (Licensed under Public Domain CC-0)
+    [Pixeloid font by GGBotNet](https://ggbot.itch.io/pixeloid-font)
+    (Licensed under SIL Open Font License)
+
+
+
+TOOLS USED
+
+    - [Free Texture Packer](https://www.free-tex-packer.com/app/): Used for conveniently packing sprites into sheets.
+    - [aseprite](https://www.aseprite.org/): Pixel art editor for creating and animating sprites.
+    - [Bitmap Font Generator (BMFont)](https://angelcode.com/products/bmfont/): Generates bitmap fonts for the game UI.
+    - [Audacity](https://www.audacityteam.org/): Audio editor for music and sound effects.
+
 
 
 POWERED BY
 
-    Built with [pxe](https://github.com/juan-medina/pxe) - an opinionated game engine by Juan Medina, powered by:
+        Built with [pxe](https://github.com/juan-medina/pxe) - an opinionated game engine by Juan Medina, powered by:
 
-    - [raylib](https://www.raylib.com/) - Simple and easy-to-use library for game programming.
-    - [raygui](https://github.com/raysan5/raygui) - Immediate mode GUI for raylib.
-    - [spdlog](https://github.com/gabime/spdlog) - Fast C++ logging library.
-    - [jsoncons](https://github.com/danielaparker/jsoncons) - C++ JSON processing library.
-    - [Boxer](https://github.com/aaronmjacobs/Boxer) - Cross-platform message boxes.
-    - [PlatformFolders](https://github.com/sago007/PlatformFolders) - Cross-platform folder locations.
-    - [Emscripten](https://emscripten.org/) - C/C++ to WebAssembly compiler.
-    - [CRT Shader based on Godot CRT Shader by perons](https://perons.itch.io/godot-crt-shader).
+        - [raylib](https://www.raylib.com/) - Simple and easy-to-use library for game programming.
+        - [raygui](https://github.com/raysan5/raygui) - Immediate mode GUI for raylib.
+        - [spdlog](https://github.com/gabime/spdlog) - Fast C++ logging library.
+        - [jsoncons](https://github.com/danielaparker/jsoncons) - C++ JSON processing library.
+        - [Boxer](https://github.com/aaronmjacobs/Boxer) - Cross-platform message boxes.
+        - [PlatformFolders](https://github.com/sago007/PlatformFolders) - Cross-platform folder locations.
+        - [Emscripten](https://emscripten.org/) - C/C++ to WebAssembly compiler.
+        - [CRT Shader based on Godot CRT Shader by perons](https://perons.itch.io/godot-crt-shader).
 -------------------------------------------------------------------------------
 
     Copyright © 2026 Juan Medina
