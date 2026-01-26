@@ -114,7 +114,7 @@ private:
 	// ========================================================================
 
 	auto toggle_batteries(size_t number) -> void;
-	auto disable_all_batteries() const -> void;
+	[[nodiscard]] auto disable_all_batteries() const -> pxe::result<>;
 	[[nodiscard]] auto find_selected_battery() const -> std::optional<size_t>;
 	[[nodiscard]] auto find_focussed_battery() const -> std::optional<size_t>;
 	[[nodiscard]] auto get_battery_display(size_t id) const -> pxe::result<std::shared_ptr<battery_display>>;
@@ -179,9 +179,9 @@ private:
 	size_t hint_to_{0};
 	bool got_hint_{false};
 	bool can_have_solution_hint_{true};
-	auto mark_battery_as_next_move(size_t battery_num, bool next_move) const -> void;
-	auto calculate_solution_hint() -> void;
-	auto reset_next_move_indicators() const -> void;
+	[[nodiscard]] auto set_hint_to_battery(size_t battery_num, bool is_hint) const -> pxe::result<>;
+	[[nodiscard]] auto reset_hint_indicators() const -> pxe::result<>;
+	[[nodiscard]] auto calculate_solution_hint() -> pxe::result<>;
 };
 
 } // namespace energy

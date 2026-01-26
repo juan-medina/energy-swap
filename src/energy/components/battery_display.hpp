@@ -7,6 +7,7 @@
 #include <pxe/components/button.hpp>
 #include <pxe/components/sprite.hpp>
 #include <pxe/components/ui_component.hpp>
+#include <pxe/math.hpp>
 #include <pxe/result.hpp>
 
 #include "../data/battery.hpp"
@@ -83,9 +84,9 @@ public:
 	}
 
 	// =============================================================================
-	// Hint/Next Move Flag
+	// Hint
 	// =============================================================================
-	void set_next_move(const bool next_move);
+	void set_hint(bool is_hint);
 
 private:
 	// =============================================================================
@@ -174,10 +175,12 @@ private:
 	[[nodiscard]] auto calculate_tint_color() const -> Color;
 
 	// =============================================================================
-	// Next Move Flag
+	// Hint
 	// =============================================================================
-	bool next_move_{false};
-	Vector2 hint_position_{0.0F, 0.0F};
+	static constexpr float hint_anim_amplitude = 6.0F; // pixels
+	pxe::oscillator hint_oscillator_{hint_anim_amplitude};
+	bool is_hint_{false};
+	Vector2 hint_position_{.x = 0.0F, .y = 0.0F};
 };
 
 } // namespace energy

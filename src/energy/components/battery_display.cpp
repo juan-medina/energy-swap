@@ -15,7 +15,9 @@
 #include <raylib.h>
 
 #include <cassert>
+#include <cmath>
 #include <cstddef>
+#include <numbers>
 #include <string>
 
 namespace energy {
@@ -50,7 +52,7 @@ auto battery_display::reset() -> void {
 	selected_ = false;
 	tint_progress_ = 0.0F;
 	tint_increasing_ = true;
-	next_move_ = false;
+	is_hint_ = false;
 	set_focussed(false);
 	set_scale(1.0F);
 	adjust_scale();
@@ -90,6 +92,10 @@ auto battery_display::update(const float delta) -> pxe::result<> {
 	update_segment_colors();
 	handle_controller_input();
 
+	if(is_hint_) {
+		hint_oscillator_.update(delta);
+	}
+
 	return true;
 }
 
@@ -119,9 +125,11 @@ auto battery_display::draw() -> pxe::result<> {
 		}
 	}
 
-	if(next_move_) {
+	if(is_hint_) {
 		const auto scale = battery_sprite_.get_scale();
-		if(const auto err = get_app().draw_sprite(sprite_sheet_name, hint_frame, hint_position_, scale).unwrap(); err) {
+		auto anim_hint_pos = hint_position_;
+		anim_hint_pos.y += hint_oscillator_.get_value() * scale;
+		if(const auto err = get_app().draw_sprite(sprite_sheet_name, hint_frame, anim_hint_pos, scale).unwrap(); err) {
 			return pxe::error("failed to draw hint sprite", *err);
 		}
 	}
@@ -272,8 +280,11 @@ auto battery_display::calculate_tint_color() const -> Color {
 	return ColorLerp(WHITE, top_color, 0.25F + (tint_progress_ * 0.75F));
 }
 
-void battery_display::set_next_move(const bool next_move) {
-	next_move_ = next_move;
+void battery_display::set_hint(const bool is_hint) {
+	is_hint_ = is_hint;
+	if(!is_hint_) {
+		hint_oscillator_.reset();
+	}
 }
 
 } // namespace energy

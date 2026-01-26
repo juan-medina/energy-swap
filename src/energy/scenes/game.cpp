@@ -450,7 +450,9 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 		battery_ptr->set_enabled(true);
 	}
 
-	calculate_solution_hint();
+	if(const auto err = calculate_solution_hint().unwrap(); err) {
+		return pxe::error("failed to calculate solution hint", *err);
+	}
 	return true;
 }
 
@@ -474,7 +476,7 @@ auto game::toggle_batteries(const size_t number) -> void {
 	}
 }
 
-auto game::disable_all_batteries() const -> void {
+auto game::disable_all_batteries() const -> pxe::result<> {
 	for(const auto &id: battery_displays_) {
 		std::shared_ptr<battery_display> battery_ptr;
 		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
@@ -483,7 +485,10 @@ auto game::disable_all_batteries() const -> void {
 		battery_ptr->set_enabled(false);
 		battery_ptr->set_focussed(false);
 	}
-	reset_next_move_indicators();
+	if(const auto err = reset_hint_indicators().unwrap(); err) {
+		return pxe::error("failed to reset hint indicators", *err);
+	}
+	return true;
 }
 
 auto game::find_selected_battery() const -> std::optional<size_t> {
@@ -540,22 +545,30 @@ auto game::on_battery_click(const battery_display::click &click) -> pxe::result<
 		if(got_hint_) {
 			// if we have a hint, and the clicked battery is the "from" battery, hint the "to" battery
 			if(clicked_index == hint_from_) {
-				mark_battery_as_next_move(hint_from_, false);
-				mark_battery_as_next_move(hint_to_, true);
+				if(const auto err = set_hint_to_battery(hint_from_, false).unwrap(); err) {
+					return pxe::error("failed to clear hint to battery", *err);
+				}
+				if(const auto err = set_hint_to_battery(hint_to_, true).unwrap(); err) {
+					return pxe::error("failed to set hint to battery", *err);
+				}
 			}
 		}
 
 		return handle_battery_selection(clicked_index, *click_index_battery_ptr);
 	}
 
-	const auto result = handle_battery_transfer(*selected_it, clicked_index, *click_index_battery_ptr);
+	if(const auto err = handle_battery_transfer(*selected_it, clicked_index, *click_index_battery_ptr).unwrap(); err) {
+		return pxe::error("failed to handle battery transfer", *err);
+	}
 
 	if(got_hint_) {
 		// if we handle a transfer get a hint, this includes when we deselect a battery, or we need the next hint
-		calculate_solution_hint();
+		if(const auto err = calculate_solution_hint().unwrap(); err) {
+			return pxe::error("failed to calculate solution hint", *err);
+		}
 	}
 
-	return result;
+	return true;
 }
 
 auto game::on_button_click(const pxe::button::click &evt) -> pxe::result<> {
@@ -657,7 +670,9 @@ auto game::handle_puzzle_solved() -> pxe::result<> {
 		}
 	}
 
-	disable_all_batteries();
+	if(const auto err = disable_all_batteries().unwrap(); err) {
+		return pxe::error("failed to disable all batteries", *err);
+	}
 
 	return true;
 }
@@ -667,7 +682,9 @@ auto game::handle_puzzle_unsolvable() const -> pxe::result<> {
 		return pxe::error("failed to update end game UI", *err);
 	}
 
-	disable_all_batteries();
+	if(const auto err = disable_all_batteries().unwrap(); err) {
+		return pxe::error("failed to disable all batteries", *err);
+	}
 
 	return true;
 }
@@ -880,43 +897,55 @@ auto game::is_battery_in_direction(const Vector2 focus_pos, const Vector2 candid
 		   || (dy != 0 && std::signbit(delta_y) == std::signbit(static_cast<float>(dy)) && std::abs(delta_y) > 1.0F);
 }
 
-auto game::mark_battery_as_next_move(const size_t battery_num, const bool next_move) const -> void {
+auto game::set_hint_to_battery(const size_t battery_num, const bool is_hint) const -> pxe::result<> {
 	for(size_t i = 0; i < max_batteries; ++i) {
 		if(battery_order.at(i) == battery_num) {
 			const auto id = battery_displays_.at(i);
 			std::shared_ptr<battery_display> battery_ptr;
-			if(const auto err = get_battery_display(id).unwrap(battery_ptr); !err) {
-				battery_ptr->set_next_move(next_move);
+			if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
+				return pxe::error("failed to get battery display component", *err);
 			}
+			battery_ptr->set_hint(is_hint);
 			break;
 		}
 	}
+	return true;
 }
 
-auto game::calculate_solution_hint() -> void {
+auto game::calculate_solution_hint() -> pxe::result<> {
 	if(!can_have_solution_hint_) {
-		return;
+		return true;
 	}
 
 	got_hint_ = false;
+	if(current_puzzle_.is_solved()) {
+		return true;
+	}
 	if(const auto solution_moves = current_puzzle_.solve(); !solution_moves.empty()) {
 		const auto [from, to] = solution_moves.front();
 		hint_from_ = from;
 		hint_to_ = to;
 		got_hint_ = true;
-		reset_next_move_indicators();
-		mark_battery_as_next_move(from, true);
+		if(const auto err = reset_hint_indicators().unwrap(); err) {
+			return pxe::error("failed to reset hint indicators", *err);
+		}
+		if(const auto err = set_hint_to_battery(from, true).unwrap(); err) {
+			return pxe::error("failed to set hint to battery", *err);
+		}
+		return true;
 	}
+	return pxe::error("no solution found for current puzzle state");
 }
 
-auto game::reset_next_move_indicators() const -> void {
+auto game::reset_hint_indicators() const -> pxe::result<> {
 	for(const auto &id: battery_displays_) {
 		std::shared_ptr<battery_display> battery_ptr;
 		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
-			continue;
+			return pxe::error("failed to get battery display component", *err);
 		}
-		battery_ptr->set_next_move(false);
+		battery_ptr->set_hint(false);
 	}
+	return true;
 }
 
 auto game::execute_energy_transfer(const size_t from_index,
