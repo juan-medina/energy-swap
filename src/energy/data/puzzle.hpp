@@ -8,6 +8,7 @@
 #include "battery.hpp"
 
 #include <cstddef>
+#include <deque>
 #include <string>
 #include <utility>
 #include <vector>
@@ -52,10 +53,9 @@ public:
 private:
 	std::vector<battery> batteries_;
 	static constexpr auto max_batteries = 12;
-	[[nodiscard]] static auto generate_moves(const puzzle &state) -> std::vector<move>;
 	static auto push_next_moves(const puzzle &state,
 								const std::vector<move> &moves,
-								std::vector<std::pair<puzzle, std::vector<move>>> &stack) -> void;
+								std::deque<std::pair<puzzle, std::vector<move>>> &queue) -> void;
 };
 
 } // namespace energy

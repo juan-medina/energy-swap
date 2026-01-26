@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <deque>
 #include <optional>
 #include <string>
 #include <unordered_set>
@@ -37,12 +38,12 @@ auto puzzle::solve() const -> std::vector<move> {
 	std::unordered_set<state_key> visited;
 
 	using frame = std::pair<puzzle, move_list>;
-	std::vector<frame> stack;
-	stack.emplace_back(*this, move_list{});
+	std::deque<frame> queue;
+	queue.emplace_back(*this, move_list{});
 
-	while(!stack.empty()) {
-		const auto [fst, snd] = std::move(stack.back());
-		stack.pop_back();
+	while(!queue.empty()) {
+		const auto [fst, snd] = std::move(queue.front());
+		queue.pop_front();
 
 		const auto &state = fst;
 		const auto &moves = snd;
@@ -57,7 +58,7 @@ auto puzzle::solve() const -> std::vector<move> {
 			return moves;
 		}
 
-		push_next_moves(state, moves, stack);
+		push_next_moves(state, moves, queue);
 	}
 	return {};
 }
@@ -114,34 +115,9 @@ auto puzzle::is_solvable() const -> bool {
 	});
 }
 
-auto puzzle::generate_moves(const puzzle &state) -> std::vector<move> {
-	std::vector<move> moves;
-	const auto n = state.size();
-	for(std::size_t from = 0; from < n; ++from) {
-		const auto &from_bat = state.at(from);
-		if(from_bat.closed() || from_bat.empty()) {
-			continue;
-		}
-		for(std::size_t to = 0; to < n; ++to) {
-			if(from == to) {
-				continue;
-			}
-			const auto &to_bat = state.at(to);
-			if(to_bat.closed() || to_bat.full()) {
-				continue;
-			}
-			if(!state.at(to).can_get_from(from_bat)) {
-				continue;
-			}
-			moves.push_back(move{.from = from, .to = to});
-		}
-	}
-	return moves;
-}
-
 auto puzzle::push_next_moves(const puzzle &state,
 							 const std::vector<move> &moves,
-							 std::vector<std::pair<puzzle, std::vector<move>>> &stack) -> void {
+							 std::deque<std::pair<puzzle, std::vector<move>>> &queue) -> void {
 	const auto n = state.size();
 	for(size_t src = 0; src < n; ++src) {
 		const auto &from = state.at(src);
@@ -163,7 +139,7 @@ auto puzzle::push_next_moves(const puzzle &state,
 			next.at(dst).transfer_energy_from(next.at(src));
 			auto next_moves = moves;
 			next_moves.push_back(move{.from = src, .to = dst});
-			stack.emplace_back(std::move(next), std::move(next_moves));
+			queue.emplace_back(std::move(next), std::move(next_moves));
 		}
 	}
 }
