@@ -2,11 +2,11 @@
 
 ### New Features
 
+- Adding a hint system to help new players understand the game mechanics, only for the first 5 levels.
+
 ### Bug Fixes
 
 ### Improvements
-
-- Better full-screen support on Mac.
 
 ### Known Issues
 
