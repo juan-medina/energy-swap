@@ -20,6 +20,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace pxe {
 class app;
@@ -172,6 +173,12 @@ private:
 	[[nodiscard]] auto auto_focus_first_available_battery() -> pxe::result<>;
 	[[nodiscard]] auto find_closest_battery_in_direction(size_t focus, int dx, int dy) const -> std::optional<size_t>;
 	[[nodiscard]] static auto is_battery_in_direction(Vector2 focus_pos, Vector2 candidate_pos, int dx, int dy) -> bool;
+
+	// ========================================================================
+	// Solution hint
+	std::vector<puzzle::move> solution_moves_{};
+	auto mark_battery_as_next_move(size_t battery_num, bool next_move) const -> void;
+	auto calculate_solution_hint() -> void;
 };
 
 } // namespace energy

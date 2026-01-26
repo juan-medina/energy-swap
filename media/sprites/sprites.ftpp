@@ -15,6 +15,11 @@
       "folder": ""
     },
     {
+      "name": "hint.png",
+      "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/hint.png",
+      "folder": ""
+    },
+    {
       "name": "spark_1.png",
       "path": "C:/Users/mail/Documents/Source/energy-swap/media/sprites/spark_1.png",
       "folder": ""
@@ -65,7 +70,7 @@
     "powerOfTwo": true,
     "padding": 2,
     "extrude": 2,
-    "allowRotation": true,
+    "allowRotation": false,
     "allowTrim": true,
     "trimMode": "trim",
     "alphaThreshold": "0",

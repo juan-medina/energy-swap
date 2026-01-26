@@ -449,8 +449,10 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 		battery_ptr->set_enabled(true);
 	}
 
+	calculate_solution_hint();
+
 	SPDLOG_DEBUG("puzzle solution");
-	for(const auto solution_moves = current_puzzle_.solve(); const auto &[from, to]: solution_moves) {
+	for(const auto &[from, to]: solution_moves_) {
 		// find in what position is move.from in the battery order vector
 		int from_pos = -1;
 		int to_pos = -1;
@@ -462,7 +464,7 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 				to_pos = static_cast<int>(i);
 			}
 		}
-		SPDLOG_DEBUG("		- move from battery {} battery {}", from_pos, to_pos);
+		SPDLOG_DEBUG("\t- move from battery {} battery {}", from_pos, to_pos);
 	}
 
 	return true;
@@ -579,6 +581,18 @@ auto game::handle_battery_selection(const size_t clicked_index, battery_display 
 
 	if(!current_puzzle_.at(clicked_index).closed() && !current_puzzle_.at(clicked_index).empty()) {
 		clicked_display.set_selected(true);
+
+		// Solution hint logic
+		if(!solution_moves_.empty()) {
+			const auto &move = solution_moves_.front();
+			if(clicked_index == move.from) {
+				mark_battery_as_next_move(move.from, false);
+				mark_battery_as_next_move(move.to, true);
+			} else {
+				// User did not follow the hint, clear the hint from 'from'
+				mark_battery_as_next_move(move.from, false);
+			}
+		}
 	}
 
 	return true;
@@ -613,35 +627,21 @@ auto game::handle_battery_transfer(const size_t selected_index,
 		}
 
 		need_click_sound = false;
+
+		// Solution hint logic
+		if(!solution_moves_.empty()) {
+			const auto &move = solution_moves_.front();
+			if(clicked_index == move.to) {
+				mark_battery_as_next_move(move.to, false);
+				calculate_solution_hint();
+			}
+		}
 	}
 
 	if(need_click_sound) {
 		if(const auto err = get_app().play_sfx(battery_click_sound).unwrap(); err) {
 			return pxe::error("failed to play battery click sound", *err);
 		}
-	}
-
-	return true;
-}
-
-auto game::execute_energy_transfer(const size_t from_index,
-								   const size_t to_index,
-								   const Vector2 &from_pos,
-								   const Vector2 &to_pos,
-								   const Color spark_color) -> pxe::result<> {
-	if(const auto err = shoot_sparks(from_pos, to_pos, spark_color, 5).unwrap(); err) {
-		return pxe::error("failed to shoot sparks", *err);
-	}
-
-	auto &from_battery = current_puzzle_.at(from_index);
-	auto &to_battery = current_puzzle_.at(to_index);
-
-	to_battery.transfer_energy_from(from_battery);
-	current_puzzle_.at(from_index) = from_battery;
-	current_puzzle_.at(to_index) = to_battery;
-
-	if(const auto err = check_end().unwrap(); err) {
-		return pxe::error("failed to check end condition", *err);
 	}
 
 	return true;
@@ -899,6 +899,53 @@ auto game::is_battery_in_direction(const Vector2 focus_pos, const Vector2 candid
 
 	return (dx != 0 && std::signbit(delta_x) == std::signbit(static_cast<float>(dx)) && std::abs(delta_x) > 1.0F)
 		   || (dy != 0 && std::signbit(delta_y) == std::signbit(static_cast<float>(dy)) && std::abs(delta_y) > 1.0F);
+}
+
+auto game::mark_battery_as_next_move(const size_t battery_num, const bool next_move) const -> void {
+	for(size_t i = 0; i < max_batteries; ++i) {
+		if(battery_order.at(i) == battery_num) {
+			const auto id = battery_displays_.at(i);
+			std::shared_ptr<battery_display> battery_ptr;
+			if(const auto err = get_battery_display(id).unwrap(battery_ptr); !err) {
+				battery_ptr->set_next_move(next_move);
+			}
+			break;
+		}
+	}
+}
+
+auto game::calculate_solution_hint() -> void {
+	// Store solution moves for hinting
+	solution_moves_ = current_puzzle_.solve();
+
+	// If there is a solution, set next_move for the 'from' battery of the first move
+	if(!solution_moves_.empty()) {
+		const auto [from, to] = solution_moves_.front();
+		mark_battery_as_next_move(from, true);
+	}
+}
+
+auto game::execute_energy_transfer(const size_t from_index,
+								   const size_t to_index,
+								   const Vector2 &from_pos,
+								   const Vector2 &to_pos,
+								   const Color spark_color) -> pxe::result<> {
+	if(const auto err = shoot_sparks(from_pos, to_pos, spark_color, 5).unwrap(); err) {
+		return pxe::error("failed to shoot sparks", *err);
+	}
+
+	auto &from_battery = current_puzzle_.at(from_index);
+	auto &to_battery = current_puzzle_.at(to_index);
+
+	to_battery.transfer_energy_from(from_battery);
+	current_puzzle_.at(from_index) = from_battery;
+	current_puzzle_.at(to_index) = to_battery;
+
+	if(const auto err = check_end().unwrap(); err) {
+		return pxe::error("failed to check end condition", *err);
+	}
+
+	return true;
 }
 
 } // namespace energy

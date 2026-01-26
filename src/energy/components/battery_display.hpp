@@ -82,6 +82,11 @@ public:
 		return selected_;
 	}
 
+	// =============================================================================
+	// Hint/Next Move Flag
+	// =============================================================================
+	void set_next_move(const bool next_move);
+
 private:
 	// =============================================================================
 	// Resource Constants
@@ -89,6 +94,7 @@ private:
 	static constexpr auto sprite_sheet_name = "sprites";
 	static constexpr auto battery_frame = "battery.png";
 	static constexpr auto full_segment_frame = "full.png";
+	static constexpr auto hint_frame = "hint.png";
 
 	// =============================================================================
 	// Visual Constants
@@ -166,6 +172,12 @@ private:
 	[[nodiscard]] auto is_battery_closed() const -> bool;
 	[[nodiscard]] auto get_battery_base_color() const -> Color;
 	[[nodiscard]] auto calculate_tint_color() const -> Color;
+
+	// =============================================================================
+	// Next Move Flag
+	// =============================================================================
+	bool next_move_ = false;
+	Vector2 hint_position_{0.0F, 0.0F};
 };
 
 } // namespace energy

@@ -50,6 +50,7 @@ auto battery_display::reset() -> void {
 	selected_ = false;
 	tint_progress_ = 0.0F;
 	tint_increasing_ = true;
+	next_move_ = false;
 	set_focussed(false);
 	set_scale(1.0F);
 	adjust_scale();
@@ -118,17 +119,12 @@ auto battery_display::draw() -> pxe::result<> {
 		}
 	}
 
-#ifndef NDEBUG
-	const auto [bx, by] = get_position();
-	const auto text = std::to_string(index_);
-	const auto &app = get_app();
-	const auto font = app.get_default_font();
-	const auto size = app.get_default_font_size();
-	const auto [tx, ty] = MeasureTextEx(font, text.c_str(), static_cast<float>(size), 1);
-	const auto text_pos_x = static_cast<int>(bx - (tx / 2));
-	const auto text_pos_y = static_cast<int>(by - (ty / 2));
-	DrawText(text.c_str(), text_pos_x, text_pos_y, size, WHITE);
-#endif
+	if(next_move_) {
+		const auto scale = battery_sprite_.get_scale();
+		if(const auto err = get_app().draw_sprite(sprite_sheet_name, hint_frame, hint_position_, scale).unwrap(); err) {
+			return pxe::error("failed to draw hint sprite", *err);
+		}
+	}
 
 	return true;
 }
@@ -161,6 +157,10 @@ auto battery_display::readjust_segments() -> void {
 		segment_pos.y -= (11.0F * scale);
 		segment.set_position(segment_pos);
 	}
+
+	constexpr auto hint_gap = 15.0F;
+	const auto [width, height] = battery_sprite_.get_size();
+	hint_position_ = Vector2{.x = pos.x, .y = pos.y - (height / 2) - (hint_gap * scale)};
 }
 
 auto battery_display::adjust_scale() -> void {
@@ -270,6 +270,10 @@ auto battery_display::get_top_color() const -> Color {
 auto battery_display::calculate_tint_color() const -> Color {
 	const auto top_color = get_top_color();
 	return ColorLerp(WHITE, top_color, 0.25F + (tint_progress_ * 0.75F));
+}
+
+void battery_display::set_next_move(const bool next_move) {
+	next_move_ = next_move;
 }
 
 } // namespace energy
