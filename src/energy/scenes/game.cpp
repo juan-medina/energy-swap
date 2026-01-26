@@ -99,6 +99,7 @@ auto game::show() -> pxe::result<> {
 
 	const auto &app = dynamic_cast<energy_swap &>(get_app());
 	const auto &level_str = app.get_level_manager().get_current_level_string();
+	can_have_solution_hint_ = app.get_level_manager().can_have_solution_hint();
 
 	SPDLOG_DEBUG("setting up puzzle with level string: {}", level_str);
 
@@ -450,23 +451,6 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 	}
 
 	calculate_solution_hint();
-
-	SPDLOG_DEBUG("puzzle solution");
-	for(const auto &[from, to]: solution_moves_) {
-		// find in what position is move.from in the battery order vector
-		int from_pos = -1;
-		int to_pos = -1;
-		for(size_t i = 0; i < battery_order.size(); ++i) {
-			if(battery_order.at(i) == from) {
-				from_pos = static_cast<int>(i);
-			}
-			if(battery_order.at(i) == to) {
-				to_pos = static_cast<int>(i);
-			}
-		}
-		SPDLOG_DEBUG("\t- move from battery {} battery {}", from_pos, to_pos);
-	}
-
 	return true;
 }
 
@@ -499,6 +483,7 @@ auto game::disable_all_batteries() const -> void {
 		battery_ptr->set_enabled(false);
 		battery_ptr->set_focussed(false);
 	}
+	reset_next_move_indicators();
 }
 
 auto game::find_selected_battery() const -> std::optional<size_t> {
@@ -552,10 +537,25 @@ auto game::on_battery_click(const battery_display::click &click) -> pxe::result<
 	const auto selected_it = find_selected_battery();
 
 	if(!selected_it.has_value()) {
+		if(got_hint_) {
+			// if we have a hint, and the clicked battery is the "from" battery, hint the "to" battery
+			if(clicked_index == hint_from_) {
+				mark_battery_as_next_move(hint_from_, false);
+				mark_battery_as_next_move(hint_to_, true);
+			}
+		}
+
 		return handle_battery_selection(clicked_index, *click_index_battery_ptr);
 	}
 
-	return handle_battery_transfer(*selected_it, clicked_index, *click_index_battery_ptr);
+	const auto result = handle_battery_transfer(*selected_it, clicked_index, *click_index_battery_ptr);
+
+	if(got_hint_) {
+		// if we handle a transfer get a hint, this includes when we deselect a battery, or we need the next hint
+		calculate_solution_hint();
+	}
+
+	return result;
 }
 
 auto game::on_button_click(const pxe::button::click &evt) -> pxe::result<> {
@@ -581,18 +581,6 @@ auto game::handle_battery_selection(const size_t clicked_index, battery_display 
 
 	if(!current_puzzle_.at(clicked_index).closed() && !current_puzzle_.at(clicked_index).empty()) {
 		clicked_display.set_selected(true);
-
-		// Solution hint logic
-		if(!solution_moves_.empty()) {
-			const auto &move = solution_moves_.front();
-			if(clicked_index == move.from) {
-				mark_battery_as_next_move(move.from, false);
-				mark_battery_as_next_move(move.to, true);
-			} else {
-				// User did not follow the hint, clear the hint from 'from'
-				mark_battery_as_next_move(move.from, false);
-			}
-		}
 	}
 
 	return true;
@@ -627,15 +615,6 @@ auto game::handle_battery_transfer(const size_t selected_index,
 		}
 
 		need_click_sound = false;
-
-		// Solution hint logic
-		if(!solution_moves_.empty()) {
-			const auto &move = solution_moves_.front();
-			if(clicked_index == move.to) {
-				mark_battery_as_next_move(move.to, false);
-				calculate_solution_hint();
-			}
-		}
 	}
 
 	if(need_click_sound) {
@@ -915,13 +894,28 @@ auto game::mark_battery_as_next_move(const size_t battery_num, const bool next_m
 }
 
 auto game::calculate_solution_hint() -> void {
-	// Store solution moves for hinting
-	solution_moves_ = current_puzzle_.solve();
+	if(!can_have_solution_hint_) {
+		return;
+	}
 
-	// If there is a solution, set next_move for the 'from' battery of the first move
-	if(!solution_moves_.empty()) {
-		const auto [from, to] = solution_moves_.front();
+	got_hint_ = false;
+	if(const auto solution_moves = current_puzzle_.solve(); !solution_moves.empty()) {
+		const auto [from, to] = solution_moves.front();
+		hint_from_ = from;
+		hint_to_ = to;
+		got_hint_ = true;
+		reset_next_move_indicators();
 		mark_battery_as_next_move(from, true);
+	}
+}
+
+auto game::reset_next_move_indicators() const -> void {
+	for(const auto &id: battery_displays_) {
+		std::shared_ptr<battery_display> battery_ptr;
+		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
+			continue;
+		}
+		battery_ptr->set_next_move(false);
 	}
 }
 

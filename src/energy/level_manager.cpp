@@ -3,9 +3,15 @@
 
 #include "level_manager.hpp"
 
+#include <pxe/result.hpp>
+
+#include <raylib.h>
+
+#include <cstddef>
 #include <format>
 #include <spdlog/spdlog.h>
 #include <sstream>
+#include <string>
 
 namespace energy {
 

@@ -5,8 +5,6 @@
 
 #include <pxe/result.hpp>
 
-#include <raylib.h>
-
 #include <cstddef>
 #include <string>
 #include <vector>
@@ -44,7 +42,9 @@ public:
 		max_reached_level_ = level;
 	}
 
-	// For survival mode, you can add more methods as needed
+	[[nodiscard]] auto can_have_solution_hint() const -> bool {
+		return current_level_ <= 5;
+	}
 
 private:
 	std::vector<std::string> levels_;
