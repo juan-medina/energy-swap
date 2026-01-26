@@ -5,8 +5,8 @@
 
 #include <pxe/result.hpp>
 
+#include <cstddef>
 #include <cstdint>
-#include <stddef.h>
 #include <string>
 #include <vector>
 

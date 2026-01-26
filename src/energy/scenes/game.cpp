@@ -449,6 +449,22 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 		battery_ptr->set_enabled(true);
 	}
 
+	SPDLOG_DEBUG("puzzle solution");
+	for(const auto solution_moves = current_puzzle_.solve(); const auto &[from, to]: solution_moves) {
+		// find in what position is move.from in the battery order vector
+		int from_pos = -1;
+		int to_pos = -1;
+		for(size_t i = 0; i < battery_order.size(); ++i) {
+			if(battery_order.at(i) == from) {
+				from_pos = static_cast<int>(i);
+			}
+			if(battery_order.at(i) == to) {
+				to_pos = static_cast<int>(i);
+			}
+		}
+		SPDLOG_DEBUG("		- move from battery {} battery {}", from_pos, to_pos);
+	}
+
 	return true;
 }
 

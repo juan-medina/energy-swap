@@ -16,6 +16,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <string>
 
 namespace energy {
 
@@ -116,6 +117,18 @@ auto battery_display::draw() -> pxe::result<> {
 			return pxe::error("failed to draw controller button sprite", *err);
 		}
 	}
+
+#ifndef NDEBUG
+	const auto [bx, by] = get_position();
+	const auto text = std::to_string(index_);
+	const auto &app = get_app();
+	const auto font = app.get_default_font();
+	const auto size = app.get_default_font_size();
+	const auto [tx, ty] = MeasureTextEx(font, text.c_str(), static_cast<float>(size), 1);
+	const auto text_pos_x = static_cast<int>(bx - (tx / 2));
+	const auto text_pos_y = static_cast<int>(by - (ty / 2));
+	DrawText(text.c_str(), text_pos_x, text_pos_y, size, WHITE);
+#endif
 
 	return true;
 }
