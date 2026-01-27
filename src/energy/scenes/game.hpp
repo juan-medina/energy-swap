@@ -18,7 +18,6 @@
 #include <array>
 #include <cstddef>
 #include <memory>
-#include <optional>
 #include <string>
 
 namespace pxe {
@@ -73,7 +72,6 @@ private:
 	size_t back_button_{};
 	size_t next_button_{};
 	size_t reset_button_{};
-	std::array<size_t, max_batteries> battery_displays_{};
 
 	// ========================================================================
 	// Game State

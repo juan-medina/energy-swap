@@ -165,7 +165,6 @@ auto game::init_battery_displays() -> pxe::result<> {
 		}
 		battery_display_ptr->set_visible(false);
 		battery_display_ptr->set_index(battery_order.at(counter)); // set the battery order index
-		battery_displays_.at(counter) = id; // TODO(juan-medina): to be removed when we dont need battery_displays
 	}
 
 	return true;
