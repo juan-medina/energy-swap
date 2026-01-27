@@ -443,13 +443,9 @@ auto game::toggle_batteries(const size_t number) -> void {
 }
 
 auto game::disable_all_batteries() const -> pxe::result<> {
-	for(const auto &id: battery_displays_) {
-		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
-			continue;
-		}
-		battery_ptr->set_enabled(false);
-		battery_ptr->set_focussed(false);
+	for(const auto &battery: get_components_of_type<battery_display>()) {
+		battery->set_enabled(false);
+		battery->set_selected(false);
 	}
 	if(const auto err = reset_hint_indicators().unwrap(); err) {
 		return pxe::error("failed to reset hint indicators", *err);
