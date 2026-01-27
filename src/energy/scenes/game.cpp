@@ -111,12 +111,8 @@ auto game::show() -> pxe::result<> {
 }
 
 auto game::reset() -> pxe::result<> {
-	for(const auto &id: sparks_) {
-		std::shared_ptr<spark> spark_ptr;
-		if(const auto err = get_component<spark>(id).unwrap(spark_ptr); err) {
-			return pxe::error("failed to get spark component", *err);
-		}
-		spark_ptr->set_visible(false);
+	for(const auto &spark: get_components_of_type<spark>()) {
+		spark->set_visible(false);
 	}
 
 	for(const auto &id: battery_displays_) {
@@ -229,13 +225,14 @@ auto game::init_buttons() -> pxe::result<> {
 }
 
 auto game::init_sparks() -> pxe::result<> {
-	for(auto &id: sparks_) {
-		if(auto err = register_component<spark>().unwrap(id); err) {
+	for([[maybe_unused]] const auto num: std::views::iota(0, max_batteries)) {
+		auto id = size_t{0};
+		if(const auto err = register_component<spark>().unwrap(id); err) {
 			return pxe::error("failed to register spark animation", *err);
 		}
 
 		std::shared_ptr<spark> spark_ptr;
-		if(auto err = get_component<spark>(id).unwrap(spark_ptr); err) {
+		if(const auto err = get_component<spark>(id).unwrap(spark_ptr); err) {
 			return pxe::error("failed to get spark animation", *err);
 		}
 		spark_ptr->set_scale(2.0F);
@@ -739,20 +736,16 @@ auto game::shoot_sparks(const Vector2 from, const Vector2 to, const Color color,
 			spark->set_visible(true);
 			spark->play();
 		} else {
-			SPDLOG_WARN("no free spark found to play animation");
+			SPDLOG_WARN("no free spark found to shoot");
 		}
 	}
 	return true;
 }
 
 auto game::find_free_spark() const -> std::shared_ptr<spark> {
-	for(const auto &id: sparks_) {
-		std::shared_ptr<spark> spark_ptr;
-		if(const auto err = get_component<spark>(id).unwrap(spark_ptr); err) {
-			continue;
-		}
-		if(!spark_ptr->is_visible()) {
-			return spark_ptr;
+	for(const auto &spark: get_components_of_type<spark>()) {
+		if(!spark->is_visible()) {
+			return spark;
 		}
 	}
 	return nullptr;

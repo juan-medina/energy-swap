@@ -74,7 +74,6 @@ private:
 	size_t next_button_{};
 	size_t reset_button_{};
 	std::array<size_t, max_batteries> battery_displays_{};
-	std::array<size_t, max_sparks> sparks_{};
 
 	// ========================================================================
 	// Game State
