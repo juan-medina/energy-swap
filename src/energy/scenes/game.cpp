@@ -117,7 +117,7 @@ auto game::reset() -> pxe::result<> {
 		spark->set_visible(false);
 	}
 
-	for(const auto &battery : get_components_of_type<battery_display>()) {
+	for(const auto &battery: get_components_of_type<battery_display>()) {
 		battery->reset(); // NOLINT(*-ambiguous-smartptr-reset-call)
 	}
 
@@ -755,13 +755,9 @@ auto game::should_auto_focus_battery() const -> bool {
 }
 
 auto game::auto_focus_first_available_battery() const -> pxe::result<> {
-	for(const auto id: battery_displays_) {
-		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
-			return pxe::error("failed to get battery display component", *err);
-		}
-		if(battery_ptr->is_visible() && !battery_ptr->is_battery_closed()) {
-			battery_ptr->set_focussed(true);
+	for(const auto &battery: get_components_of_type<battery_display>()) {
+		if(battery->is_visible() && !battery->is_battery_closed()) {
+			battery->set_focussed(true);
 			return true;
 		}
 	}
