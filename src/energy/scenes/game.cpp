@@ -843,12 +843,8 @@ auto game::calculate_solution_hint() -> pxe::result<> {
 }
 
 auto game::reset_hint_indicators() const -> pxe::result<> {
-	for(const auto &id: battery_displays_) {
-		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
-			return pxe::error("failed to get battery display component", *err);
-		}
-		battery_ptr->set_hint(false);
+	for(const auto &battery: get_components_of_type<battery_display>()) {
+		battery->set_hint(false);
 	}
 	return true;
 }
