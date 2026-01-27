@@ -433,18 +433,12 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 // ============================================================================
 
 auto game::toggle_batteries(const size_t number) -> void {
-	auto index = static_cast<size_t>(0);
-	for(const auto battery_num: battery_order) {
-		const auto id = battery_displays_.at(index);
-		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
-			continue;
+	for(const auto &battery: get_components_of_type<battery_display>()) {
+		const auto index = battery->get_index();
+		battery->set_visible(index < number);
+		if(index < number) {
+			battery->set_battery(current_puzzle_.at(index));
 		}
-		battery_ptr->set_visible(battery_num < number);
-		if(battery_num < number) {
-			battery_ptr->set_battery(current_puzzle_.at(battery_num));
-		}
-		++index;
 	}
 }
 
