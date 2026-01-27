@@ -114,7 +114,7 @@ private:
 
 	auto toggle_batteries(size_t number) -> void;
 	[[nodiscard]] auto disable_all_batteries() const -> pxe::result<>;
-	[[nodiscard]] auto find_selected_battery() const -> std::optional<size_t>;
+	[[nodiscard]] auto find_selected_battery() const -> std::shared_ptr<battery_display>;
 	[[nodiscard]] auto find_focussed_battery() const -> std::optional<size_t>;
 	[[nodiscard]] auto get_battery_display(size_t id) const -> pxe::result<std::shared_ptr<battery_display>>;
 
@@ -129,16 +129,11 @@ private:
 	// Battery Click Processing
 	// ========================================================================
 
-	[[nodiscard]] auto handle_battery_selection(size_t clicked_index, battery_display &clicked_display)
-		-> pxe::result<>;
-	[[nodiscard]] auto handle_battery_transfer(size_t selected_index,
-											   size_t clicked_index,
-											   const battery_display &clicked_display) -> pxe::result<>;
-	[[nodiscard]] auto execute_energy_transfer(size_t from_index,
-											   size_t to_index,
-											   const Vector2 &from_pos,
-											   const Vector2 &to_pos,
-											   Color spark_color) -> pxe::result<>;
+	[[nodiscard]] auto handle_battery_selection(const std::shared_ptr<battery_display> &clicked) -> pxe::result<>;
+	[[nodiscard]] auto handle_battery_transfer(const std::shared_ptr<battery_display> &selected,
+											   const std::shared_ptr<battery_display> &clicked) -> pxe::result<>;
+	[[nodiscard]] auto execute_energy_transfer(const std::shared_ptr<battery_display> &from,
+											   const std::shared_ptr<battery_display> &to) -> pxe::result<>;
 
 	// ========================================================================
 	// Win/Lose Conditions
@@ -168,7 +163,7 @@ private:
 	[[nodiscard]] auto controller_move_battery(size_t focused) -> pxe::result<>;
 	[[nodiscard]] auto move_focus_to(size_t focus, int dx, int dy) const -> pxe::result<>;
 	[[nodiscard]] auto should_auto_focus_battery() const -> bool;
-	[[nodiscard]] auto auto_focus_first_available_battery() -> pxe::result<>;
+	[[nodiscard]] auto auto_focus_first_available_battery() const -> pxe::result<>;
 	[[nodiscard]] auto find_closest_battery_in_direction(size_t focus, int dx, int dy) const -> std::optional<size_t>;
 	[[nodiscard]] static auto is_battery_in_direction(Vector2 focus_pos, Vector2 candidate_pos, int dx, int dy) -> bool;
 

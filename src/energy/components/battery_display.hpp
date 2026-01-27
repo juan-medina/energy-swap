@@ -33,7 +33,7 @@ public:
 	// Event Types
 	// =============================================================================
 	struct click {
-		size_t index;
+		size_t id;
 	};
 
 	// =============================================================================
@@ -87,6 +87,15 @@ public:
 	// Hint
 	// =============================================================================
 	void set_hint(bool is_hint);
+
+	// =============================================================================
+	// State Queries
+	// =============================================================================
+	[[nodiscard]] auto is_battery_closed() const -> bool;
+	[[nodiscard]] auto is_battery_full() const -> bool;
+	[[nodiscard]] auto is_battery_empty() const -> bool;
+	[[nodiscard]] auto can_get_from(const battery_display &battery) const -> bool;
+	auto transfer_energy_from(const battery_display &other) const -> void;
 
 private:
 	// =============================================================================
@@ -170,7 +179,6 @@ private:
 	// =============================================================================
 	// State Queries
 	// =============================================================================
-	[[nodiscard]] auto is_battery_closed() const -> bool;
 	[[nodiscard]] auto get_battery_base_color() const -> Color;
 	[[nodiscard]] auto calculate_tint_color() const -> Color;
 

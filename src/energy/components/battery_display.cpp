@@ -15,9 +15,7 @@
 #include <raylib.h>
 
 #include <cassert>
-#include <cmath>
 #include <cstddef>
-#include <numbers>
 #include <string>
 
 namespace energy {
@@ -83,7 +81,7 @@ auto battery_display::update(const float delta) -> pxe::result<> {
 		battery_sprite_.set_tint(get_battery_base_color());
 	} else {
 		if(handle_mouse_input()) {
-			get_app().post_event(click{index_});
+			get_app().post_event(click{get_id()});
 		}
 	}
 
@@ -250,7 +248,7 @@ auto battery_display::handle_controller_input() -> void {
 	}
 
 	if(get_app().is_controller_button_pressed(controller_button)) {
-		get_app().post_event(click{index_});
+		get_app().post_event(click{get_id()});
 	}
 }
 
@@ -260,6 +258,22 @@ auto battery_display::handle_controller_input() -> void {
 
 auto battery_display::is_battery_closed() const -> bool {
 	return battery_->get().closed();
+}
+
+auto battery_display::is_battery_full() const -> bool {
+	return battery_->get().full();
+}
+
+auto battery_display::is_battery_empty() const -> bool {
+	return battery_->get().empty();
+}
+
+auto battery_display::can_get_from(const battery_display &battery) const -> bool {
+	return battery_->get().can_get_from(battery.battery_->get());
+}
+
+auto battery_display::transfer_energy_from(const battery_display &other) const -> void {
+	battery_->get().transfer_energy_from(other.battery_->get());
 }
 
 auto battery_display::get_battery_base_color() const -> Color {
