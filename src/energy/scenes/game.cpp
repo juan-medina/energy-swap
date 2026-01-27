@@ -167,13 +167,13 @@ auto game::init_battery_displays() -> pxe::result<> {
 		battery_display_ptr->set_visible(false);
 	}
 
-	for(const auto index: std::views::iota(0, max_batteries)) {
-		const auto id = battery_displays_.at(index);
+	for(const auto counter: std::views::iota(0, max_batteries)) {
+		const auto id = battery_displays_.at(counter);
 		std::shared_ptr<battery_display> battery_display_ptr;
 		if(const auto err = get_battery_display(id).unwrap(battery_display_ptr); err) {
 			return pxe::error("failed to get battery display component", *err);
 		}
-		battery_display_ptr->set_index(index);
+		battery_display_ptr->set_index(battery_order.at(counter)); // set the battery order index
 	}
 
 	return true;
@@ -862,16 +862,8 @@ auto game::is_battery_in_direction(const Vector2 focus_pos, const Vector2 candid
 }
 
 auto game::set_hint_to_battery(const size_t battery_num, const bool is_hint) const -> pxe::result<> {
-	auto battery_idx = size_t{0};
-	for(auto index = 0; index < battery_order.size(); ++index) {
-		if(battery_order.at(index) == battery_num) {
-			battery_idx = index;
-			break;
-		}
-	}
-
 	for(const auto &battery: get_components_of_type<battery_display>()) {
-		if(battery->get_index() == battery_idx) {
+		if(battery->get_index() == battery_num) {
 			battery->set_hint(is_hint);
 			return true;
 		}
