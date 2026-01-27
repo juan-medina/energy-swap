@@ -117,12 +117,8 @@ auto game::reset() -> pxe::result<> {
 		spark->set_visible(false);
 	}
 
-	for(const auto &id: battery_displays_) {
-		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
-			return pxe::error("failed to get battery display component", *err);
-		}
-		battery_ptr->reset(); // NOLINT(*-ambiguous-smartptr-reset-call)
+	for(const auto &battery : get_components_of_type<battery_display>()) {
+		battery->reset(); // NOLINT(*-ambiguous-smartptr-reset-call)
 	}
 
 	return show();
