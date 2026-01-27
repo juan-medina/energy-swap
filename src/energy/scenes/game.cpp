@@ -166,8 +166,7 @@ auto game::init_battery_displays() -> pxe::result<> {
 		}
 		battery_display_ptr->set_visible(false);
 		battery_display_ptr->set_index(battery_order.at(counter)); // set the battery order index
-		battery_displays_.at(counter) =
-			id; // TODO(juan-medina): to be removed when we dont need anymore battery_displays
+		battery_displays_.at(counter) = id; // TODO(juan-medina): to be removed when we dont need battery_displays
 	}
 
 	return true;
@@ -418,21 +417,9 @@ auto game::setup_puzzle(const std::string &puzzle_str) -> pxe::result<> {
 	auto const total_batteries = current_puzzle_.size();
 	toggle_batteries(total_batteries);
 
-	for(const auto index: std::views::iota(0, max_batteries)) {
-		const auto id = battery_displays_.at(index);
-		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
-			return pxe::error("failed to get battery display component", *err);
-		}
-		battery_ptr->reset(); // NOLINT(*-ambiguous-smartptr-reset-call)
-	}
-
-	for(const auto &id: battery_displays_) {
-		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
-			return pxe::error("failed to get battery display component", *err);
-		}
-		battery_ptr->set_enabled(true);
+	for(const auto &battery: get_components_of_type<battery_display>()) {
+		battery->reset(); // NOLINT(*-ambiguous-smartptr-reset-call)
+		battery->set_enabled(true);
 	}
 
 	if(const auto err = calculate_solution_hint().unwrap(); err) {
