@@ -166,7 +166,8 @@ auto game::init_battery_displays() -> pxe::result<> {
 		}
 		battery_display_ptr->set_visible(false);
 		battery_display_ptr->set_index(battery_order.at(counter)); // set the battery order index
-		battery_displays_.at(counter) = id; // TODO(juan-medina): to be removed when we dont need anymore battery_displays
+		battery_displays_.at(counter) =
+			id; // TODO(juan-medina): to be removed when we dont need anymore battery_displays
 	}
 
 	return true;
@@ -294,18 +295,14 @@ auto game::layout_batteries(const pxe::size screen_size) const -> pxe::result<> 
 	const auto start_x = (screen_size.width - horizontal_space) / 2.0F;
 	const auto start_y = (screen_size.height - vertical_space) / 2.0F;
 
-	for(int i = 0; i < max_batteries; ++i) {
+	size_t i{0};
+	for(const auto &battery: get_components_of_type<battery_display>()) {
 		auto const row = i / cols;
 		auto const col = i % cols;
 		auto const pos_x = start_x + (battery_width * static_cast<float>(col)) + (battery_width / 2.0F);
 		auto const pos_y = start_y + (battery_height * static_cast<float>(row)) + (battery_height / 2.0F);
-		const auto id = battery_displays_.at(i);
-
-		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
-			return pxe::error("failed to get battery display component", *err);
-		}
-		battery_ptr->set_position({.x = pos_x, .y = pos_y});
+		battery->set_position({.x = pos_x, .y = pos_y});
+		i++;
 	}
 
 	return true;
