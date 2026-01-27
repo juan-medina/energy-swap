@@ -454,13 +454,9 @@ auto game::disable_all_batteries() const -> pxe::result<> {
 }
 
 auto game::find_selected_battery() const -> std::shared_ptr<battery_display> {
-	for(const size_t id: battery_displays_) {
-		std::shared_ptr<battery_display> battery_ptr;
-		if(const auto err = get_battery_display(id).unwrap(battery_ptr); err) {
-			continue;
-		}
-		if(battery_ptr->is_selected()) {
-			return battery_ptr;
+	for(const auto &battery: get_components_of_type<battery_display>()) {
+		if(battery->is_selected()) {
+			return battery;
 		}
 	}
 	return nullptr;
