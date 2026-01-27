@@ -155,25 +155,18 @@ auto game::init_ui_components() -> pxe::result<> {
 }
 
 auto game::init_battery_displays() -> pxe::result<> {
-	for(auto &id: battery_displays_) {
+	size_t id{0};
+	for(const auto counter: std::views::iota(0, max_batteries)) {
 		if(const auto err = register_component<battery_display>().unwrap(id); err) {
 			return pxe::error("failed to register battery display", *err);
 		}
-
 		std::shared_ptr<battery_display> battery_display_ptr;
 		if(const auto err = get_battery_display(id).unwrap(battery_display_ptr); err) {
 			return pxe::error("failed to get battery display component", *err);
 		}
 		battery_display_ptr->set_visible(false);
-	}
-
-	for(const auto counter: std::views::iota(0, max_batteries)) {
-		const auto id = battery_displays_.at(counter);
-		std::shared_ptr<battery_display> battery_display_ptr;
-		if(const auto err = get_battery_display(id).unwrap(battery_display_ptr); err) {
-			return pxe::error("failed to get battery display component", *err);
-		}
 		battery_display_ptr->set_index(battery_order.at(counter)); // set the battery order index
+		battery_displays_.at(counter) = id; // TODO(juan-medina): to be removed when we dont need anymore battery_displays
 	}
 
 	return true;
