@@ -43,7 +43,7 @@ public:
 	}
 
 	[[nodiscard]] auto can_have_solution_hint() const -> bool {
-		return current_level_ <= 5;
+		return current_mode_ == mode::classic && current_level_ <= 5;
 	}
 
 	enum class mode : std::uint8_t {

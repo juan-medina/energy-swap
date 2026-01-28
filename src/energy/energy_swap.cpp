@@ -10,6 +10,7 @@
 
 #include "scenes/game.hpp"
 #include "scenes/level_selection.hpp"
+#include "scenes/mode.hpp"
 
 #include <cstddef>
 #include <optional>
@@ -53,8 +54,9 @@ auto energy_swap::init() -> pxe::result<> {
 
 	level_selection_scene_ = register_scene<level_selection>(false);
 	game_scene_ = register_scene<game>(false);
+	mode_scene_ = register_scene<mode>(false);
 
-	set_main_scene(level_selection_scene_);
+	set_main_scene(mode_scene_);
 
 	// subscribe to events
 	next_level_ = on_event<game::next_level>(this, &energy_swap::on_next_level);
@@ -62,6 +64,8 @@ auto energy_swap::init() -> pxe::result<> {
 	reset_ = on_event<game::reset_level>(this, &energy_swap::on_reset_level);
 	level_selected_ = bind_event<level_selected>(this, &energy_swap::on_level_selected);
 	back_from_level_selection_ = on_event<level_selection::back>(this, &energy_swap::on_back_from_level_selection);
+	back_from_mode_ = on_event<mode::back>(this, &energy_swap::on_back_from_mode);
+	mode_selected_ = bind_event<mode::selected>(this, &energy_swap::on_mode_selected);
 
 	return true;
 }
@@ -73,6 +77,8 @@ auto energy_swap::end() -> pxe::result<> {
 	unsubscribe(reset_);
 	unsubscribe(level_selected_);
 	unsubscribe(back_from_level_selection_);
+	unsubscribe(back_from_mode_);
+	unsubscribe(mode_selected_);
 
 	// unload sfx
 	if(const auto err = unload_sfx(click_sfx).unwrap(); err) {
@@ -117,9 +123,27 @@ auto energy_swap::on_level_selected(const level_selected &evt) -> pxe::result<> 
 }
 
 auto energy_swap::on_back_from_level_selection() -> pxe::result<> {
-	post_event(back_to_menu_from{.id = level_selection_scene_});
+	return replace_scene(level_selection_scene_, mode_scene_);
+}
+
+auto energy_swap::on_back_from_mode() -> pxe::result<> {
+	post_event(back_to_menu_from{.id = mode_scene_});
 
 	return true;
+}
+
+auto energy_swap::on_mode_selected(const mode::selected &evt) -> pxe::result<> {
+	switch(evt.mode) {
+	case level_manager::mode::classic:
+		level_manager_.set_mode(evt.mode);
+		return replace_scene(mode_scene_, level_selection_scene_);
+	case level_manager::mode::cosmic:
+		level_manager_.set_current_level(1);
+		level_manager_.set_mode(evt.mode);
+		return replace_scene(mode_scene_, game_scene_);
+	default:
+		return pxe::error("unknown mode selected");
+	}
 }
 
 } // namespace energy

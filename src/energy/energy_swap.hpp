@@ -9,6 +9,7 @@
 #include <pxe/scenes/scene.hpp>
 
 #include "level_manager.hpp"
+#include "scenes/mode.hpp"
 
 #include <raylib.h>
 
@@ -89,8 +90,15 @@ private:
 	int back_from_level_selection_{0};
 	[[nodiscard]] auto on_back_from_level_selection() -> pxe::result<>;
 
+	int back_from_mode_{0};
+	[[nodiscard]] auto on_back_from_mode() -> pxe::result<>;
+
+	int mode_selected_{0};
+	[[nodiscard]] auto on_mode_selected(const mode::selected &evt) -> pxe::result<>;
+
 	pxe::scene_id game_scene_;
 	pxe::scene_id level_selection_scene_;
+	pxe::scene_id mode_scene_;
 };
 
 } // namespace energy

@@ -143,9 +143,10 @@ auto level_selection::layout(const pxe::size screen_size) -> pxe::result<> {
 		return pxe::error("failed to get title label", *err);
 	}
 
+	constexpr auto button_v_gap = 20.0F;
 	title_ptr->set_position({
 		.x = screen_size.width / 2.0F,
-		.y = 20.0F,
+		.y = button_v_gap,
 	});
 
 	// Layout level buttons in a 2x5 grid
@@ -183,7 +184,6 @@ auto level_selection::layout(const pxe::size screen_size) -> pxe::result<> {
 	}
 
 	// Position page buttons centered below the grid
-	constexpr auto button_v_gap = 10.0F;
 	const auto [button_width, button_height] = prev_button_ptr->get_size();
 	const auto center_pos_y = screen_size.height - button_height - button_v_gap;
 
@@ -368,8 +368,6 @@ auto level_selection::on_button_click(const pxe::button::click &evt) -> pxe::res
 			}
 		}
 	} else if(evt.id == back_button_) {
-		set_visible(false);
-
 		// Post event to go back to main menu
 		get_app().post_event(back{});
 	} else {
