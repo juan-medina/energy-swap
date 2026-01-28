@@ -32,7 +32,7 @@ public:
 		return current_level_;
 	}
 
-	[[nodiscard]] auto get_current_level_string() const -> const std::string &;
+	[[nodiscard]] auto get_current_level_string() const -> std::string;
 	[[nodiscard]] auto get_total_levels() const -> size_t;
 
 	[[nodiscard]] auto get_max_reached_level() const -> size_t {

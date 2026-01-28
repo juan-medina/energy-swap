@@ -5,6 +5,8 @@
 
 #include <pxe/result.hpp>
 
+#include "data/puzzle.hpp"
+
 #include <raylib.h>
 
 #include <cstddef>
@@ -34,9 +36,10 @@ auto level_manager::load_levels(const std::string &levels_path) -> pxe::result<>
 	return true;
 }
 
-auto level_manager::get_current_level_string() const -> const std::string & {
+auto level_manager::get_current_level_string() const -> std::string {
 	if(current_mode_ == mode::cosmic) {
-		return levels_.at(99); // TODO(juan-medina) implement cosmic levels
+		const auto new_puzzle = puzzle::random(4, 2);
+		return new_puzzle.to_string();
 	}
 	return levels_.at(current_level_ - 1);
 }

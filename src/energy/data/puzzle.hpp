@@ -45,6 +45,8 @@ public:
 	// =============================================================================
 	// Puzzle creation and analysis
 	[[nodiscard]] static auto from_string(const std::string &str) -> pxe::result<puzzle>;
+	[[nodiscard]] auto to_string() const -> std::string;
+	[[nodiscard]] static auto random(size_t total_energies, size_t free_slots) -> puzzle;
 
 	[[nodiscard]] auto is_solved() const -> bool;
 
