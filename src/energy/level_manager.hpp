@@ -32,7 +32,7 @@ public:
 		return current_level_;
 	}
 
-	[[nodiscard]] auto get_current_level_string() const -> pxe::result<std::string>;
+	[[nodiscard]] auto get_current_level_string() -> pxe::result<std::string>;
 	[[nodiscard]] auto get_total_levels() const -> size_t;
 
 	[[nodiscard]] auto get_max_reached_level() const -> size_t {
@@ -59,6 +59,8 @@ public:
 
 	auto set_mode(const mode new_mode) -> void {
 		current_mode_ = new_mode;
+		last_level_string_ = 0;
+		cached_level_string_.clear();
 	}
 
 	[[nodiscard]] auto get_mode() const -> mode {
@@ -103,6 +105,9 @@ private:
 	static auto generate_cosmic_level_string(size_t energies, size_t empty) -> std::string;
 	auto load_classic_levels(const std::string &levels_path) -> pxe::result<>;
 	auto load_cosmic_levels(const std::string &levels_path) -> pxe::result<>;
+
+	size_t last_level_string_ = 0;
+	std::string cached_level_string_;
 };
 
 } // namespace energy

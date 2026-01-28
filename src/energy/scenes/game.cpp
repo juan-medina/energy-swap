@@ -98,7 +98,7 @@ auto game::show() -> pxe::result<> {
 		return pxe::error("fail to play game music", *err);
 	}
 
-	const auto &app = dynamic_cast<energy_swap &>(get_app());
+	auto &app = dynamic_cast<energy_swap &>(get_app());
 	std::string level_str;
 	if(const auto err = app.get_level_manager().get_current_level_string().unwrap(level_str); err) {
 		return pxe::error("failed to get current level string", *err);
@@ -493,7 +493,7 @@ auto game::on_battery_click(const battery_display::click &click) -> pxe::result<
 	const auto selected_ptr = find_selected_battery();
 
 	if(selected_ptr == nullptr) {
-		if(got_hint_) {
+		if(got_hint_ && can_have_solution_hint_) {
 			// if we have a hint, and the clicked battery is the "from" battery, hint the "to" battery
 			if(const auto clicked_index = clicked_battery->get_index(); clicked_index == hint_from_) {
 				if(const auto err = set_hint_to_battery(hint_from_, false).unwrap(); err) {
@@ -512,7 +512,7 @@ auto game::on_battery_click(const battery_display::click &click) -> pxe::result<
 		return pxe::error("failed to handle battery transfer", *err);
 	}
 
-	if(got_hint_) {
+	if(got_hint_ && can_have_solution_hint_) {
 		// if we handle a transfer get a hint, this includes when we deselect a battery, or we need the next hint
 		if(const auto err = calculate_solution_hint().unwrap(); err) {
 			return pxe::error("failed to calculate solution hint", *err);

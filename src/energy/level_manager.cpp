@@ -126,20 +126,31 @@ auto level_manager::load_levels() -> pxe::result<> {
 	return true;
 }
 
-auto level_manager::get_current_level_string() const -> pxe::result<std::string> {
+auto level_manager::get_current_level_string() -> pxe::result<std::string> {
+	if(last_level_string_ == current_level_ && !cached_level_string_.empty()) {
+		return cached_level_string_;
+	}
+	last_level_string_ = current_level_;
+	cached_level_string_.clear();
 	if(current_mode_ == mode::cosmic) {
 		for(const auto &[difficult, ranges]: cosmic_levels_) {
 			if(difficult == current_difficulty_) {
 				for(const auto &[from, to, energies, empty]: ranges) {
 					if(current_level_ >= from && current_level_ <= to) {
-						return generate_cosmic_level_string(energies, empty);
+						cached_level_string_ = generate_cosmic_level_string(energies, empty);
 					}
 				}
 			}
 		}
-		return pxe::error("cosmic level entry missing cosmic levels");
+	} else {
+		cached_level_string_ = classic_levels_.at(current_level_ - 1);
 	}
-	return classic_levels_.at(current_level_ - 1);
+
+	if(cached_level_string_.empty()) {
+		return pxe::error("invalid level requested");
+	}
+
+	return cached_level_string_;
 }
 
 auto level_manager::get_total_levels() const -> size_t {
@@ -148,7 +159,7 @@ auto level_manager::get_total_levels() const -> size_t {
 
 auto level_manager::generate_cosmic_level_string(const size_t energies, const size_t empty) -> std::string {
 	while(true) {
-		const auto new_puzzle = puzzle::random(energies, empty); // generate a random puzzle
+		const auto new_puzzle = puzzle::random(energies, empty);			   // generate a random puzzle
 		if(const auto solution = new_puzzle.solve(false); !solution.empty()) { // ensure the puzzle is solvable
 			return new_puzzle.to_string();
 		}
