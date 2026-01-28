@@ -55,6 +55,7 @@ private:
 	size_t title_label_{};
 	size_t classic_button_{};
 	size_t cosmic_button_{};
+	size_t cosmic_label_error{};
 	size_t back_button_{};
 	int button_click_{};
 

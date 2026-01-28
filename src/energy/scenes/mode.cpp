@@ -10,6 +10,7 @@
 #include <pxe/result.hpp>
 #include <pxe/scenes/scene.hpp>
 
+#include "../energy_swap.hpp"
 #include "../level_manager.hpp"
 
 #include <raylib.h>
@@ -37,6 +38,11 @@ auto mode::init(pxe::app &app) -> pxe::result<> {
 	if(const auto err = register_component<pxe::button>().unwrap(cosmic_button_); err) {
 		return pxe::error("failed to register cosmic button", *err);
 	}
+
+	if(const auto err = register_component<pxe::label>().unwrap(cosmic_label_error); err) {
+		return pxe::error("failed to register cosmic label error", *err);
+	}
+
 	if(const auto err = register_component<pxe::button>().unwrap(back_button_); err) {
 		return pxe::error("failed to register back button", *err);
 	}
@@ -67,6 +73,14 @@ auto mode::init(pxe::app &app) -> pxe::result<> {
 	cosmic_btn->set_font_size(30);
 	cosmic_btn->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_UP);
 
+	std::shared_ptr<pxe::label> cosmic_error;
+	if(const auto err = get_component<pxe::label>(cosmic_label_error).unwrap(cosmic_error); err) {
+		return pxe::error("failed to get cosmic error label", *err);
+	}
+	cosmic_error->set_text("unlock: complete level \n20 on classic mode.");
+	cosmic_error->set_font_size(10);
+	cosmic_error->set_text_color(RED);
+
 	std::shared_ptr<pxe::button> back_btn;
 	if(const auto err = get_component<pxe::button>(back_button_).unwrap(back_btn); err) {
 		return pxe::error("failed to get back button", *err);
@@ -90,7 +104,32 @@ auto mode::update(float delta) -> pxe::result<> {
 }
 
 auto mode::show() -> pxe::result<> {
-	return scene::show();
+	if(!is_visible() || !is_enabled()) {
+		return true;
+	}
+
+	// get cosmic button
+
+	std::shared_ptr<pxe::button> cosmic_btn;
+	if(const auto err = get_component<pxe::button>(cosmic_button_).unwrap(cosmic_btn); err) {
+		return pxe::error("failed to get cosmic button", *err);
+	}
+	std::shared_ptr<pxe::label> cosmic_error;
+	if(const auto err = get_component<pxe::label>(cosmic_label_error).unwrap(cosmic_error); err) {
+		return pxe::error("failed to get cosmic error label", *err);
+	}
+
+	const auto &app = dynamic_cast<energy_swap &>(get_app());
+
+	const auto cosmic_unlock = app.get_level_manager().get_max_reached_level() > 20;
+	cosmic_btn->set_enabled(cosmic_unlock);
+	cosmic_error->set_visible(!cosmic_unlock);
+
+	if(const auto err = scene::show().unwrap(); err) {
+		return pxe::error("failed to show base scene", *err);
+	}
+
+	return true;
 }
 
 auto mode::layout(const pxe::size screen_size) -> pxe::result<> {
@@ -102,6 +141,11 @@ auto mode::layout(const pxe::size screen_size) -> pxe::result<> {
 	if(const auto err = get_component<pxe::button>(cosmic_button_).unwrap(cosmic_btn); err) {
 		return pxe::error("failed to get cosmic button", *err);
 	}
+	std::shared_ptr<pxe::label> cosmic_error;
+	if(const auto err = get_component<pxe::label>(cosmic_label_error).unwrap(cosmic_error); err) {
+		return pxe::error("failed to get cosmic error label", *err);
+	}
+
 	std::shared_ptr<pxe::button> back_btn;
 	if(const auto err = get_component<pxe::button>(back_button_).unwrap(back_btn); err) {
 		return pxe::error("failed to get back button", *err);
@@ -128,7 +172,9 @@ auto mode::layout(const pxe::size screen_size) -> pxe::result<> {
 	});
 
 	classic_btn->set_position({.x = start_x, .y = y});
+
 	cosmic_btn->set_position({.x = start_x + clw + gap, .y = y});
+	cosmic_error->set_position({.x = start_x + clw + gap, .y = y + clh + 5.0F});
 
 	back_btn->set_position({
 		.x = (screen_size.width - bca) / 2.0F,
