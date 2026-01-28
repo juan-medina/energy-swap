@@ -38,14 +38,25 @@ auto level_manager::load_levels(const std::string &levels_path) -> pxe::result<>
 
 auto level_manager::get_current_level_string() const -> std::string {
 	if(current_mode_ == mode::cosmic) {
-		const auto new_puzzle = puzzle::random(4, 2);
-		return new_puzzle.to_string();
+		return generate_cosmic_level_string(4U, 2U);
 	}
 	return levels_.at(current_level_ - 1);
 }
 
 auto level_manager::get_total_levels() const -> size_t {
 	return levels_.size();
+}
+
+auto level_manager::generate_cosmic_level_string(const size_t energies, const size_t empty) -> std::string {
+	while(true) {
+		const auto new_puzzle = puzzle::random(energies, empty); // generate a random puzzle
+		if(new_puzzle.has_any_full_battery()) {					 // avoid puzzles with any full battery
+			continue;
+		}
+		if(const auto solution = new_puzzle.solve(false); !solution.empty()) { // ensure the puzzle is solvable
+			return new_puzzle.to_string();
+		}
+	}
 }
 
 } // namespace energy

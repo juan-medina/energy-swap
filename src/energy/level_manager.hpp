@@ -80,6 +80,8 @@ private:
 
 	mode current_mode_{mode::classic};
 	difficulty current_difficulty_{difficulty::normal};
+
+	static auto generate_cosmic_level_string(size_t energies, size_t empty) -> std::string;
 };
 
 } // namespace energy

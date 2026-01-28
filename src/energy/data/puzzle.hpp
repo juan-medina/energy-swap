@@ -7,6 +7,7 @@
 
 #include "battery.hpp"
 
+#include <algorithm>
 #include <cstddef>
 #include <deque>
 #include <string>
@@ -27,7 +28,7 @@ public:
 	// =============================================================================
 	// Puzzle solving and identification
 	[[nodiscard]] auto id() const -> std::string;
-	[[nodiscard]] auto solve() const -> std::vector<energy::puzzle::move>;
+	[[nodiscard]] auto solve(bool optimized = true) const -> std::vector<move>;
 
 	// =============================================================================
 	// Puzzle data accessors
@@ -51,6 +52,10 @@ public:
 	[[nodiscard]] auto is_solved() const -> bool;
 
 	[[nodiscard]] auto is_solvable() const -> bool;
+
+	[[nodiscard]] auto has_any_full_battery() const -> bool {
+		return std::ranges::any_of(batteries_, [](const auto &bat) -> bool { return bat.full(); });
+	}
 
 private:
 	std::vector<battery> batteries_;

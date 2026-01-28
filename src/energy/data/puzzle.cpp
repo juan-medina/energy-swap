@@ -35,7 +35,7 @@ auto puzzle::id() const -> std::string {
 	return result;
 }
 
-auto puzzle::solve() const -> std::vector<move> {
+auto puzzle::solve(bool optimized) const -> std::vector<move> {
 	using move_list = std::vector<move>;
 	using state_key = std::string;
 	std::unordered_set<state_key> visited;
@@ -45,11 +45,17 @@ auto puzzle::solve() const -> std::vector<move> {
 	queue.emplace_back(*this, move_list{});
 
 	while(!queue.empty()) {
-		const auto [fst, snd] = std::move(queue.front());
-		queue.pop_front();
+		frame current;
+		if (optimized) {
+			current = std::move(queue.front());
+			queue.pop_front();
+		} else {
+			current = std::move(queue.back());
+			queue.pop_back();
+		}
 
-		const auto &state = fst;
-		const auto &moves = snd;
+		const auto &state = current.first;
+		const auto &moves = current.second;
 
 		const auto key = state.id();
 		if(visited.contains(key)) {
