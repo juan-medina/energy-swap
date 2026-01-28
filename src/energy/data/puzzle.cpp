@@ -110,12 +110,27 @@ auto puzzle::random(const size_t total_energies, const size_t free_slots) -> puz
 	const auto total_batteries = total_energies + free_slots;
 	assert(total_batteries <= puzzle::max_batteries && "total energies and free slots exceed maximum capacity");
 
-	// Build a vector of all energy units
+	// Step 1: Build and shuffle all possible energy types
+	std::vector<int> all_types;
+	all_types.reserve(battery::max_energy_types);
+	for(int t = 1; t <= battery::max_energy_types; ++t) {
+		all_types.push_back(t);
+	}
+	std::ranges::shuffle(all_types, std::mt19937{static_cast<unsigned>(std::rand())});
+
+	// Step 2: Select the first total_energies types
+	std::vector<int> chosen_types;
+	chosen_types.reserve(total_energies);
+	for(size_t i = 0; i < total_energies; ++i) {
+		chosen_types.push_back(all_types.at(i));
+	}
+
+	// Step 3: Build a vector of all energy units using only chosen types
 	std::vector<int> energies;
 	energies.reserve(total_batteries * battery::max_energy);
-	for(size_t type = 1; type <= total_energies; ++type) {
+	for(const auto type : chosen_types) {
 		for(size_t i = 0; i < battery::max_energy; ++i) {
-			energies.push_back(static_cast<int>(type));
+			energies.push_back(type);
 		}
 	}
 	// Add free slots (represented as 0)
