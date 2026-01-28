@@ -23,7 +23,7 @@ public:
 	level_manager(level_manager &&) = delete;
 	auto operator=(level_manager &&) -> level_manager & = delete;
 
-	auto load_levels(const std::string &levels_path) -> pxe::result<>;
+	auto load_levels() -> pxe::result<>;
 
 	auto set_current_level(const size_t level) -> void {
 		current_level_ = level;
@@ -74,7 +74,8 @@ public:
 	}
 
 private:
-	std::vector<std::string> levels_;
+	static constexpr auto classic_levels_path = "resources/levels/classic.json";
+	std::vector<std::string> classic_levels_;
 	size_t current_level_ = 1;
 	size_t max_reached_level_ = 1;
 
@@ -82,6 +83,7 @@ private:
 	difficulty current_difficulty_{difficulty::normal};
 
 	static auto generate_cosmic_level_string(size_t energies, size_t empty) -> std::string;
+	auto load_classic_levels(const std::string &levels_path) -> pxe::result<>;
 };
 
 } // namespace energy

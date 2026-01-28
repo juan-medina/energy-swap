@@ -70,8 +70,6 @@ private:
 	static constexpr auto zap_sfx = "zap";
 
 	static constexpr pxe::size design_resolution{.width = 640, .height = 360};
-
-	static constexpr auto levels_path = "resources/levels/levels.json";
 	static constexpr auto max_level_key = "game.max_level_reached";
 
 	level_manager level_manager_;

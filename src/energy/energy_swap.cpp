@@ -44,8 +44,7 @@ auto energy_swap::init() -> pxe::result<> {
 		return pxe::error{"failed to load zap sfx", *err};
 	}
 
-	// Use LevelManager to load levels
-	if(const auto err = level_manager_.load_levels(levels_path).unwrap(); err) {
+	if(const auto err = level_manager_.load_levels().unwrap(); err) {
 		return pxe::error{"failed to load levels", *err};
 	}
 

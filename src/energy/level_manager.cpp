@@ -20,8 +20,8 @@
 
 namespace energy {
 
-auto level_manager::load_levels(const std::string &levels_path) -> pxe::result<> {
-	levels_.clear();
+auto level_manager::load_classic_levels(const std::string &levels_path) -> pxe::result<> {
+	classic_levels_.clear();
 	std::ifstream const file(levels_path);
 	if(!file.is_open()) {
 		return pxe::error(std::format("failed to open levels json file: {}", levels_path));
@@ -44,25 +44,29 @@ auto level_manager::load_levels(const std::string &levels_path) -> pxe::result<>
 		   || !level["puzzle"].is_string()) { // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
 			return pxe::error("level entry missing 'puzzle' string");
 		}
-		levels_.emplace_back(
+		classic_levels_.emplace_back(
 			level["puzzle"].as<std::string>()); // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
 	}
-	if(levels_.empty()) {
+	if(classic_levels_.empty()) {
 		return pxe::error(std::format("no levels found in file {}", levels_path));
 	}
-	SPDLOG_DEBUG("loaded {} levels from {} (json)", levels_.size(), levels_path);
+	SPDLOG_DEBUG("loaded {} levels from {} (json)", classic_levels_.size(), levels_path);
 	return true;
+}
+
+auto level_manager::load_levels() -> pxe::result<> {
+	return load_classic_levels(classic_levels_path);
 }
 
 auto level_manager::get_current_level_string() const -> std::string {
 	if(current_mode_ == mode::cosmic) {
 		return generate_cosmic_level_string(4U, 2U);
 	}
-	return levels_.at(current_level_ - 1);
+	return classic_levels_.at(current_level_ - 1);
 }
 
 auto level_manager::get_total_levels() const -> size_t {
-	return levels_.size();
+	return classic_levels_.size();
 }
 
 auto level_manager::generate_cosmic_level_string(const size_t energies, const size_t empty) -> std::string {
