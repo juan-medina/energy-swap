@@ -4,12 +4,30 @@
 		"ranges": [
 			{
 				"from": 1,
-				"to": 1,
+				"to": 5,
+				"energies": 4,
+				"empty": 2
+			},
+			{
+				"from": 6,
+				"to": 10,
 				"energies": 4,
 				"empty": 1
 			},
 			{
-				"from": 2,
+				"from": 11,
+				"to": 20,
+				"energies": 5,
+				"empty": 2
+			},
+			{
+				"from": 21,
+				"to": 30,
+				"energies": 5,
+				"empty": 1
+			},
+			{
+				"from": 31,
 				"to": 9999,
 				"energies": 6,
 				"empty": 2
