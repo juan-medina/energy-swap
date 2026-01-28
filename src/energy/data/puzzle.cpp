@@ -46,7 +46,7 @@ auto puzzle::solve(bool optimized) const -> std::vector<move> {
 
 	while(!queue.empty()) {
 		frame current;
-		if (optimized) {
+		if(optimized) {
 			current = std::move(queue.front());
 			queue.pop_front();
 		} else {
@@ -73,28 +73,21 @@ auto puzzle::solve(bool optimized) const -> std::vector<move> {
 }
 
 auto puzzle::from_string(const std::string &str) -> pxe::result<puzzle> {
-	puzzle result;
-
-	// split by -, first part is the batteries, second we ignore for now
-	const auto delimiter_pos = str.find('-');
-	if(delimiter_pos == std::string::npos) {
-		return pxe::error("invalid puzzle string format, missing delimiter");
-	}
-	const auto batteries_str = str.substr(0, delimiter_pos);
-
-	if(batteries_str.empty()) {
+	if(str.empty()) {
 		return pxe::error("battery string is empty");
 	}
 
-	if(batteries_str.size() / 4 > max_batteries) {
+	if(str.size() / 4 > max_batteries) {
 		return pxe::error("too many batteries in puzzle string");
 	}
-	if(batteries_str.size() % 4 != 0) {
+
+	if(str.size() % 4 != 0) {
 		return pxe::error("invalid battery string length, must be multiple of 4");
 	}
 
-	for(size_t i = 0; i < batteries_str.size(); i += 4) {
-		const auto battery_str = batteries_str.substr(i, 4);
+	puzzle result;
+	for(size_t i = 0; i < str.size(); i += 4) {
+		const auto battery_str = str.substr(i, 4);
 		battery parsed;
 		if(const auto error = battery::from_string(battery_str).unwrap(parsed); error) {
 			return pxe::error("failed to parse battery in puzzle from string", *error);

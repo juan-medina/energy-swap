@@ -7,32 +7,50 @@
 
 #include "data/puzzle.hpp"
 
-#include <raylib.h>
-
 #include <cstddef>
 #include <format>
+#include <fstream>
+#include <jsoncons/basic_json.hpp>
+#include <jsoncons/json_decoder.hpp>
+#include <jsoncons/json_reader.hpp>
 #include <spdlog/spdlog.h>
 #include <sstream>
 #include <string>
+#include <system_error>
 
 namespace energy {
 
 auto level_manager::load_levels(const std::string &levels_path) -> pxe::result<> {
 	levels_.clear();
-	auto *text = LoadFileText(levels_path.c_str());
-	if(text == nullptr) {
-		return pxe::error(std::format("failed to load levels file from {}", levels_path));
+	std::ifstream const file(levels_path);
+	if(!file.is_open()) {
+		return pxe::error(std::format("failed to open levels json file: {}", levels_path));
 	}
-	auto stream = std::istringstream(text);
-	auto line = std::string{};
-	while(std::getline(stream, line)) {
-		levels_.emplace_back(line);
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	std::error_code error_code;
+	jsoncons::json_decoder<jsoncons::json> decoder;
+	jsoncons::json_stream_reader reader(buffer, decoder);
+	reader.read(error_code);
+	if(error_code) {
+		return pxe::error(std::format("JSON parse error: {}", error_code.message()));
 	}
-	UnloadFileText(text);
+	const auto &parsed = decoder.get_result();
+	if(!parsed.is_array()) {
+		return pxe::error("levels.json root is not an array");
+	}
+	for(const auto &level: parsed.array_range()) {
+		if(!level.contains("puzzle")
+		   || !level["puzzle"].is_string()) { // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+			return pxe::error("level entry missing 'puzzle' string");
+		}
+		levels_.emplace_back(
+			level["puzzle"].as<std::string>()); // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+	}
 	if(levels_.empty()) {
 		return pxe::error(std::format("no levels found in file {}", levels_path));
 	}
-	SPDLOG_DEBUG("loaded {} levels from {}", levels_.size(), levels_path);
+	SPDLOG_DEBUG("loaded {} levels from {} (json)", levels_.size(), levels_path);
 	return true;
 }
 
