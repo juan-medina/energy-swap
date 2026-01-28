@@ -9,6 +9,7 @@
 #include <pxe/scenes/scene.hpp>
 
 #include "level_manager.hpp"
+#include "scenes/cosmic.hpp"
 #include "scenes/mode.hpp"
 
 #include <raylib.h>
@@ -96,9 +97,16 @@ private:
 	int mode_selected_{0};
 	[[nodiscard]] auto on_mode_selected(const mode::selected &evt) -> pxe::result<>;
 
+	int back_from_cosmic_{0};
+	[[nodiscard]] auto on_back_from_cosmic() -> pxe::result<>;
+
+	int difficulty_selected_{0};
+	[[nodiscard]] auto on_difficulty_selected(const cosmic::selected &evt) -> pxe::result<>;
+
 	pxe::scene_id game_scene_;
 	pxe::scene_id level_selection_scene_;
 	pxe::scene_id mode_scene_;
+	pxe::scene_id cosmic_scene_;
 };
 
 } // namespace energy

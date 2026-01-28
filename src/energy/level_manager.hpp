@@ -52,8 +52,8 @@ public:
 	};
 
 	enum class difficulty : std::uint8_t {
-		easy,
 		normal,
+		hard,
 		burger_daddy,
 	};
 

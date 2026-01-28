@@ -8,6 +8,7 @@
 #include <pxe/result.hpp>
 #include <pxe/scenes/scene.hpp>
 
+#include "scenes/cosmic.hpp"
 #include "scenes/game.hpp"
 #include "scenes/level_selection.hpp"
 #include "scenes/mode.hpp"
@@ -55,6 +56,7 @@ auto energy_swap::init() -> pxe::result<> {
 	level_selection_scene_ = register_scene<level_selection>(false);
 	game_scene_ = register_scene<game>(false);
 	mode_scene_ = register_scene<mode>(false);
+	cosmic_scene_ = register_scene<cosmic>(false);
 
 	set_main_scene(mode_scene_);
 
@@ -66,6 +68,8 @@ auto energy_swap::init() -> pxe::result<> {
 	back_from_level_selection_ = on_event<level_selection::back>(this, &energy_swap::on_back_from_level_selection);
 	back_from_mode_ = on_event<mode::back>(this, &energy_swap::on_back_from_mode);
 	mode_selected_ = bind_event<mode::selected>(this, &energy_swap::on_mode_selected);
+	back_from_cosmic_ = on_event<cosmic::back>(this, &energy_swap::on_back_from_cosmic);
+	difficulty_selected_ = bind_event<cosmic::selected>(this, &energy_swap::on_difficulty_selected);
 
 	return true;
 }
@@ -79,6 +83,7 @@ auto energy_swap::end() -> pxe::result<> {
 	unsubscribe(back_from_level_selection_);
 	unsubscribe(back_from_mode_);
 	unsubscribe(mode_selected_);
+	unsubscribe(back_from_cosmic_);
 
 	// unload sfx
 	if(const auto err = unload_sfx(click_sfx).unwrap(); err) {
@@ -135,15 +140,26 @@ auto energy_swap::on_back_from_mode() -> pxe::result<> {
 auto energy_swap::on_mode_selected(const mode::selected &evt) -> pxe::result<> {
 	switch(evt.mode) {
 	case level_manager::mode::classic:
+		level_manager_.set_current_level(level_manager_.get_max_reached_level());
 		level_manager_.set_mode(evt.mode);
 		return replace_scene(mode_scene_, level_selection_scene_);
 	case level_manager::mode::cosmic:
-		level_manager_.set_current_level(1);
 		level_manager_.set_mode(evt.mode);
-		return replace_scene(mode_scene_, game_scene_);
+		return replace_scene(mode_scene_, cosmic_scene_);
 	default:
 		return pxe::error("unknown mode selected");
 	}
+}
+
+auto energy_swap::on_back_from_cosmic() -> pxe::result<> {
+	return replace_scene(cosmic_scene_, mode_scene_);
+}
+
+auto energy_swap::on_difficulty_selected(const cosmic::selected &evt) -> pxe::result<> {
+	level_manager_.set_mode(level_manager::mode::cosmic);
+	level_manager_.set_difficulty(evt.difficulty);
+	level_manager_.set_current_level(1);
+	return replace_scene(cosmic_scene_, game_scene_);
 }
 
 } // namespace energy
