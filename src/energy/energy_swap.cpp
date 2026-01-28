@@ -11,8 +11,6 @@
 #include "scenes/game.hpp"
 #include "scenes/level_selection.hpp"
 
-#include <raylib.h>
-
 #include <cstddef>
 #include <optional>
 #include <string>
@@ -87,8 +85,6 @@ auto energy_swap::end() -> pxe::result<> {
 
 	return app::end();
 }
-
-// No longer needed: load_levels handled by LevelManager
 
 auto energy_swap::on_next_level() -> pxe::result<> {
 	level_manager_.set_current_level(level_manager_.get_current_level() + 1);

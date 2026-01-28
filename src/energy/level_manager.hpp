@@ -6,6 +6,7 @@
 #include <pxe/result.hpp>
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,7 @@ public:
 
 	auto load_levels(const std::string &levels_path) -> pxe::result<>;
 
-	auto set_current_level(size_t level) -> void {
+	auto set_current_level(const size_t level) -> void {
 		current_level_ = level;
 	}
 	[[nodiscard]] auto get_current_level() const -> size_t {
@@ -34,7 +35,6 @@ public:
 	[[nodiscard]] auto get_current_level_string() const -> const std::string &;
 	[[nodiscard]] auto get_total_levels() const -> size_t;
 
-	// For normal mode
 	[[nodiscard]] auto get_max_reached_level() const -> size_t {
 		return max_reached_level_;
 	}
@@ -46,10 +46,40 @@ public:
 		return current_level_ <= 5;
 	}
 
+	enum class mode : std::uint8_t {
+		classic,
+		cosmic,
+	};
+
+	enum class difficulty : std::uint8_t {
+		easy,
+		normal,
+		burger_daddy,
+	};
+
+	auto set_mode(const mode new_mode) -> void {
+		current_mode_ = new_mode;
+	}
+
+	[[nodiscard]] auto get_mode() const -> mode {
+		return current_mode_;
+	}
+
+	auto set_difficulty(const difficulty new_difficulty) -> void {
+		current_difficulty_ = new_difficulty;
+	}
+
+	[[nodiscard]] auto get_difficulty() const -> difficulty {
+		return current_difficulty_;
+	}
+
 private:
 	std::vector<std::string> levels_;
 	size_t current_level_ = 1;
 	size_t max_reached_level_ = 1;
+
+	mode current_mode_{mode::classic};
+	difficulty current_difficulty_{difficulty::normal};
 };
 
 } // namespace energy

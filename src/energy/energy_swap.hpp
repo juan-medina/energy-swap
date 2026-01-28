@@ -71,9 +71,8 @@ private:
 
 	static constexpr auto levels_path = "resources/levels/levels.txt";
 	static constexpr auto max_level_key = "game.max_level_reached";
-	auto load_levels() -> pxe::result<>;
 
-	energy::level_manager level_manager_;
+	level_manager level_manager_;
 
 	int next_level_{0};
 	auto on_next_level() -> pxe::result<>;

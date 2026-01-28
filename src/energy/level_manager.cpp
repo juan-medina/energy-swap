@@ -35,6 +35,9 @@ auto level_manager::load_levels(const std::string &levels_path) -> pxe::result<>
 }
 
 auto level_manager::get_current_level_string() const -> const std::string & {
+	if(current_mode_ == mode::cosmic) {
+		return levels_.at(99); // TODO(juan-medina) implement cosmic levels
+	}
 	return levels_.at(current_level_ - 1);
 }
 
