@@ -149,9 +149,6 @@ auto level_manager::get_total_levels() const -> size_t {
 auto level_manager::generate_cosmic_level_string(const size_t energies, const size_t empty) -> std::string {
 	while(true) {
 		const auto new_puzzle = puzzle::random(energies, empty); // generate a random puzzle
-		if(new_puzzle.has_any_full_battery()) {					 // avoid puzzles with any full battery
-			continue;
-		}
 		if(const auto solution = new_puzzle.solve(false); !solution.empty()) { // ensure the puzzle is solvable
 			return new_puzzle.to_string();
 		}
