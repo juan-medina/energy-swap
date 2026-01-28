@@ -59,7 +59,7 @@ protected:
 	[[nodiscard]] auto end() -> pxe::result<> override;
 
 private:
-	static constexpr auto font_path = "resources/fonts/PixeloidSans_16.fnt";
+	static constexpr auto font_path  = "resources/fonts/PeaberryMono.fnt";
 	static constexpr auto clear_color = Color{.r = 20, .g = 49, .b = 59, .a = 255};
 
 	static constexpr auto click_sfx_path = "resources/sfx/click.wav";

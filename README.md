@@ -36,7 +36,7 @@ Report bugs or feedback on the repository issues page: https://github.com/juan-m
 - SFX by [Helton Yan & Beto Bezerra](https://heltonyan.itch.io/pixelcombat?download) (licensed under Attribution 4.0 International).
 - Particle Pack by [Polar_34](https://polar-34.itch.io/particles) (license under MIT).
 - Additional graphics by [Kenney.nl](https://kenney.nl/assets) (licensed under Public Domain CC-0).
-- [Pixeloid font by GGBotNet](https://ggbot.itch.io/pixeloid-font) (licensed under SIL Open Font License).
+- [Peaberry Pixel Font by emhuo](https://emhuo.itch.io/peaberry-pixel-font) (licensed under Open Font License Version 1.1).
 
 ## Tools Used
 

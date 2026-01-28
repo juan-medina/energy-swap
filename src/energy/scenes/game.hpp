@@ -69,6 +69,7 @@ private:
 
 	size_t title_{};
 	size_t status_{};
+	size_t time_{};
 	size_t back_button_{};
 	size_t next_button_{};
 	size_t reset_button_{};
@@ -141,11 +142,18 @@ private:
 	[[nodiscard]] auto check_end() -> pxe::result<>;
 	[[nodiscard]] auto handle_puzzle_solved() -> pxe::result<>;
 	[[nodiscard]] auto handle_puzzle_unsolvable() const -> pxe::result<>;
+	[[nodiscard]] auto handle_cosmic_time_up() const -> pxe::result<>;
 	[[nodiscard]] auto update_end_game_ui(const std::string &status_message, bool show_next, bool show_reset) const
 		-> pxe::result<>;
 	static auto constexpr win_message = "Congratulations! You completed all levels!";
 	static auto constexpr continue_message = "You Win, continue to the next level ...";
 	static auto constexpr unsolvable_message = "No more moves available, try again ...";
+	static auto constexpr cosmic_time_up_message = "Time's up! Try again ...";
+	static auto constexpr format_classic_level_title = "Classic Level {}";
+	static auto constexpr format_cosmic_level_title = "Cosmic {} Level {}";
+	static auto constexpr cosmic_normal = "Normal";
+	static auto constexpr cosmic_hard = "Hard";
+	static auto constexpr cosmic_burger_daddy = "Burger Daddy";
 
 	// ========================================================================
 	// Visual Effects
@@ -178,6 +186,9 @@ private:
 	[[nodiscard]] auto set_hint_to_battery(size_t battery_num, bool is_hint) const -> pxe::result<>;
 	[[nodiscard]] auto reset_hint_indicators() const -> pxe::result<>;
 	[[nodiscard]] auto calculate_solution_hint() -> pxe::result<>;
+
+	bool is_cosmic_level_{false};
+	float remaining_time_{0.0F};
 };
 
 } // namespace energy

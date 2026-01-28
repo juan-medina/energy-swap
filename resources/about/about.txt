@@ -31,8 +31,8 @@ CREDITS
     GRAPHICS
     [Additional graphics by Kenney.nl](https://kenney.nl/assets)
     (Licensed under Public Domain CC-0)
-    [Pixeloid font by GGBotNet](https://ggbot.itch.io/pixeloid-font)
-    (Licensed under SIL Open Font License)
+    [Peaberry Pixel Font by emhuo](https://emhuo.itch.io/peaberry-pixel-font)
+    (Licensed under Open Font License Version 1.1)
 
 
 

@@ -1,5 +1,4 @@
 // SPDX-FileCopyrightText: 2026 Juan Medina
-// SPDX-FileCopyrightText: 2026 Juan Medina
 // SPDX-License-Identifier: MIT
 
 #include "game.hpp"
@@ -19,6 +18,7 @@
 
 #include <raylib.h>
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstddef>
@@ -127,6 +127,10 @@ auto game::reset() -> pxe::result<> {
 }
 
 auto game::update(const float delta) -> pxe::result<> {
+	if(!is_enabled() || !is_visible()) {
+		return true;
+	}
+
 	if(const auto err = scene::update(delta).unwrap(); err) {
 		return pxe::error("failed to update base scene", *err);
 	}
@@ -134,6 +138,27 @@ auto game::update(const float delta) -> pxe::result<> {
 	if(get_app().is_in_controller_mode()) {
 		if(const auto err = update_controller_input().unwrap(); err) {
 			return pxe::error("failed to update controller input", *err);
+		}
+	}
+
+	if(is_cosmic_level_) {
+		remaining_time_ -= delta;
+		auto const seconds_str = std::format("{:.2f}", std::max(0.0F, remaining_time_));
+		std::shared_ptr<pxe::label> time_ptr;
+		if(const auto err = get_component<pxe::label>(time_).unwrap(time_ptr); err) {
+			return pxe::error("failed to get time label", *err);
+		}
+		time_ptr->set_text(seconds_str);
+		if(remaining_time_ <= 0.0F) {
+			if(const auto err = handle_cosmic_time_up().unwrap(); err) {
+				return pxe::error("failed to handle cosmic time up", *err);
+			}
+		} else if(remaining_time_ < 10.0F) {
+			time_ptr->set_text_color(RED);
+		} else if(remaining_time_ <= 30.0F) {
+			time_ptr->set_text_color(YELLOW);
+		} else {
+			time_ptr->set_text_color(GREEN);
 		}
 	}
 
@@ -152,6 +177,17 @@ auto game::init_ui_components() -> pxe::result<> {
 	if(const auto err = register_component<pxe::label>().unwrap(status_); err) {
 		return pxe::error("failed to register status label", *err);
 	}
+
+	if(const auto err = register_component<pxe::label>().unwrap(time_); err) {
+		return pxe::error("failed to register time label", *err);
+	}
+
+	std::shared_ptr<pxe::label> title_ptr;
+	if(const auto err = get_component<pxe::label>(title_).unwrap(title_ptr); err) {
+		return pxe::error("failed to get title label", *err);
+	}
+	title_ptr->set_font_size(30);
+	title_ptr->set_text("Level 000");
 
 	return true;
 }
@@ -268,6 +304,16 @@ auto game::layout_title(const pxe::size screen_size) const -> pxe::result<> {
 		.y = 10.0F,
 	});
 
+	std::shared_ptr<pxe::label> time_ptr;
+	if(const auto err = get_component<pxe::label>(time_).unwrap(time_ptr); err) {
+		return pxe::error("failed to get time label", *err);
+	}
+
+	time_ptr->set_position({
+		.x = screen_size.width / 2.0F,
+		.y = 10.0F + title_ptr->get_size().height + 5.0F,
+	});
+
 	return true;
 }
 
@@ -365,14 +411,50 @@ auto game::configure_show_ui() -> pxe::result<> {
 		return pxe::error("failed to get title label", *err);
 	}
 
+	std::shared_ptr<pxe::label> time_ptr;
+	if(const auto err = get_component<pxe::label>(time_).unwrap(time_ptr); err) {
+		return pxe::error("failed to get time label", *err);
+	}
+
 	std::shared_ptr<pxe::label> status_ptr;
 	if(const auto err = get_component<pxe::label>(status_).unwrap(status_ptr); err) {
 		return pxe::error("failed to get status label", *err);
 	}
 
-	title_ptr->set_text(std::format("Level {}", app.get_level_manager().get_current_level()));
+	is_cosmic_level_ = app.get_level_manager().get_mode() == level_manager::mode::cosmic;
+
+	if(!is_cosmic_level_) {
+		title_ptr->set_text(std::format(format_classic_level_title, app.get_level_manager().get_current_level()));
+	} else {
+		switch(app.get_level_manager().get_difficulty()) {
+		case level_manager::difficulty::normal:
+			title_ptr->set_text(
+				std::format(format_cosmic_level_title, cosmic_normal, app.get_level_manager().get_current_level()));
+			break;
+		case level_manager::difficulty::hard:
+			title_ptr->set_text(
+				std::format(format_cosmic_level_title, cosmic_hard, app.get_level_manager().get_current_level()));
+			break;
+		case level_manager::difficulty::burger_daddy:
+			title_ptr->set_text(std::format(
+				format_cosmic_level_title, cosmic_burger_daddy, app.get_level_manager().get_current_level()));
+			break;
+		}
+	}
 	title_ptr->set_font_size(30);
 	title_ptr->set_centered(true);
+
+	time_ptr->set_text("Time: 00:00");
+	time_ptr->set_font_size(20);
+	time_ptr->set_text_color(GREEN);
+	time_ptr->set_centered(true);
+
+	if(is_cosmic_level_) {
+		time_ptr->set_visible(true);
+		remaining_time_ = 60.0F; // 60 seconds for cosmic levels
+	} else {
+		time_ptr->set_visible(false);
+	}
 
 	status_ptr->set_text("");
 	status_ptr->set_centered(true);
@@ -613,6 +695,18 @@ auto game::handle_puzzle_solved() -> pxe::result<> {
 
 auto game::handle_puzzle_unsolvable() const -> pxe::result<> {
 	if(const auto err = update_end_game_ui(unsolvable_message, false, true).unwrap(); err) {
+		return pxe::error("failed to update end game UI", *err);
+	}
+
+	if(const auto err = disable_all_batteries().unwrap(); err) {
+		return pxe::error("failed to disable all batteries", *err);
+	}
+
+	return true;
+}
+
+auto game::handle_cosmic_time_up() const -> pxe::result<> {
+	if(const auto err = update_end_game_ui(cosmic_time_up_message, false, true).unwrap(); err) {
 		return pxe::error("failed to update end game UI", *err);
 	}
 
