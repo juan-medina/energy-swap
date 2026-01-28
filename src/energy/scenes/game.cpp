@@ -99,7 +99,10 @@ auto game::show() -> pxe::result<> {
 	}
 
 	const auto &app = dynamic_cast<energy_swap &>(get_app());
-	const auto &level_str = app.get_level_manager().get_current_level_string();
+	std::string level_str;
+	if(const auto err = app.get_level_manager().get_current_level_string().unwrap(level_str); err) {
+		return pxe::error("failed to get current level string", *err);
+	}
 	can_have_solution_hint_ = app.get_level_manager().can_have_solution_hint();
 
 	SPDLOG_DEBUG("setting up puzzle with level string: {}", level_str);

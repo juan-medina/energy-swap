@@ -32,7 +32,7 @@ public:
 		return current_level_;
 	}
 
-	[[nodiscard]] auto get_current_level_string() const -> std::string;
+	[[nodiscard]] auto get_current_level_string() const -> pxe::result<std::string>;
 	[[nodiscard]] auto get_total_levels() const -> size_t;
 
 	[[nodiscard]] auto get_max_reached_level() const -> size_t {
@@ -75,7 +75,25 @@ public:
 
 private:
 	static constexpr auto classic_levels_path = "resources/levels/classic.json";
+	static constexpr auto cosmic_levels_path = "resources/levels/cosmic.json";
 	std::vector<std::string> classic_levels_;
+
+	// =============================================================================
+	// Cosmic mode level data structures
+	struct cosmic_range {
+		size_t from;
+		size_t to;
+		size_t energies;
+		size_t empty;
+	};
+
+	struct cosmic_level {
+		difficulty difficult;
+		std::vector<cosmic_range> ranges;
+	};
+
+	std::vector<cosmic_level> cosmic_levels_;
+
 	size_t current_level_ = 1;
 	size_t max_reached_level_ = 1;
 
@@ -84,6 +102,7 @@ private:
 
 	static auto generate_cosmic_level_string(size_t energies, size_t empty) -> std::string;
 	auto load_classic_levels(const std::string &levels_path) -> pxe::result<>;
+	auto load_cosmic_levels(const std::string &levels_path) -> pxe::result<>;
 };
 
 } // namespace energy

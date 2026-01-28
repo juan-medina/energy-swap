@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <deque>
 #include <optional>
-#include <ranges>
+#include <random>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -103,29 +103,38 @@ auto puzzle::to_string() const -> std::string {
 	for(const auto &bat: batteries_) {
 		result += bat.string();
 	}
-	result += "-0";
 	return result;
 }
 
 auto puzzle::random(const size_t total_energies, const size_t free_slots) -> puzzle {
-	auto const total_batteries = total_energies + free_slots;
-	assert(total_batteries <= max_batteries && "total energies and free slots exceed maximum capacity");
-	puzzle result;
+	const auto total_batteries = total_energies + free_slots;
+	assert(total_batteries <= puzzle::max_batteries && "total energies and free slots exceed maximum capacity");
 
-	for([[maybe_unused]] auto i: std::ranges::views::iota(0U, total_batteries)) {
-		result.batteries_.emplace_back();
+	// Build a vector of all energy units
+	std::vector<int> energies;
+	energies.reserve(total_batteries * battery::max_energy);
+	for(size_t type = 1; type <= total_energies; ++type) {
+		for(size_t i = 0; i < battery::max_energy; ++i) {
+			energies.push_back(static_cast<int>(type));
+		}
 	}
+	// Add free slots (represented as 0)
+	for(size_t i = 0; i < free_slots * battery::max_energy; ++i) {
+		energies.push_back(0);
+	}
+	// Shuffle energies
+	std::ranges::shuffle(energies, std::mt19937{static_cast<unsigned>(std::rand())});
 
-	for([[maybe_unused]] const auto energy_type: std::ranges::views::iota(0U, total_energies)) {
-		auto to_drop = battery::max_energy;
-		while(to_drop > 0) {
-			const auto battery_index = std::rand() % total_batteries;
-			auto &bat = result.batteries_.at(battery_index);
-			if(bat.full()) {
-				continue;
+	puzzle result;
+	result.batteries_.resize(total_batteries);
+	// Distribute energies into batteries
+	size_t idx = 0;
+	for(auto &bat: result.batteries_) {
+		for(size_t i = 0; i < battery::max_energy; ++i) {
+			if(const auto val = energies.at(idx); val > 0) {
+				bat.add(val);
 			}
-			bat.add(static_cast<int>(energy_type + 1));
-			to_drop--;
+			++idx;
 		}
 	}
 

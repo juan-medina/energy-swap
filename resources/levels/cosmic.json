@@ -1,0 +1,53 @@
+[
+	{
+		"difficult": 0,
+		"ranges": [
+			{
+				"from": 1,
+				"to": 1,
+				"energies": 3,
+				"empty": 3
+			},
+			{
+				"from": 2,
+				"to": 9999,
+				"energies": 6,
+				"empty": 2
+			}
+		]
+	},
+	{
+		"difficult": 1,
+		"ranges": [
+			{
+				"from": 1,
+				"to": 1,
+				"energies": 6,
+				"empty": 2
+			},
+			{
+				"from": 2,
+				"to": 9999,
+				"energies": 8,
+				"empty": 2
+			}
+		]
+	},
+	{
+		"difficult": 2,
+		"ranges": [
+			{
+				"from": 1,
+				"to": 1,
+				"energies": 9,
+				"empty": 3
+			},
+			{
+				"from": 2,
+				"to": 9999,
+				"energies": 10,
+				"empty": 2
+			}
+		]
+	}
+]
