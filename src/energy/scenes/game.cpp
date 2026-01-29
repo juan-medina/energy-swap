@@ -133,7 +133,7 @@ auto game::update(const float delta) -> pxe::result<> {
 		}
 	}
 
-	if(is_cosmic_level_) {
+	if(is_cosmic_level_ && !time_paused_) {
 		remaining_time_ -= delta;
 		auto const seconds_str = std::format("{:.2f}", std::max(0.0F, remaining_time_));
 		std::shared_ptr<pxe::label> time_ptr;
@@ -443,7 +443,8 @@ auto game::configure_show_ui() -> pxe::result<> {
 
 	if(is_cosmic_level_) {
 		time_ptr->set_visible(true);
-		remaining_time_ = 60.0F; // 60 seconds for cosmic levels
+		remaining_time_ = app.get_time_for_cosmic();
+		time_paused_ = false;
 	} else {
 		time_ptr->set_visible(false);
 	}
@@ -664,7 +665,9 @@ auto game::check_end() -> pxe::result<> {
 }
 
 auto game::handle_puzzle_solved() -> pxe::result<> {
+	time_paused_ = true;
 	auto &app = dynamic_cast<energy_swap &>(get_app());
+	app.set_time_for_cosmic(remaining_time_);
 	const auto current_level = app.get_level_manager().get_current_level();
 	const auto total_levels = app.get_level_manager().get_total_levels();
 
@@ -697,7 +700,8 @@ auto game::handle_puzzle_unsolvable() const -> pxe::result<> {
 	return true;
 }
 
-auto game::handle_cosmic_time_up() const -> pxe::result<> {
+auto game::handle_cosmic_time_up() -> pxe::result<> {
+	time_paused_ = true;
 	if(const auto err = update_end_game_ui(cosmic_time_up_message, false, true).unwrap(); err) {
 		return pxe::error("failed to update end game UI", *err);
 	}
@@ -945,6 +949,12 @@ auto game::execute_energy_transfer(const std::shared_ptr<battery_display> &from,
 	}
 
 	to->transfer_energy_from(*from);
+
+	if(is_cosmic_level_) {
+		if(to->is_battery_closed()) {
+			remaining_time_ += 5;
+		}
+	}
 
 	if(const auto err = check_end().unwrap(); err) {
 		return pxe::error("failed to check end condition", *err);

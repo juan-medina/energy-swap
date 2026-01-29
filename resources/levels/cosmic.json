@@ -39,12 +39,30 @@
 		"ranges": [
 			{
 				"from": 1,
-				"to": 1,
+				"to": 5,
 				"energies": 6,
 				"empty": 2
 			},
 			{
-				"from": 2,
+				"from": 6,
+				"to": 10,
+				"energies": 6,
+				"empty": 1
+			},
+			{
+				"from": 11,
+				"to": 20,
+				"energies": 7,
+				"empty": 2
+			},
+			{
+				"from": 21,
+				"to": 30,
+				"energies": 7,
+				"empty": 1
+			},
+			{
+				"from": 31,
 				"to": 9999,
 				"energies": 8,
 				"empty": 2
@@ -56,12 +74,24 @@
 		"ranges": [
 			{
 				"from": 1,
-				"to": 1,
+				"to": 5,
+				"energies": 8,
+				"empty": 1
+			},
+			{
+				"from": 6,
+				"to": 10,
 				"energies": 9,
 				"empty": 3
 			},
 			{
-				"from": 2,
+				"from": 11,
+				"to": 20,
+				"energies": 9,
+				"empty": 2
+			},
+			{
+				"from": 21,
 				"to": 9999,
 				"energies": 10,
 				"empty": 2

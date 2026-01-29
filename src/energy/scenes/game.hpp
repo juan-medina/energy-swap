@@ -140,7 +140,7 @@ private:
 	[[nodiscard]] auto check_end() -> pxe::result<>;
 	[[nodiscard]] auto handle_puzzle_solved() -> pxe::result<>;
 	[[nodiscard]] auto handle_puzzle_unsolvable() const -> pxe::result<>;
-	[[nodiscard]] auto handle_cosmic_time_up() const -> pxe::result<>;
+	[[nodiscard]] auto handle_cosmic_time_up() -> pxe::result<>;
 	[[nodiscard]] auto update_end_game_ui(const std::string &status_message, bool show_next, bool show_reset) const
 		-> pxe::result<>;
 	static auto constexpr win_message = "Congratulations! You completed all levels!";
@@ -187,6 +187,7 @@ private:
 
 	bool is_cosmic_level_{false};
 	float remaining_time_{0.0F};
+	bool time_paused_{false};
 };
 
 } // namespace energy

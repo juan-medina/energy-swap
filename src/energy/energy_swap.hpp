@@ -54,6 +54,14 @@ public:
 		size_t level;
 	};
 
+	auto set_time_for_cosmic(const float time) -> void {
+		time_for_cosmic_ = time;
+	}
+
+	[[nodiscard]] auto get_time_for_cosmic() const -> float {
+		return time_for_cosmic_;
+	}
+
 protected:
 	[[nodiscard]] auto init() -> pxe::result<> override;
 	[[nodiscard]] auto end() -> pxe::result<> override;
@@ -104,6 +112,7 @@ private:
 	pxe::scene_id level_selection_scene_;
 	pxe::scene_id mode_scene_;
 	pxe::scene_id cosmic_scene_;
+	float time_for_cosmic_{0.0F};
 };
 
 } // namespace energy
