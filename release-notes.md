@@ -2,7 +2,7 @@
 
 ### New Features
 
-- Adding a hint system to help new players understand the game mechanics, only for the first 5 levels.
+- Added a new Cosmic mode: a fast-paced, time-attack challenge alongside the original Classic mode.
 
 ### Bug Fixes
 
