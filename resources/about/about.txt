@@ -1,75 +1,90 @@
 ENERGY SWAP
+  A puzzle game where colored energy units flow
+  between battery nodes.
+  Your goal: organize each battery to be empty
+  or contain a single color!
 
-    A puzzle game where colored energy units flow between battery nodes.
-    Your goal: organize each battery to be empty or contain a single color!
-
-    Strategy meets simplicity in this addictive color-matching challenge.
+  Strategy meets simplicity in this addictive
+  color-matching challenge.
 
 
 CREDITS
 
-
-    GAME DESIGN & PROGRAMMING
-    [Juan Medina](https://juan-medina.com).
-
-
-    MUSIC
-    [Abstraction Music](https://abstractionmusic.com/).
-    (Licensed under Public Domain CC-0)
+  GAME DESIGN & PROGRAMMING
+  [Juan Medina](https://juan-medina.com).
 
 
-    SOUND EFFECTS
-    [Helton Yan & Beto Bezerra](https://heltonyan.itch.io/pixelcombat).
-    (Licensed under Attribution 4.0 International)
+  MUSIC
+  [Abstraction Music](https://abstractionmusic.com/).
+  (Licensed: Public Domain CC-0)
 
 
-    VISUAL EFFECTS
-    [Particle Pack by Polar_34](https://polar-34.itch.io/particles).
-    (Licensed under MIT)
+  SOUND EFFECTS
+  [Helton Yan & Beto Bezerra](https://heltonyan.itch.io/pixelcombat).
+  (Licensed: Attribution 4.0 International)
 
 
-    GRAPHICS
-    [Additional graphics by Kenney.nl](https://kenney.nl/assets)
-    (Licensed under Public Domain CC-0)
-    [Peaberry Pixel Font by emhuo](https://emhuo.itch.io/peaberry-pixel-font)
-    (Licensed under Open Font License Version 1.1)
+  VISUAL EFFECTS
+  [Particle Pack by Polar_34](https://polar-34.itch.io/particles).
+  (Licensed: MIT)
+
+
+  GRAPHICS
+  [Additional graphics by Kenney.nl](https://kenney.nl/assets)
+  (Licensed: Public Domain CC-0)
+  [Peaberry Pixel Font by emhuo](https://emhuo.itch.io/peaberry-pixel-font)
+  (Licensed: Open Font License Version 1.1)
 
 
 
 TOOLS USED
-
-    - [Free Texture Packer](https://www.free-tex-packer.com/app/): Used for conveniently packing sprites into sheets.
-    - [aseprite](https://www.aseprite.org/): Pixel art editor for creating and animating sprites.
-    - [Bitmap Font Generator (BMFont)](https://angelcode.com/products/bmfont/): Generates bitmap fonts for the game UI.
-    - [Audacity](https://www.audacityteam.org/): Audio editor for music and sound effects.
+  - [Free Texture Packer](https://www.free-tex-packer.com/app/)
+    Packing sprites into sheets.
+  - [aseprite](https://www.aseprite.org/)
+    Pixel art editor.
+  - [Audacity](https://www.audacityteam.org/)
+    Audio editor for music and sound effects.
 
 
 
 POWERED BY
 
-        Built with [pxe](https://github.com/juan-medina/pxe) - an opinionated game engine by Juan Medina, powered by:
+    Built with [pxe](https://github.com/juan-medina/pxe):
+    an opinionated game engine by Juan Medina,
+    powered by:
 
-        - [raylib](https://www.raylib.com/) - Simple and easy-to-use library for game programming.
-        - [raygui](https://github.com/raysan5/raygui) - Immediate mode GUI for raylib.
-        - [spdlog](https://github.com/gabime/spdlog) - Fast C++ logging library.
-        - [jsoncons](https://github.com/danielaparker/jsoncons) - C++ JSON processing library.
-        - [Boxer](https://github.com/aaronmjacobs/Boxer) - Cross-platform message boxes.
-        - [PlatformFolders](https://github.com/sago007/PlatformFolders) - Cross-platform folder locations.
-        - [Emscripten](https://emscripten.org/) - C/C++ to WebAssembly compiler.
-        - [CRT Shader based on Godot CRT Shader by perons](https://perons.itch.io/godot-crt-shader).
--------------------------------------------------------------------------------
+    - [raylib](https://www.raylib.com/)
+      Simple and easy-to-use library for game
+      programming.
+    - [raygui](https://github.com/raysan5/raygui)
+      Immediate mode GUI for raylib.
+    - [spdlog](https://github.com/gabime/spdlog)
+      Fast C++ logging library.
+    - [jsoncons](https://github.com/danielaparker/jsoncons)
+      C++ JSON processing library.
+    - [Boxer](https://github.com/aaronmjacobs/Boxer)
+      Cross-platform message boxes.
+    - [PlatformFolders](https://github.com/sago007/PlatformFolders)
+      Cross-platform folder locations.
+    - [Emscripten](https://emscripten.org/)
+      C/C++ to WebAssembly compiler.
+    - CRT Shader based on:
+      [Godot CRT Shader by perons](https://perons.itch.io/godot-crt-shader).
+-----------------------------------------------
 
-    Copyright © 2026 Juan Medina
-    All rights reserved
+  Copyright 2026 Juan Medina
+  All rights reserved
 
-    [More information & full source-code](https://github.com/juan-medina/energy-swap)
+  [More information & full source-code](https://github.com/juan-medina/energy-swap)
 
-    [Report bugs or feedback](https://github.com/juan-medina/energy-swap/issues)
+  [Report bugs or feedback](https://github.com/juan-medina/energy-swap/issues)
 
--------------------------------------------------------------------------------
+-----------------------------------------------
 
-    Special thanks to all players who support indie game development
-    and the open source community for making this possible!
+  Special thanks to all players who support
+  indie game development and the open source
+  community for making this possible!
 
-    This game was crafted with passion and dedication.
-    Thank you for playing!
+  This game was crafted with passion and
+  dedication.
+  Thank you for playing!
