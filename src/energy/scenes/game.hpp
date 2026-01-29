@@ -11,6 +11,7 @@
 
 #include "../components/battery_display.hpp"
 #include "../components/spark.hpp"
+#include "../components/points.hpp"
 #include "../data/puzzle.hpp"
 
 #include <raylib.h>
@@ -54,6 +55,7 @@ public:
 private:
 	static constexpr auto max_batteries = 12;
 	static constexpr auto max_sparks = 25;
+	static constexpr auto max_points = 10;
 	static constexpr auto large_font_size = 20;
 	static constexpr std::array<size_t, 12> battery_order{8, 4, 0, 1, 5, 9, 10, 6, 2, 3, 7, 11};
 
@@ -88,6 +90,7 @@ private:
 	[[nodiscard]] auto init_battery_displays() -> pxe::result<>;
 	[[nodiscard]] auto init_buttons() -> pxe::result<>;
 	[[nodiscard]] auto init_sparks() -> pxe::result<>;
+	[[nodiscard]] auto init_points() -> pxe::result<>;
 
 	// ========================================================================
 	// Layout
@@ -159,6 +162,8 @@ private:
 
 	[[nodiscard]] auto shoot_sparks(Vector2 from, Vector2 to, Color color, size_t count) -> pxe::result<>;
 	[[nodiscard]] auto find_free_spark() const -> std::shared_ptr<spark>;
+	[[nodiscard]] auto shoot_points(int value, Vector2 position) const -> pxe::result<>;
+	[[nodiscard]] auto find_free_point() const -> std::shared_ptr<points>;
 
 	// ========================================================================
 	// Controller Input

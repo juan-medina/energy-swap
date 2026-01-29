@@ -11,6 +11,7 @@
 #include <pxe/scenes/scene.hpp>
 
 #include "../components/battery_display.hpp"
+#include "../components/points.hpp"
 #include "../components/spark.hpp"
 #include "../data/puzzle.hpp"
 #include "../energy_swap.hpp"
@@ -58,6 +59,10 @@ auto game::init(pxe::app &app) -> pxe::result<> {
 
 	if(const auto err = init_sparks().unwrap(); err) {
 		return pxe::error("failed to initialize sparks", *err);
+	}
+
+	if(const auto err = init_points().unwrap(); err) {
+		return pxe::error("failed to initialize points components", *err);
 	}
 
 	battery_click_ = app.bind_event<battery_display::click>(this, &game::on_battery_click);
@@ -109,6 +114,10 @@ auto game::show() -> pxe::result<> {
 auto game::reset() -> pxe::result<> {
 	for(const auto &spark: get_components_of_type<spark>()) {
 		spark->set_visible(false);
+	}
+
+	for(const auto &points_comp: get_components_of_type<points>()) {
+		points_comp->set_visible(false);
 	}
 
 	for(const auto &battery: get_components_of_type<battery_display>()) {
@@ -245,7 +254,7 @@ auto game::init_buttons() -> pxe::result<> {
 }
 
 auto game::init_sparks() -> pxe::result<> {
-	for([[maybe_unused]] const auto num: std::views::iota(0, max_batteries)) {
+	for([[maybe_unused]] const auto num: std::views::iota(0, max_sparks)) {
 		auto id = size_t{0};
 		if(const auto err = register_component<spark>().unwrap(id); err) {
 			return pxe::error("failed to register spark animation", *err);
@@ -257,6 +266,23 @@ auto game::init_sparks() -> pxe::result<> {
 		}
 		spark_ptr->set_scale(2.0F);
 		spark_ptr->set_visible(false);
+	}
+	return true;
+}
+
+auto game::init_points() -> pxe::result<> {
+	for([[maybe_unused]] const auto num: std::views::iota(0, max_points)) {
+		auto id = size_t{0};
+		if(const auto err = register_component<points>().unwrap(id); err) {
+			return pxe::error("failed to register points component", *err);
+		}
+
+		std::shared_ptr<points> points_ptr;
+		if(const auto err = get_component<points>(id).unwrap(points_ptr); err) {
+			return pxe::error("failed to get points component", *err);
+		}
+		points_ptr->set_visible(false);
+		points_ptr->set_centered(true);
 	}
 	return true;
 }
@@ -778,6 +804,27 @@ auto game::find_free_spark() const -> std::shared_ptr<spark> {
 	return nullptr;
 }
 
+auto game::shoot_points(const int value, const Vector2 position) const -> pxe::result<> {
+	if(const auto points_comp = find_free_point(); points_comp != nullptr) {
+		points_comp->set_points(value);
+		points_comp->set_position(position);
+		points_comp->set_visible(true);
+	} else {
+		SPDLOG_WARN("no free points component found to shoot");
+	}
+
+	return true;
+}
+
+auto game::find_free_point() const -> std::shared_ptr<points> {
+	for(const auto &points_comp: get_components_of_type<points>()) {
+		if(!points_comp->is_visible()) {
+			return points_comp;
+		}
+	}
+	return nullptr;
+}
+
 // ============================================================================
 // Controller Input
 // ============================================================================
@@ -953,6 +1000,9 @@ auto game::execute_energy_transfer(const std::shared_ptr<battery_display> &from,
 	if(is_cosmic_level_) {
 		if(to->is_battery_closed()) {
 			remaining_time_ += 5;
+			if(const auto err = shoot_points(5, to->get_position()).unwrap(); err) {
+				return pxe::error("failed to shoot points for cosmic closed battery", *err);
+			}
 		}
 	}
 
