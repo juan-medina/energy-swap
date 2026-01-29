@@ -75,7 +75,7 @@ auto cosmic::init(pxe::app &app) -> pxe::result<> {
 		return pxe::error("failed to get burger daddy button", *err);
 	}
 	burger_daddy_btn->set_text(GuiIconText(ICON_DEMON, "Burger Daddy"));
-	burger_daddy_btn->set_size({.width = 190, .height = 40});
+	burger_daddy_btn->set_size({.width = 200, .height = 40});
 	burger_daddy_btn->set_font_size(25);
 	burger_daddy_btn->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_LEFT);
 

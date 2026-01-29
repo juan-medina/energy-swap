@@ -48,7 +48,7 @@ private:
 	static constexpr auto max_levels = 100;
 	static constexpr auto levels_per_page = 10;
 	static constexpr auto total_pages = max_levels / levels_per_page;
-	static constexpr auto button_font_size = 16;
+	static constexpr auto button_font_size = 17;
 
 	size_t current_page_{0};
 

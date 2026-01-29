@@ -60,7 +60,7 @@ auto mode::init(pxe::app &app) -> pxe::result<> {
 		return pxe::error("failed to get classic button", *err);
 	}
 	classic_btn->set_text(GuiIconText(ICON_PLAYER, "Classic"));
-	classic_btn->set_size({.width = 120, .height = 40});
+	classic_btn->set_size({.width = 150, .height = 40});
 	classic_btn->set_font_size(30);
 	classic_btn->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
 
@@ -69,7 +69,7 @@ auto mode::init(pxe::app &app) -> pxe::result<> {
 		return pxe::error("failed to get cosmic button", *err);
 	}
 	cosmic_btn->set_text(GuiIconText(ICON_STAR, "Cosmic"));
-	cosmic_btn->set_size({.width = 120, .height = 40});
+	cosmic_btn->set_size({.width = 150, .height = 40});
 	cosmic_btn->set_font_size(30);
 	cosmic_btn->set_controller_button(GAMEPAD_BUTTON_RIGHT_FACE_UP);
 

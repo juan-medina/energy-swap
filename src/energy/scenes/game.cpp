@@ -239,15 +239,15 @@ auto game::init_buttons() -> pxe::result<> {
 
 	back_button_ptr->set_text(GuiIconText(ICON_PLAYER_PREVIOUS, "Back"));
 	back_button_ptr->set_position({.x = 0, .y = 0});
-	back_button_ptr->set_size({.width = 65, .height = 25});
+	back_button_ptr->set_size({.width = 75, .height = 25});
 
 	next_button_ptr->set_text(GuiIconText(ICON_PLAYER_NEXT, "Next"));
 	next_button_ptr->set_position({.x = 0, .y = 0});
-	next_button_ptr->set_size({.width = 65, .height = 25});
+	next_button_ptr->set_size({.width = 75, .height = 25});
 
 	reset_button_ptr->set_text(GuiIconText(ICON_UNDO, "Reset"));
 	reset_button_ptr->set_position({.x = 0, .y = 0});
-	reset_button_ptr->set_size({.width = 65, .height = 25});
+	reset_button_ptr->set_size({.width = 75, .height = 25});
 
 	return true;
 }
