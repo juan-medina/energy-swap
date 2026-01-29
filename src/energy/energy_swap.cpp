@@ -28,14 +28,11 @@ auto energy_swap::init() -> pxe::result<> {
 
 	set_clear_color(clear_color);
 
-	if(const auto err = set_default_font(font_path).unwrap(); err) {
-		return pxe::error{"failed to set default font", *err};
+	if(const auto err = load_sprite_sheet(sprite_sheet_name, sprite_sheet_path).unwrap(); err) {
+		return pxe::error("failed to initialize sprite sheet", *err);
 	}
 
-	if(const auto err = load_sfx(click_sfx, click_sfx_path).unwrap(); err) {
-		return pxe::error{"failed to load button sfx", *err};
-	}
-
+	set_logo(sprite_sheet_name, logo_frame);
 	if(const auto err = load_sfx(battery_click_sfx, battery_click_sfx_path).unwrap(); err) {
 		return pxe::error{"failed to load battery click sfx", *err};
 	}
@@ -85,12 +82,12 @@ auto energy_swap::end() -> pxe::result<> {
 	unsubscribe(back_from_cosmic_);
 
 	// unload sfx
-	if(const auto err = unload_sfx(click_sfx).unwrap(); err) {
-		return pxe::error{"failed to unload click sfx", *err};
-	}
-
 	if(const auto err = unload_sfx(battery_click_sfx).unwrap(); err) {
 		return pxe::error{"failed to unload battery click sfx", *err};
+	}
+
+	if(const auto err = unload_sprite_sheet(sprite_sheet_name).unwrap(); err) {
+		return pxe::error("failed to end sprite sheet", *err);
 	}
 
 	return app::end();

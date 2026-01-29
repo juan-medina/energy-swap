@@ -126,7 +126,7 @@ auto level_selection::update(const float delta) -> pxe::result<> {
 	}
 
 	if((previous_level != selected_level_) || (previous_page != current_page_)) {
-		if(const auto err = get_app().play_sfx(click_sfx).unwrap(); err) {
+		if(const auto err = get_app().play_click().unwrap(); err) {
 			return pxe::error("failed to play click sfx", *err);
 		}
 		if(const auto err = update_buttons().unwrap(); err) {

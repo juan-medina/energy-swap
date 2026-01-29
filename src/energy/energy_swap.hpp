@@ -59,11 +59,10 @@ protected:
 	[[nodiscard]] auto end() -> pxe::result<> override;
 
 private:
-	static constexpr auto font_path  = "resources/fonts/PeaberryMono.fnt";
+	static constexpr auto sprite_sheet_name = "sprites";
+	static constexpr auto sprite_sheet_path = "resources/sprites/sprites.json";
+	static constexpr auto logo_frame = "logo.png";
 	static constexpr auto clear_color = Color{.r = 20, .g = 49, .b = 59, .a = 255};
-
-	static constexpr auto click_sfx_path = "resources/sfx/click.wav";
-	static constexpr auto click_sfx = "click";
 	static constexpr auto battery_click_sfx_path = "resources/sfx/battery.wav";
 	static constexpr auto battery_click_sfx = "battery";
 	static constexpr auto zap_sfx_path = "resources/sfx/zap.wav";

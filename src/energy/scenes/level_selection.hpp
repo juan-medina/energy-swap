@@ -69,7 +69,6 @@ private:
 
 	size_t selected_level_{1};
 	auto on_dpad_input(int dx, int dy) -> pxe::result<>;
-	static constexpr auto click_sfx = "click";
 	auto controller_move_level() -> pxe::result<>;
 	auto check_page_movement() -> pxe::result<>;
 };

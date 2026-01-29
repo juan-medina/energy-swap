@@ -1,8 +1,32 @@
 {
   "frames": {
-    "battery.png": {
+    "logo.png": {
       "frame": {
         "x": 4,
+        "y": 4,
+        "w": 297,
+        "h": 134
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 2,
+        "y": 1,
+        "w": 297,
+        "h": 134
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 135
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "battery.png": {
+      "frame": {
+        "x": 309,
         "y": 4,
         "w": 35,
         "h": 58
@@ -26,8 +50,8 @@
     },
     "full.png": {
       "frame": {
-        "x": 4,
-        "y": 70,
+        "x": 352,
+        "y": 4,
         "w": 26,
         "h": 9
       },
@@ -48,10 +72,34 @@
         "y": 0.5
       }
     },
+    "spark_6.png": {
+      "frame": {
+        "x": 386,
+        "y": 4,
+        "w": 10,
+        "h": 5
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 3,
+        "y": 10,
+        "w": 10,
+        "h": 5
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
     "hint.png": {
       "frame": {
-        "x": 38,
-        "y": 70,
+        "x": 404,
+        "y": 4,
         "w": 9,
         "h": 13
       },
@@ -74,8 +122,8 @@
     },
     "spark_4.png": {
       "frame": {
-        "x": 4,
-        "y": 87,
+        "x": 386,
+        "y": 17,
         "w": 9,
         "h": 6
       },
@@ -98,8 +146,8 @@
     },
     "spark_5.png": {
       "frame": {
-        "x": 21,
-        "y": 87,
+        "x": 352,
+        "y": 21,
         "w": 9,
         "h": 6
       },
@@ -120,34 +168,10 @@
         "y": 0.5
       }
     },
-    "spark_6.png": {
-      "frame": {
-        "x": 47,
-        "y": 4,
-        "w": 10,
-        "h": 5
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 3,
-        "y": 10,
-        "w": 10,
-        "h": 5
-      },
-      "sourceSize": {
-        "w": 16,
-        "h": 32
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
     "spark_3.png": {
       "frame": {
-        "x": 47,
-        "y": 17,
+        "x": 369,
+        "y": 21,
         "w": 7,
         "h": 7
       },
@@ -170,8 +194,8 @@
     },
     "spark_2.png": {
       "frame": {
-        "x": 47,
-        "y": 32,
+        "x": 352,
+        "y": 35,
         "w": 4,
         "h": 5
       },
@@ -194,8 +218,8 @@
     },
     "spark_1.png": {
       "frame": {
-        "x": 47,
-        "y": 45,
+        "x": 421,
+        "y": 4,
         "w": 2,
         "h": 2
       },
@@ -223,8 +247,8 @@
     "image": "sprites.png",
     "format": "RGBA8888",
     "size": {
-      "w": 64,
-      "h": 128
+      "w": 512,
+      "h": 256
     },
     "scale": 1
   }

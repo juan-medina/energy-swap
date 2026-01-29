@@ -57,8 +57,6 @@ private:
 	static constexpr auto large_font_size = 20;
 	static constexpr std::array<size_t, 12> battery_order{8, 4, 0, 1, 5, 9, 10, 6, 2, 3, 7, 11};
 
-	static constexpr auto sprite_sheet_name = "sprites";
-	static constexpr auto sprite_sheet_path = "resources/sprites/sprites.json";
 	static constexpr auto game_music = "resources/music/game.ogg";
 	static constexpr auto battery_click_sound = "battery";
 	static constexpr auto zap_sound = "zap";

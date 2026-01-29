@@ -48,10 +48,6 @@ auto game::init(pxe::app &app) -> pxe::result<> {
 		return pxe::error("failed to initialize UI components", *err);
 	}
 
-	if(const auto err = app.load_sprite_sheet(sprite_sheet_name, sprite_sheet_path).unwrap(); err) {
-		return pxe::error("failed to initialize sprite sheet", *err);
-	}
-
 	if(const auto err = init_battery_displays().unwrap(); err) {
 		return pxe::error("failed to initialize battery displays", *err);
 	}
@@ -73,10 +69,6 @@ auto game::init(pxe::app &app) -> pxe::result<> {
 auto game::end() -> pxe::result<> {
 	get_app().unsubscribe(button_click_);
 	get_app().unsubscribe(battery_click_);
-
-	if(const auto err = get_app().unload_sprite_sheet(sprite_sheet_name).unwrap(); err) {
-		return pxe::error("failed to end sprite sheet", *err);
-	}
 
 	return scene::end();
 }
