@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <jsoncons/basic_json.hpp>
 
 namespace energy {
 
@@ -115,6 +116,9 @@ private:
 	std::string cached_level_string_;
 
 	[[nodiscard]] auto get_cosmic_data() const -> cosmic_level;
+
+	static auto parse_cosmic_level(const jsoncons::basic_json<char> &level) -> pxe::result<cosmic_level>;
+	static auto parse_cosmic_range(const jsoncons::basic_json<char> &range) -> pxe::result<cosmic_range>;
 };
 
 } // namespace energy
