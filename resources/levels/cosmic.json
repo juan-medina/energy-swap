@@ -1,6 +1,10 @@
 [
 	{
 		"difficult": 0,
+		"time": {
+			"initial": 60,
+			"complete a battery add": 5
+		},
 		"ranges": [
 			{
 				"from": 1,
@@ -36,6 +40,10 @@
 	},
 	{
 		"difficult": 1,
+		"time": {
+			"initial": 90,
+			"complete a battery add": 10
+		},
 		"ranges": [
 			{
 				"from": 1,
@@ -71,6 +79,10 @@
 	},
 	{
 		"difficult": 2,
+		"time": {
+			"initial": 120,
+			"complete a battery add": 20
+		},
 		"ranges": [
 			{
 				"from": 1,

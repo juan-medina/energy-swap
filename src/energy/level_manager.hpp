@@ -75,6 +75,9 @@ public:
 		return current_difficulty_;
 	}
 
+	[[nodiscard]] auto get_game_time() const -> size_t;
+	[[nodiscard]] auto get_battery_time() const -> size_t;
+
 private:
 	static constexpr auto classic_levels_path = "resources/levels/classic.json";
 	static constexpr auto cosmic_levels_path = "resources/levels/cosmic.json";
@@ -92,6 +95,8 @@ private:
 	struct cosmic_level {
 		difficulty difficult;
 		std::vector<cosmic_range> ranges;
+		size_t game_time;
+		size_t battery_time;
 	};
 
 	std::vector<cosmic_level> cosmic_levels_;
@@ -108,6 +113,8 @@ private:
 
 	size_t last_level_string_ = 0;
 	std::string cached_level_string_;
+
+	[[nodiscard]] auto get_cosmic_data() const -> cosmic_level;
 };
 
 } // namespace energy

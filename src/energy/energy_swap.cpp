@@ -155,7 +155,7 @@ auto energy_swap::on_difficulty_selected(const cosmic::selected &evt) -> pxe::re
 	level_manager_.set_mode(level_manager::mode::cosmic);
 	level_manager_.set_difficulty(evt.difficulty);
 	level_manager_.set_current_level(1);
-	set_time_for_cosmic(60.0F); // default time for cosmic mode
+	set_time_for_cosmic(static_cast<float>(level_manager_.get_game_time()));
 	return replace_scene(cosmic_scene_, game_scene_);
 }
 

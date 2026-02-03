@@ -101,6 +101,7 @@ auto game::show() -> pxe::result<> {
 		return pxe::error("failed to get current level string", *err);
 	}
 	can_have_solution_hint_ = app.get_level_manager().can_have_solution_hint();
+	time_per_battery_ = app.get_level_manager().get_battery_time();
 
 	SPDLOG_DEBUG("setting up puzzle with level string: {}", level_str);
 
@@ -999,8 +1000,8 @@ auto game::execute_energy_transfer(const std::shared_ptr<battery_display> &from,
 
 	if(is_cosmic_level_) {
 		if(to->is_battery_closed()) {
-			remaining_time_ += 5;
-			if(const auto err = shoot_points(5, to->get_position()).unwrap(); err) {
+			remaining_time_ += time_per_battery_;
+			if(const auto err = shoot_points(static_cast<int>(time_per_battery_), to->get_position()).unwrap(); err) {
 				return pxe::error("failed to shoot points for cosmic closed battery", *err);
 			}
 		}

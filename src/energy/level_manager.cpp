@@ -88,6 +88,25 @@ auto level_manager::load_cosmic_levels(const std::string &levels_path) -> pxe::r
 		if(diff_val < 0 || diff_val > 2) {
 			return pxe::error("cosmic level 'difficult' value out of range");
 		}
+		if(!level.contains("time")
+		   || !level["time"].is_object()) { // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+			return pxe::error("cosmic level entry missing 'ranges' array");
+		}
+		auto time = level["time"]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+		if(time.contains("initial")
+		   && time["initial"].is_uint64()) {				 // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+			cosmic.game_time = time["initial"].as<size_t>(); // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+		} else {
+			return pxe::error("cosmic level 'time' missing 'initial'");
+		}
+		if(time.contains("complete a battery add")
+		   && time["complete a battery add"].is_uint64()) { // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+			cosmic.battery_time =
+				time["complete a battery add"].as<size_t>(); // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+		} else {
+			return pxe::error("cosmic level 'time' missing 'battery'");
+		}
+
 		cosmic.difficult = static_cast<difficulty>(diff_val);
 		for(const auto &range: level["ranges"].array_range()) { // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
 			if(!range.contains("from")
@@ -116,6 +135,23 @@ auto level_manager::load_cosmic_levels(const std::string &levels_path) -> pxe::r
 	return true;
 }
 
+auto level_manager::get_cosmic_data() const -> cosmic_level {
+	for(const auto &level: cosmic_levels_) {
+		if(level.difficult == current_difficulty_) {
+			return level;
+		}
+	}
+	return {};
+}
+
+auto level_manager::get_game_time() const -> size_t {
+	return get_cosmic_data().game_time;
+}
+
+auto level_manager::get_battery_time() const -> size_t {
+	return get_cosmic_data().battery_time;
+}
+
 auto level_manager::load_levels() -> pxe::result<> {
 	if(const auto err = load_classic_levels(classic_levels_path).unwrap(); err) {
 		return pxe::error("failed to load classic levels", *err);
@@ -133,7 +169,7 @@ auto level_manager::get_current_level_string() -> pxe::result<std::string> {
 	last_level_string_ = current_level_;
 	cached_level_string_.clear();
 	if(current_mode_ == mode::cosmic) {
-		for(const auto &[difficult, ranges]: cosmic_levels_) {
+		for(const auto &[difficult, ranges, game_time, battery_time]: cosmic_levels_) {
 			if(difficult == current_difficulty_) {
 				for(const auto &[from, to, energies, empty]: ranges) {
 					if(current_level_ >= from && current_level_ <= to) {

@@ -192,6 +192,7 @@ private:
 
 	bool is_cosmic_level_{false};
 	float remaining_time_{0.0F};
+	size_t time_per_battery_{0};
 	bool time_paused_{false};
 };
 
