@@ -2,11 +2,11 @@
 
 ### New Features
 
-- Added a new Cosmic mode: a fast-paced, time-attack challenge alongside the original Classic mode.
-
 ### Bug Fixes
 
 ### Improvements
+
+Improve cosmic level time for higher difficulties.
 
 ### Known Issues
 
