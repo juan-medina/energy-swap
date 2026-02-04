@@ -715,7 +715,8 @@ auto game::handle_puzzle_solved() -> pxe::result<> {
 	return true;
 }
 
-auto game::handle_puzzle_unsolvable() const -> pxe::result<> {
+auto game::handle_puzzle_unsolvable() -> pxe::result<> {
+	time_paused_ = true;
 	if(const auto err = update_end_game_ui(unsolvable_message, false, true).unwrap(); err) {
 		return pxe::error("failed to update end game UI", *err);
 	}

@@ -10,8 +10,8 @@
 #include <pxe/scenes/scene.hpp>
 
 #include "../components/battery_display.hpp"
-#include "../components/spark.hpp"
 #include "../components/points.hpp"
+#include "../components/spark.hpp"
 #include "../data/puzzle.hpp"
 
 #include <raylib.h>
@@ -142,7 +142,7 @@ private:
 
 	[[nodiscard]] auto check_end() -> pxe::result<>;
 	[[nodiscard]] auto handle_puzzle_solved() -> pxe::result<>;
-	[[nodiscard]] auto handle_puzzle_unsolvable() const -> pxe::result<>;
+	[[nodiscard]] auto handle_puzzle_unsolvable() -> pxe::result<>;
 	[[nodiscard]] auto handle_cosmic_time_up() -> pxe::result<>;
 	[[nodiscard]] auto update_end_game_ui(const std::string &status_message, bool show_next, bool show_reset) const
 		-> pxe::result<>;
