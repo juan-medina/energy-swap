@@ -4,9 +4,9 @@
 
 ### Bug Fixes
 
-### Improvements
+Cosmic time was not paused when there is no more moves available.
 
-Improve cosmic level time for higher difficulties.
+### Improvements
 
 ### Known Issues
 
